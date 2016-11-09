@@ -1,0 +1,84 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <include
+        android:id="@+id/widget_bar"
+        layout="@layout/widget_toolbar" />
+
+    <LinearLayout
+        android:id="@+id/streamid_pannel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="stream id:" />
+
+        <EditText
+            android:id="@+id/stream_id_et"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/streamid_pannel"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <Button
+            android:onClick="onLine1BtnClick"
+            android:id="@+id/btn_line1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.3"
+            android:text="线路1" />
+
+        <Button
+            android:onClick="onLine2BtnClick"
+            android:id="@+id/btn_line2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="1.0"
+            android:text="线路2" />
+    </LinearLayout>
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="4dp"
+        android:layout_marginBottom="31dp">
+
+        <Button
+            android:onClick="onPublishBtnClick"
+            android:id="@+id/publish_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:padding="4dp"
+            android:text="直播" />
+
+        <Button
+            android:onClick="onPlayBtnClick"
+            android:id="@+id/play_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="4dp"
+            android:layout_toRightOf="@id/publish_fab"
+            android:padding="4dp"
+            android:text="播放" />
+    </RelativeLayout>
+
+</RelativeLayout>

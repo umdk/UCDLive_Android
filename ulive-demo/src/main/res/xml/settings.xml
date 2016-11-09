@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory android:title="@string/pref_category_general">
+
+        <com.ucloud.ulive.example.preference.UListPreference
+            android:defaultValue="@string/pref_filter_default"
+            android:dialogTitle="@string/pref_filter_title"
+            android:entries="@array/pref_filter_entries"
+            android:entryValues="@array/pref_filter_values"
+            android:key="pref.filter"
+            android:title="@string/pref_filter_title"
+            app:entrySummaries="@array/pref_filter_values" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_category_debug">
+
+        <com.ucloud.ulive.example.preference.UEditTextPreference
+            android:defaultValue="@string/pref_fps_default"
+            android:key="pref.fps"
+            android:persistent="true"
+            android:title="@string/pref_fps_title" />
+
+        <com.ucloud.ulive.example.preference.UListPreference
+            android:defaultValue="@string/pref_video_bitrate_default"
+            android:dialogTitle="@string/pref_video_bitrate_title"
+            android:entries="@array/pref_video_bitrate_entries"
+            android:entryValues="@array/pref_video_bitrate_values"
+            android:key="pref.video_bitrate"
+            android:title="@string/pref_video_bitrate_title"
+            app:entrySummaries="@array/pref_video_bitrate_values" />
+
+        <com.ucloud.ulive.example.preference.UListPreference
+            android:defaultValue="@string/pref_resolution_default"
+            android:dialogTitle="@string/pref_resolution_title"
+            android:entries="@array/pref_hw_resolution_entries"
+            android:entryValues="@array/pref_hw_resolution_values"
+            android:key="pref.resolution"
+            android:title="@string/pref_resolution_title"
+            app:entrySummaries="@array/pref_hw_resolution_values" />
+
+        <com.ucloud.ulive.example.preference.UListPreference
+            android:defaultValue="@string/pref_orientation_default"
+            android:dialogTitle="@string/pref_orientation_title"
+            android:entries="@array/pref_orientation_entries"
+            android:entryValues="@array/pref_orientation_values"
+            android:key="pref.video_capture_orientation"
+            android:title="@string/pref_orientation_title"
+            app:entrySummaries="@array/pref_orientation_values" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_category_about">
+        <Preference android:key="pref.about" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

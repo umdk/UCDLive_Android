@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- category -->
+    <string name="pref_category_general">general</string>
+    <string name="pref_category_debug">debug</string>
+    <string name="pref_category_about">about</string>
+
+    <!-- filter -->
+    <string name="pref_filter_title">filter</string>
+    <string name="pref_filter_default">1</string>
+    <string-array name="pref_filter_entries">
+        <item>CPU</item>
+        <item>GPU</item>
+    </string-array>
+    <string-array name="pref_filter_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <!-- fps -->
+    <string name="pref_fps_title">frame rate</string>
+    <string name="pref_fps_default">20</string>
+
+    <!-- video bitrate-->
+    <string name="pref_video_bitrate_title">video bitrate</string>
+    <string name="pref_video_bitrate_default">400</string>
+    <string-array name="pref_video_bitrate_entries">
+        <item>VIDEO_BITRATE_LOW</item>
+        <item>VIDEO_BITRATE_NORMAL</item>
+        <item>VIDEO_BITRATE_MEDIUM</item>
+        <item>VIDEO_BITRATE_HIGH</item>
+    </string-array>
+    <string-array name="pref_video_bitrate_values">
+        <item>200</item>
+        <item>400</item>
+        <item>600</item>
+        <item>800</item>
+    </string-array>
+
+    <!-- resolution -->
+    <string name="pref_resolution_title">resolution</string>
+    <string name="pref_resolution_default">0</string>
+    <string-array name="pref_hw_resolution_entries">
+        <item>RATIO_AUTO</item>
+        <item>RATIO_4x3</item>
+        <item>RATIO_16x9</item>
+        <item>RATIO_16x9_LOW</item>
+        <item>RATIO_16x9_HIGH</item>
+    </string-array>
+    <string-array name="pref_hw_resolution_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <string-array name="pref_sw_resolution_entries">
+        <item>RATIO_AUTO</item>
+        <item>RATIO_4x3</item>
+    </string-array>
+    <string-array name="pref_sw_resolution_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <!-- capture orientation -->
+    <string name="pref_orientation_title">capture orientation</string>
+    <string name="pref_orientation_default">1</string>
+    <string-array name="pref_orientation_entries">
+        <item>PORTRAIT</item>
+        <item>LANDSCAPE</item>
+    </string-array>
+    <string-array name="pref_orientation_values">
+        <item>1</item>
+        <item>0</item>
+    </string-array>
+
+    <!-- log -->
+    <string name="pref_open_log">log</string>
+    <string name="pref_log_cache_dir">log output dir</string>
+    <string name="pref_default_log_cache_dir">/sdcard/ucloud/log</string>
+
+</resources>

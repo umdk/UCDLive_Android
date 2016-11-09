@@ -1,0 +1,180 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/bottombar_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="4dip">
+
+            <Button
+                android:id="@+id/img_bt_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.7"
+                android:onClick="onToggleFilterBtnClick"
+                android:text="美颜" />
+
+            <Button
+                android:id="@+id/img_bt_switch_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.7"
+                android:onClick="onSwitchCameraBtnClick"
+                android:text="摄像头" />
+
+
+            <Button
+                android:id="@+id/img_bt_lamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.7"
+                android:onClick="onToggleFlashModeBtnClick"
+                android:text="闪光灯" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/rightbar_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottombar_container"
+        android:layout_alignParentRight="true">
+
+        <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/img_bt_record"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.7"
+                    android:onClick="onToggleRecordBtnClick"
+                    android:text="开始" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.7"
+                    android:onClick="onToggleMuteBtnClick"
+                    android:text="静音" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.7"
+                    android:onClick="onToggleRawAudioMixClick"
+                    android:text="混音" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.7"
+                    android:onClick="onToggleFrontCameraOutputFlipBtnClick"
+                    android:text="镜像" />
+
+                <Button
+                    android:id="@+id/btn_toggle_filter_mode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.7"
+                    android:onClick="onToggleFilterModeBtnClick"
+                    android:text="GPU" />
+
+                <Button
+                    android:id="@+id/btn_toggle_caputre_orientation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.7"
+                    android:onClick="onToggleCaptureOrientationBtnClick"
+                    android:text="横屏" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.7"
+                    android:onClick="onVideoFrameCaptureBtnClick"
+                    android:text="截帧" />
+
+                <Button
+                    android:id="@+id/img_bt_close_record"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.7"
+                    android:onClick="onStopStreamingBtnClick"
+                    android:text="退出" />
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottombar_container"
+        android:layout_toLeftOf="@id/rightbar_container">
+
+        <include layout="@layout/live_layout_live_room_debug_pannel"></include>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="onToggleDebugInfoVisibleBtnClick"
+                android:text="[调  试]"
+                android:textColor="@android:color/holo_blue_dark" />
+
+            <TextView
+                android:id="@+id/copy_to_clipboard_txtv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="onCopyDebugLogBtnClick"
+                android:text="[复  制]"
+                android:visibility="invisible"
+                android:textColor="@android:color/holo_blue_dark" />
+
+            <TextView
+                android:id="@+id/clear_debug_info_txtv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:visibility="invisible"
+                android:clickable="true"
+                android:focusable="true"
+                android:onClick="onClearDebugLogBtnClick"
+                android:text="[清  屏]"
+                android:textColor="@android:color/holo_blue_dark" />
+
+        </LinearLayout>
+    </FrameLayout>
+
+
+</RelativeLayout>
