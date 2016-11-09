@@ -28,6 +28,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.megvii.facepp.sdk.ext.FaceuHelper;
 import com.ucloud.ulive.UAudioProfile;
 import com.ucloud.ulive.UCameraProfile;
 import com.ucloud.ulive.UCameraSessionListener;
@@ -41,6 +42,7 @@ import com.ucloud.ulive.UStreamingProfile;
 import com.ucloud.ulive.UVideoProfile;
 import com.ucloud.ulive.common.util.DeviceUtils;
 import com.ucloud.ulive.common.util.StringUtil;
+import com.ucloud.ulive.example.ext.faceu.FaceuCompat;
 import com.ucloud.ulive.example.filter.audio.UAudioMuteFilter;
 import com.ucloud.ulive.example.filter.audio.URawAudioMixFilter;
 import com.ucloud.ulive.example.permission.PermissionsActivity;
@@ -102,6 +104,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
     private List<UVideoGPUFilter> filters = new ArrayList<>();
     private USkinBeautyCPUFilter mSkinBeautyCPUFilter;
     private USkinBeautyGPUFilter mSkinBeautyGPUFilter;
+    private FaceuCompat mFaceuCompat;
     private UVideoGroupGPUFilter mGpuGroupFilter;
 
     private boolean isRecording;
@@ -110,6 +113,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
     private boolean isNeedContinueCaptureAfterBackToMainHome = false;
     private boolean isMute = false;
     private boolean isMix = false;
+    private boolean isOpenFaceDetectorFilter = false;
     private boolean isOpenBeautyFilter = false;
     private boolean isNeedRePreview = false;
     private int faceuFilterIndex = 0;
@@ -171,6 +175,15 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
                 mFilterLevelBar.setVisibility(View.VISIBLE);
             } else {
                 mFilterLevelBar.setVisibility(View.GONE);
+            }
+            if (isOpenFaceDetectorFilter) {
+                mFaceuCompat = new FaceuCompat(this);
+                mFaceuCompat.setFaceuFilter(FaceuHelper.getFaceuFilter(faceuFilterIndex));
+                faceuFilterIndex++;
+                if (faceuFilterIndex == FaceuHelper.sItems.length) {
+                    faceuFilterIndex = 0;
+                }
+                filters.add(mFaceuCompat);
             }
             if (filters.size() > 0) {
                 mGpuGroupFilter = new UVideoGroupGPUFilter(filters);
@@ -331,6 +344,12 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
         mEasyStreaming.setOnStreamStateListener(this);
         mEasyStreaming.setOnNetworkStateListener(this);
         mEasyStreaming.prepare(mStreamingProfile);
+
+        if (mEasyStreaming.getFilterMode() != currentFilterType) {
+            currentFilterType = mEasyStreaming.getFilterMode();
+            appendDebugLogInfo("sync from cloud adapter must use:" + ((currentFilterType == UFilterProfile.FilterMode.CPU) ? "CPU filter" : "GPU filter"));
+        }
+
         if (isMute) {
             mEasyStreaming.setAudioCPUFilter(new UAudioMuteFilter());
         } else {
@@ -348,7 +367,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
             mEasyStreaming.frontCameraFlipHorizontal(isFrontCameraOutputNeedFlip);
         }
         initPreviewTextureView();
-        if (isOpenBeautyFilter) {
+        if (isOpenBeautyFilter || isOpenFaceDetectorFilter) {
             initFilters();
         } else {
             mFilterLevelBar.setVisibility(View.GONE);
@@ -476,16 +495,30 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
     public void onSwitchCameraBtnClick(View view) {
         if (mEasyStreaming != null) {
             boolean retVal = mEasyStreaming.switchCamera();
-            appendDebugLogInfo("switch camear " + (retVal ? "succeed." : "failed."));
+            appendDebugLogInfo("switch camera " + (retVal ? "succeed." : "failed."));
         }
     }
 
     public void onToggleFilterBtnClick(View view) {
         isOpenBeautyFilter = !isOpenBeautyFilter;
         if (isOpenBeautyFilter) {
-            appendDebugLogInfo("set skin beauty filter.");
+            appendDebugLogInfo("apply skin beauty filter.");
         } else {
             appendDebugLogInfo("removed skin beauty filter.");
+        }
+        initFilters();
+    }
+
+    public void onToggleFaceDetectorBtnClick(View view) {
+        if (currentFilterType == UFilterProfile.FilterMode.CPU) {
+            Toast.makeText(this, "sorry, just support for gpu.",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        isOpenFaceDetectorFilter = !isOpenFaceDetectorFilter;
+        if (isOpenFaceDetectorFilter) {
+            appendDebugLogInfo("apply face detector filter.");
+        } else {
+            appendDebugLogInfo("remove face detector filter.");
         }
         initFilters();
     }
@@ -539,7 +572,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
 
     //just support gpu filter & front camera
     public void onToggleFrontCameraOutputFlipBtnClick(View view) {
-        if (mStreamingProfile != null && mStreamingProfile.getFilterProfile().getFilterMode() == UFilterProfile.FilterMode.CPU) {
+        if (mStreamingProfile != null && currentFilterType == UFilterProfile.FilterMode.CPU) {
             Toast.makeText(this, "sorry, just support gpu filter -> front camera", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -629,16 +662,23 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
     public void onCopyDebugLogBtnClick(View view) {
         ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = ClipData.newPlainText("text", mBitrateTxtv.getText().toString()
-                + "  "+mRecordedTimeTxtv.getText().toString() + "\n"
-                + mFpsTxtv.getText().toString()
-                + mNetworkblockTxtv.getText().toString() + "\n"
-                +mOutputStreamInfoTxtv.getText() +mLogMsg.toString());
+                                                        + "  "+mRecordedTimeTxtv.getText().toString() + "\n"
+                                                        + mFpsTxtv.getText().toString()
+                                                        + mNetworkblockTxtv.getText().toString() + "\n"
+                                                        +mOutputStreamInfoTxtv.getText() +mLogMsg.toString());
         clipboardManager.setPrimaryClip(clipData);
         Toast.makeText(this, "copy to clipboard.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onPreviewFrame(int cameraId, byte[] data, int width, int height) {
+        if (filters != null) {
+            for(UVideoGPUFilter filter: filters) {
+                if (filter instanceof FaceuCompat) {
+                   ((FaceuCompat) filter).updateCameraFrame(cameraId, data, width, height);
+                }
+            }
+        }
     }
 
     @Override
@@ -753,7 +793,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
                 Log.i(TAG, "lifecycle->demo->stream->invalid streaming url.");
                 break;
             case SIGNATRUE_FAILED:
-                appendDebugLogInfo("streaming signature failed!");
+                appendDebugLogInfo("url signature failed->" + error.toString());
                 Log.i(TAG, "lifecycle->demo->stream->signature failed.");
                 break;
             case IOERROR:
@@ -821,7 +861,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
             mOutputStreamInfoTxtv.setVisibility(View.VISIBLE);
             String info = "url:" + streamingProfile.getStreamUrl() + "\n" +
                     "resolution:" + mEasyStreaming.getVideoOutputSize().toString() + "\n" +
-                    "filter type:" + (streamingProfile.getFilterProfile().getFilterMode() == UFilterProfile.FilterMode.GPU ? "GPU" : "CPU") + "\n" +
+                    "filter type:" + (currentFilterType == UFilterProfile.FilterMode.GPU ? "GPU" : "CPU") + "\n" +
                     "video bitrate:" + videoBitrateMode(streamingProfile.getVideoProfile().getBitrate()) + "\n" +
                     "audio bitrate:" + audioBitrateMode(streamingProfile.getAudioProfile().getBitrate()) + "\n" +
                     "video fps:" + streamingProfile.getVideoProfile().getFps() + "\n" +

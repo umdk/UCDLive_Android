@@ -79,6 +79,5 @@
     <!-- log -->
     <string name="pref_open_log">log</string>
     <string name="pref_log_cache_dir">log output dir</string>
-    <string name="pref_default_log_cache_dir">/sdcard/ucloud/log</string>
 
 </resources>

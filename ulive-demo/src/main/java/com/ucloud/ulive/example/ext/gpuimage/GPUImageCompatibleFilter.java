@@ -1,4 +1,5 @@
 package com.ucloud.ulive.example.ext.gpuimage;
+
 /*
 import android.opengl.GLES20;
 
@@ -52,4 +53,5 @@ public class GPUImageCompatibleFilter<T extends GPUImageFilter> extends UVideoGP
             innerTextureBuffer = UGPUImageCompat.getGPUImageCompatTextureVerticesBuffer(directionFlag);
         }
     }
-}*/
+}
+*/

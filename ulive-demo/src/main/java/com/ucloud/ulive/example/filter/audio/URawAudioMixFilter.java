@@ -103,8 +103,12 @@ public class URawAudioMixFilter extends UAudioCPUFilter {
 
         if (isMixBgm) {
             byte[] bytes = averageAudioMixer.mixRawAudioBytes(new byte[][]{scale(bgm, SIZE, bgmVolumeLevel), scale(orignBuff, SIZE, miscVolumeLevel)});
-            System.arraycopy(bytes, 0, targetBuff, 0, bytes.length);
-            return true;
+            if (bytes != null) {
+                System.arraycopy(bytes, 0, targetBuff, 0, bytes.length);
+                return true;
+            } else {
+                return false;
+            }
         } else {
             return false;
         }

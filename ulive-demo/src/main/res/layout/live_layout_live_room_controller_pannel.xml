@@ -25,6 +25,14 @@
                 android:text="美颜" />
 
             <Button
+                android:id="@+id/img_bt_face_detector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.7"
+                android:onClick="onToggleFaceDetectorBtnClick"
+                android:text="动态贴纸" />
+
+            <Button
                 android:id="@+id/img_bt_switch_camera"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

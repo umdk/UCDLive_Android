@@ -38,4 +38,5 @@ dependencies {
     /* compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'*/
     compile project(':ulive-android-sdk')
     compile project(':uvod-android-sdk')
+    compile project(':extension-ucloud-faceu')
 }

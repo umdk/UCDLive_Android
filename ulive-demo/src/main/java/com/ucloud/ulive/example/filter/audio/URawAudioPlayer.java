@@ -13,6 +13,8 @@ import java.util.LinkedList;
 
 public class URawAudioPlayer {
 
+    private static final String TAG = "URawAudioPlayer";
+
     private final static int STREAM_TYPE = AudioManager.STREAM_MUSIC;
 
     private final static int SAMPLE_RATE_IN_HZ = 44100;
@@ -24,6 +26,8 @@ public class URawAudioPlayer {
     private final Object syncObject = new Object();
 
     private LinkedList<byte[]> mAudioBuffer = new LinkedList<>();
+
+    private LinkedList<byte[]> mAudioPool = new LinkedList<>();
 
     private boolean mIsRunning;
 
@@ -55,7 +59,7 @@ public class URawAudioPlayer {
             if (!mIsRunning) {
                 return;
             }
-            byte[] tempData = new byte[data.length];
+            byte[] tempData = get(data.length);
             System.arraycopy(data, 0, tempData, 0, tempData.length);
             mAudioBuffer.add(tempData);
         }
@@ -88,13 +92,34 @@ public class URawAudioPlayer {
             while (mIsRunning) {
                 synchronized (syncObject) {
                     if (!mAudioBuffer.isEmpty()) {
-                        byte[] data = mAudioBuffer.remove(0);
+                        byte[] data = mAudioBuffer.removeFirst();
                         audioTrack.write(data, 0, data.length);
+                        release(data);
                     }
                 }
             }
             audioTrack.stop();
             audioTrack.release();
+        }
+    }
+
+    private byte[] get(int size) {
+        synchronized (syncObject) {
+            if (mAudioPool.size() > 0) {
+                byte[] bytes = mAudioPool.removeFirst();
+                return bytes;
+            } else {
+                byte[] bytes = new byte[size];
+                return bytes;
+            }
+        }
+    }
+
+    private void release(byte[] data) {
+        synchronized (syncObject) {
+            if (mAudioPool.size() < 2) {
+               mAudioPool.add(data);
+            }
         }
     }
 }
