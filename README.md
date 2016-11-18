@@ -600,6 +600,17 @@ public void onDestroy() {
   - issue：[查看已有的 issues 和提交 Bug[推荐]](https://github.com/umdk/UCDLive_Android/issues)
   - 邮 箱：[sdk_spt@ucloud.cn](mailto:sdk_spt@ucloud.cn)
 
+## 问题反馈参考模板
+
+|名称|描述|
+|---|---|
+|设备型号|华为 Mate 8|
+|系统版本|Android 5.0|
+|SDK 版本|v1.4.1|
+|问题描述|描述问题现象|
+|操作路径|重现问题的操作步骤|
+|附件|推流界面截屏、推流调试日志截屏、报错日志截图等|
+
 <a name="8"></a>
 # 8 版本历史
 
