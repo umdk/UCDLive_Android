@@ -600,7 +600,7 @@ public void onDestroy() {
   - issue：[查看已有的 issues 和提交 Bug[推荐]](https://github.com/umdk/UCDLive_Android/issues)
   - 邮 箱：[sdk_spt@ucloud.cn](mailto:sdk_spt@ucloud.cn)
 
-## 问题反馈参考模板
+### 问题反馈参考模板
 
 |名称|描述|
 |---|---|
@@ -613,6 +613,10 @@ public void onDestroy() {
 
 <a name="8"></a>
 # 8 版本历史
+
+* v1.4.3 (2016.12.02)
+    - 优化音频采样率设置接口
+    - 修复摄像头翻转倒置问题
 
 * v1.4.2 (2016.11.09)
     - 优化丢帧策略

@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.ucloud.ulive.UBuild;
 import com.ucloud.ulive.example.permission.PermissionsActivity;
 import com.ucloud.ulive.example.permission.PermissionsChecker;
 import com.ucloud.ulive.example.play.VideoActivity;
@@ -35,12 +36,10 @@ public class MainActivity extends AppCompatActivity {
 
     String[] playUrls = {
             "http://vlive3.rtmp.cdn.ucloud.com.cn/ucloud/%s.flv",
-            "http://rtmp3.usmtd.ucloud.com.cn/live/%s.flv"
+            "http://rtmp3.usmtd.ucloud.com.cn/live/%s.flv",
     };
 
     private EditText mUrlEdtx;
-
-    private Settings mSettings;
 
     private static final int REQUEST_CODE = 200;
 
@@ -93,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
         mUrlEdtx.setText(streamId);
         mLine1Btn = (Button) findViewById(R.id.btn_line1);
         mLine2Btn = (Button) findViewById(R.id.btn_line2);
-        mSettings = new Settings(this);
         if (default_index == 0) {
             mLine1Btn.setAlpha(1.0f);
             mLine2Btn.setAlpha(0.3f);

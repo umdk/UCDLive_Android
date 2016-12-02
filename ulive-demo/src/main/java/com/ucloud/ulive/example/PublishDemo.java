@@ -324,15 +324,28 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
         initBtnState();
         mPreviewContainer.setShowMode(UAspectFrameLayout.Mode.FULL);
         mEasyStreaming = UEasyStreaming.Factory.newInstance();
+
         UVideoProfile videoProfile = new UVideoProfile().fps(mSettings.getVideoFps())
                 .bitrate(mSettings.getVideoBitrate())
                 .resolution(mSettings.getResolution())
                 .captureOrientation(videoCaptureOrientation);
-        UAudioProfile audioProfile = new UAudioProfile();
-        audioProfile.bitrate(UAudioProfile.AUDIO_BITRATE_NORMAL);
+
+        UAudioProfile audioProfile = new UAudioProfile()
+                    .bitrate(UAudioProfile.AUDIO_BITRATE_NORMAL)
+                    .channels(UAudioProfile.CHANNEL_IN_STEREO)
+                    .source(UAudioProfile.AUDIO_SOURCE_MIC)
+                    .format(UAudioProfile.FORMAT_PCM_16BIT)
+                    .samplerate(UAudioProfile.SAMPLE_RATE_44100_HZ);
+        List<Integer> supportSampleRates = UAudioProfile.getSupportSampleRates(UAudioProfile.AUDIO_SOURCE_MIC, UAudioProfile.CHANNEL_IN_STEREO, UAudioProfile.FORMAT_PCM_16BIT);
+        Log.e(TAG, "lifecycle->demo->support samplerates->" + supportSampleRates.toString());
+        //44100Hz is currently the only rate that is guaranteed to work on all devices, but other rates such as 22050, 16000, and 11025 may work on some devices.
+        // if samplerate != 44100 or channels != UAudioProfile.CHANNEL_IN_STEREO or format != UAudioProfile.FORMAT_PCM_16BIT, raw mix demo may error.
+
         UFilterProfile filterProfile = new UFilterProfile().mode(currentFilterType);
+
         UCameraProfile cameraProfile = new UCameraProfile().frontCameraFlip(isFrontCameraOutputNeedFlip)
                 .setCameraIndex(currentCameraIndex);
+
         mStreamingProfile = new UStreamingProfile.Builder()
                 .setAudioProfile(audioProfile)
                 .setVideoProfile(videoProfile)

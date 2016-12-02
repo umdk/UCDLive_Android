@@ -77,7 +77,8 @@ public class URawAudioMixFilter extends UAudioCPUFilter {
         }
     }
 
-    //just support PCM s16le, background music pcm samplerate and channels must be same with UAudioProfile.
+    //just support PCM s16le,
+    // background music pcm:  samplerate = 44100 channels = 2, pcm format = s16le if different with UAudioProfile demo may be error.
     @Override
     public boolean onFrame(byte[] orignBuff, byte[] targetBuff, long presentationTimeMs, int sequenceNum) {
         try {

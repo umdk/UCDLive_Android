@@ -3,8 +3,8 @@
     android:layout_height="match_parent"
     android:background="@color/black">
 
-    <com.ucloud.uvod.widget.v2.UVideoView
-        android:id="@+id/videoview"
+    <com.ucloud.uvod.widget.UVideoView
+        android:id="@+id/uvideoview"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
