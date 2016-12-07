@@ -112,7 +112,7 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
     @Override
     public void onPlayerError(Error error, int extra1, Object extra2) {
         switch (error) {
-            case IO:
+            case IOERROR:
                 Toast.makeText(this, "Error: " + extra1, Toast.LENGTH_SHORT).show();
                 break;
             case PREPARE_TIMEOUT:
