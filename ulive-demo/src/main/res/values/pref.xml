@@ -55,15 +55,6 @@
         <item>3</item>
         <item>4</item>
     </string-array>
-    <string-array name="pref_sw_resolution_entries">
-        <item>RATIO_AUTO</item>
-        <item>RATIO_4x3</item>
-    </string-array>
-    <string-array name="pref_sw_resolution_values">
-        <item>0</item>
-        <item>1</item>
-    </string-array>
-
     <!-- capture orientation -->
     <string name="pref_orientation_title">capture orientation</string>
     <string name="pref_orientation_default">1</string>
@@ -75,9 +66,4 @@
         <item>1</item>
         <item>0</item>
     </string-array>
-
-    <!-- log -->
-    <string name="pref_open_log">log</string>
-    <string name="pref_log_cache_dir">log output dir</string>
-
 </resources>

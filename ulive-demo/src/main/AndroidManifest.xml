@@ -11,18 +11,12 @@
         <activity
             android:name="com.ucloud.ulive.example.MainActivity"
             android:theme="@style/BlueTheme"
-            android:screenOrientation="portrait">
+            android:screenOrientation="sensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name="com.ucloud.ulive.example.preference.SettingsActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTask"
-            android:theme="@style/SettingTheme"/>
 
          <activity
             android:name="com.ucloud.ulive.example.permission.PermissionsActivity"
@@ -33,15 +27,24 @@
         <activity
             android:name="com.ucloud.ulive.example.PublishDemo"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/BlueTheme" />
+            android:theme="@style/BlueTheme" >
+            <intent-filter>
+                <action android:name="ucloud.intent.action.ulive.example.publish" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name="com.ucloud.ulive.example.play.VideoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" />
-
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" >
+            <intent-filter>
+                <action android:name="ucloud.intent.action.ulive.example.play" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
     <supports-screens android:resizeable="true"

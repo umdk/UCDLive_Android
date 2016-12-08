@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
@@ -40,13 +41,11 @@ import com.ucloud.ulive.USize;
 import com.ucloud.ulive.UStreamStateListener;
 import com.ucloud.ulive.UStreamingProfile;
 import com.ucloud.ulive.UVideoProfile;
-import com.ucloud.ulive.common.util.DeviceUtils;
-import com.ucloud.ulive.common.util.StringUtil;
+import com.ucloud.ulive.common.Utils;
 import com.ucloud.ulive.example.ext.faceu.FaceuCompat;
 import com.ucloud.ulive.example.filter.audio.UAudioMuteFilter;
 import com.ucloud.ulive.example.filter.audio.URawAudioMixFilter;
 import com.ucloud.ulive.example.permission.PermissionsActivity;
-import com.ucloud.ulive.example.preference.Settings;
 import com.ucloud.ulive.filter.UAudioCPUFilter;
 import com.ucloud.ulive.filter.UVideoGPUFilter;
 import com.ucloud.ulive.filter.UVideoGroupGPUFilter;
@@ -65,7 +64,6 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
 
     protected UEasyStreaming mEasyStreaming;
     protected String mRtmpAddress = "";
-    protected Settings mSettings;
     protected UStreamingProfile mStreamingProfile;
 
     //Views
@@ -96,9 +94,12 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
     private ImageView screenshotView;
     private FrameLayout mDebugInfoLayout;
 
-    private int currentFilterType = UFilterProfile.FilterMode.GPU;
+    private int videoFilterType = UFilterProfile.FilterMode.GPU;
     private int videoCaptureOrientation = UVideoProfile.ORIENTATION_PORTRAIT;
+    private int videoCaptureFps = 20;
+    private int videoBitrate = UVideoProfile.VIDEO_BITRATE_NORMAL;
     private int currentCameraIndex = UCameraProfile.CAMERA_FACING_FRONT;
+    private UVideoProfile.Resolution videoResolution = UVideoProfile.Resolution.RATIO_AUTO;
 
     private int networkblockCount = 0;
     private List<UVideoGPUFilter> filters = new ArrayList<>();
@@ -150,12 +151,19 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
     private void initConfig() {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Intent i = getIntent();
-        if (i.getStringExtra(MainActivity.EXTRA_RTMP_ADDRESS) != null && !i.getStringExtra(MainActivity.EXTRA_RTMP_ADDRESS).isEmpty()) {
-            mRtmpAddress = i.getStringExtra(MainActivity.EXTRA_RTMP_ADDRESS);
+        mRtmpAddress = i.getStringExtra(MainActivity.KEY_STREAMING_ADDRESS);
+        if (TextUtils.isEmpty(mRtmpAddress)) {
+            Toast.makeText(this, "streaming url is null.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
         }
-        mSettings = new Settings(this);
-        currentFilterType = mSettings.getFilterType();
-        videoCaptureOrientation = mSettings.getVideoCaptureOrientation();
+        videoFilterType = i.getIntExtra(MainActivity.KEY_FILTER, UFilterProfile.FilterMode.GPU);
+        videoCaptureOrientation  = i.getIntExtra(MainActivity.KEY_CAPTURE_ORIENTATION, UVideoProfile.ORIENTATION_PORTRAIT);
+        videoCaptureFps = i.getIntExtra(MainActivity.KEY_FPS, 20);
+        videoBitrate = i.getIntExtra(MainActivity.KEY_VIDEO_BITRATE,UVideoProfile.VIDEO_BITRATE_NORMAL);
+        videoResolution = UVideoProfile.Resolution.valueOf(i.getIntExtra(MainActivity.KEY_VIDEO_RESOLUTION, UVideoProfile.Resolution.RATIO_AUTO.ordinal()));
+        Log.d(TAG, String.format("lifecycle->demo->config->filter = %d, orientation = %d, fps = %d bitrate = %d resolution = %s",
+                videoFilterType, videoCaptureOrientation, videoCaptureFps, videoBitrate, videoResolution.toString()));
         initBtnState();
     }
 
@@ -169,7 +177,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
         //add to list
         filters.clear();
         //init group filter ucloud skin beauty & faceu detector
-        if (currentFilterType == UFilterProfile.FilterMode.GPU) {
+        if (videoFilterType == UFilterProfile.FilterMode.GPU) {
             if (isOpenBeautyFilter) {
                 filters.add(mSkinBeautyGPUFilter);
                 mFilterLevelBar.setVisibility(View.VISIBLE);
@@ -308,7 +316,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
             ((Button)findViewById(R.id.btn_toggle_caputre_orientation)).setText("竖屏");
         }
 
-        if (currentFilterType == UFilterProfile.FilterMode.GPU) {
+        if (videoFilterType == UFilterProfile.FilterMode.GPU) {
             ((Button)findViewById(R.id.btn_toggle_filter_mode)).setText("CPU");
         } else {
             ((Button)findViewById(R.id.btn_toggle_filter_mode)).setText("GPU");
@@ -325,9 +333,9 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
         mPreviewContainer.setShowMode(UAspectFrameLayout.Mode.FULL);
         mEasyStreaming = UEasyStreaming.Factory.newInstance();
 
-        UVideoProfile videoProfile = new UVideoProfile().fps(mSettings.getVideoFps())
-                .bitrate(mSettings.getVideoBitrate())
-                .resolution(mSettings.getResolution())
+        UVideoProfile videoProfile = new UVideoProfile().fps(videoCaptureFps)
+                .bitrate(videoBitrate)
+                .resolution(videoResolution)
                 .captureOrientation(videoCaptureOrientation);
 
         UAudioProfile audioProfile = new UAudioProfile()
@@ -341,7 +349,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
         //44100Hz is currently the only rate that is guaranteed to work on all devices, but other rates such as 22050, 16000, and 11025 may work on some devices.
         // if samplerate != 44100 or channels != UAudioProfile.CHANNEL_IN_STEREO or format != UAudioProfile.FORMAT_PCM_16BIT, raw mix demo may error.
 
-        UFilterProfile filterProfile = new UFilterProfile().mode(currentFilterType);
+        UFilterProfile filterProfile = new UFilterProfile().mode(videoFilterType);
 
         UCameraProfile cameraProfile = new UCameraProfile().frontCameraFlip(isFrontCameraOutputNeedFlip)
                 .setCameraIndex(currentCameraIndex);
@@ -358,9 +366,9 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
         mEasyStreaming.setOnNetworkStateListener(this);
         mEasyStreaming.prepare(mStreamingProfile);
 
-        if (mEasyStreaming.getFilterMode() != currentFilterType) {
-            currentFilterType = mEasyStreaming.getFilterMode();
-            appendDebugLogInfo("sync from cloud adapter must use:" + ((currentFilterType == UFilterProfile.FilterMode.CPU) ? "CPU filter" : "GPU filter"));
+        if (mEasyStreaming.getFilterMode() != videoFilterType) {
+            videoFilterType = mEasyStreaming.getFilterMode();
+            appendDebugLogInfo("sync from cloud adapter must use:" + ((videoFilterType == UFilterProfile.FilterMode.CPU) ? "CPU filter" : "GPU filter"));
         }
 
         if (isMute) {
@@ -376,7 +384,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
             mEasyStreaming.setAudioCPUFilter(null);
         }
 
-        if (currentFilterType == UFilterProfile.FilterMode.GPU) {
+        if (videoFilterType == UFilterProfile.FilterMode.GPU) {
             mEasyStreaming.frontCameraFlipHorizontal(isFrontCameraOutputNeedFlip);
         }
         initPreviewTextureView();
@@ -523,7 +531,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
     }
 
     public void onToggleFaceDetectorBtnClick(View view) {
-        if (currentFilterType == UFilterProfile.FilterMode.CPU) {
+        if (videoFilterType == UFilterProfile.FilterMode.CPU) {
             Toast.makeText(this, "sorry, just support for gpu.",Toast.LENGTH_SHORT).show();
             return;
         }
@@ -585,7 +593,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
 
     //just support gpu filter & front camera
     public void onToggleFrontCameraOutputFlipBtnClick(View view) {
-        if (mStreamingProfile != null && currentFilterType == UFilterProfile.FilterMode.CPU) {
+        if (mStreamingProfile != null && videoFilterType == UFilterProfile.FilterMode.CPU) {
             Toast.makeText(this, "sorry, just support gpu filter -> front camera", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -606,11 +614,11 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
             mEasyStreaming.stopRecording();
         }
         stopPreviewTextureView(true);
-        if (currentFilterType == UFilterProfile.FilterMode.GPU) {
-            currentFilterType = UFilterProfile.FilterMode.CPU;
+        if (videoFilterType == UFilterProfile.FilterMode.GPU) {
+            videoFilterType = UFilterProfile.FilterMode.CPU;
             appendDebugLogInfo("toggle cpu filter.");
         } else {
-            currentFilterType = UFilterProfile.FilterMode.GPU;
+            videoFilterType = UFilterProfile.FilterMode.GPU;
             appendDebugLogInfo("toggle gpu filter.");
         }
         initStreamingEnv(); // all init, camera index, is mirror
@@ -847,7 +855,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
                 if (mRecordedTimeTxtv != null) {
                     mRecordedTimeTxtv.setVisibility(View.VISIBLE);
                     long time = (long) extra;
-                    String retVal = StringUtil.getTimeFormatString(time);
+                    String retVal = Utils.getTimeFormatString(time);
                     mRecordedTimeTxtv.setText(retVal);
                 }
                 break;
@@ -874,11 +882,11 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
             mOutputStreamInfoTxtv.setVisibility(View.VISIBLE);
             String info = "url:" + streamingProfile.getStreamUrl() + "\n" +
                     "resolution:" + mEasyStreaming.getVideoOutputSize().toString() + "\n" +
-                    "filter type:" + (currentFilterType == UFilterProfile.FilterMode.GPU ? "GPU" : "CPU") + "\n" +
+                    "filter type:" + (videoFilterType == UFilterProfile.FilterMode.GPU ? "GPU" : "CPU") + "\n" +
                     "video bitrate:" + videoBitrateMode(streamingProfile.getVideoProfile().getBitrate()) + "\n" +
                     "audio bitrate:" + audioBitrateMode(streamingProfile.getAudioProfile().getBitrate()) + "\n" +
                     "video fps:" + streamingProfile.getVideoProfile().getFps() + "\n" +
-                    "brand:" + DeviceUtils.getDeviceBrand() + "_" + DeviceUtils.getDeviceModel() + "\n" +
+                    "brand:" + Build.BRAND + "_" + Build.MODEL + "\n" +
                     "sdk version:" + com.ucloud.ulive.UBuild.VERSION + "\n" +
                     "android sdk version:" + Build.VERSION.SDK_INT;
             mOutputStreamInfoTxtv.setText(info);

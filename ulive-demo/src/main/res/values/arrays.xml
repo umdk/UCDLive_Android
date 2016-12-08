@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="demoNames">
+        <item>Demo-Publish</item>
+        <item>Demo-Play</item>
+    </string-array>
+    <string-array name="demoDirects">
+        <item>ucloud.intent.action.ulive.example.publish</item>
+        <item>ucloud.intent.action.ulive.example.play</item>
+    </string-array>
+</resources>

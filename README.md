@@ -5,6 +5,7 @@ UCDLive SDK 是由 UCloud 提供的低延时、高并发的直播云服务。
 ![screenshot-1](screenshot/screenshot-1.png)  
 ![screenshot-2](screenshot/screenshot-2.png)  
 ![screenshot-3](screenshot/screenshot-3.png)  
+![screenshot-4](screenshot/screenshot-4.png)  
 
 - 1 [阅读对象](#1)
 - 2 [功能特性](#2)
@@ -64,7 +65,7 @@ UCDLive SDK 是由 UCloud 提供的低延时、高并发的直播云服务。
 - 支持动态贴纸(Faceu等)
 - 支持自定义滤镜，兼容GPUImage
 - 支持音视频源数据回调，可自定义数据处理
-- 支持 armv7a、arm64-v8a 主流芯片体系架构
+- 支持 arm、armv7a、arm64-v8a、x86 主流芯片体系架构
 - 支持 RTMP 推流地址鉴权功能
 - 支持云适配功能
 - 支持直播鉴黄功能
@@ -77,7 +78,7 @@ UCDLive SDK 是由 UCloud 提供的低延时、高并发的直播云服务。
 <a name="3.1"></a>
 ## 3.1 开发环境配置
 
-- Android Studio开发工具。官方[下载地址](https://developer.android.com/studio/index.html)
+- Android Studio开发工具。官方[下载地址][1]
 - 下载UCDLive SDK。
 - 请用真机调试代码，模拟器无法调试。
 
@@ -129,7 +130,7 @@ dependencies {
     ...
 }
 ```
-    
+
 > 【小细节】  
 > 请确保使用的 Android SDK API 版本是4.3以上，即 minSdkVersion >= 18
 
@@ -195,6 +196,7 @@ String mRtmpAddress = "rtmp://xxx";
 UStreamingProfile mStreamingProfile = new UStreamingProfile.Builder().build(mRtmpAddress);
 mEasyStreaming.prepare(mStreamingProfile);
 ```
+
 > 【小细节】  
 > SDK 支持 ip 推流，格式如下：  
 > rtmp://127.0.0.1/ucloud/%s?host=publish3.cdn.ucloud.com.cn
@@ -240,41 +242,41 @@ mEasyStreaming.setOnCameraSessionListener(this);
 
 - 推流状态返回
 
-|状态枚举|描述|
-|---|---|
-|UStreamStateListener.State.PREPARING|推流初始化准备中|
-|UStreamStateListener.State.PREPARED|推流初始化完毕|
-|UStreamStateListener.State.CONNECTING|正在于服务器建立连接中|
-|UStreamStateListener.State.CONNECTED|与服务器成功建立连接|
-|UStreamStateListener.State.START|推流开始|
-|UStreamStateListener.State.STOP|推流停止|
-|UStreamStateListener.State.NETWORK\_BLOCK|弱网等情况下丢帧|
-|UStreamStateListener.Error.INVALID\_STREAMING\_URL|非法的推流地址|
-|UStreamStateListener.Error.SIGNATRUE\_FAILED|推流地址鉴权出错|
-|UStreamStateListener.Error.AUDIO\_PREPARE\_FAILED|音频准备出错|
-|UStreamStateListener.Error.VIDEO\_PREPARE\_FAILED|视频准备出错|
-|UStreamStateListener.Error.IOERROR|推流出现IO流读写错误，可能与服务器断开了连接|
-|UStreamStateListener.Error.UNKNOWN|推流出现未知错误|
+| 状态枚举                                           | 描述                                         |
+| ---                                                | ---                                          |
+| UStreamStateListener.State.PREPARING               | 推流初始化准备中                             |
+| UStreamStateListener.State.PREPARED                | 推流初始化完毕                               |
+| UStreamStateListener.State.CONNECTING              | 正在于服务器建立连接中                       |
+| UStreamStateListener.State.CONNECTED               | 与服务器成功建立连接                         |
+| UStreamStateListener.State.START                   | 推流开始                                     |
+| UStreamStateListener.State.STOP                    | 推流停止                                     |
+| UStreamStateListener.State.NETWORK\_BLOCK          | 弱网等情况下丢帧                             |
+| UStreamStateListener.Error.INVALID\_STREAMING\_URL | 非法的推流地址                               |
+| UStreamStateListener.Error.SIGNATRUE\_FAILED       | 推流地址鉴权出错                             |
+| UStreamStateListener.Error.AUDIO\_PREPARE\_FAILED  | 音频准备出错                                 |
+| UStreamStateListener.Error.VIDEO\_PREPARE\_FAILED  | 视频准备出错                                 |
+| UStreamStateListener.Error.IOERROR                 | 推流出现IO流读写错误，可能与服务器断开了连接 |
+| UStreamStateListener.Error.UNKNOWN                 | 推流出现未知错误                             |
 
 - 摄像头状态返回
 
-|状态枚举|描述|
-|---|---|
-|UCameraSessionListener.Error.START\_PREVIEW\_FAILED|摄像头预览失败|
-|UCameraSessionListener.Error.REQUEST\_FLASH\_MODE\_FAILED|打开摄像头闪关灯失败|
-|UCameraSessionListener.Error.NO\_NV21\_PREVIEW\_FORMAT|摄像头不支持NV21预览格式|
-|UCameraSessionListener.Error.NO\_SUPPORT\_PREVIEW\_SIZE|摄像头不支持预览大小|
-|UCameraSessionListener.Error.NO\_PERMISSION|缺少摄像头访问权限|
-|UCameraSessionListener.Error.UNKNOWN|摄像头出现未知错误|
+| 状态枚举                                                  | 描述                     |
+| ---                                                       | ---                      |
+| UCameraSessionListener.Error.START\_PREVIEW\_FAILED       | 摄像头预览失败           |
+| UCameraSessionListener.Error.REQUEST\_FLASH\_MODE\_FAILED | 打开摄像头闪关灯失败     |
+| UCameraSessionListener.Error.NO\_NV21\_PREVIEW\_FORMAT    | 摄像头不支持NV21预览格式 |
+| UCameraSessionListener.Error.NO\_SUPPORT\_PREVIEW\_SIZE   | 摄像头不支持预览大小     |
+| UCameraSessionListener.Error.NO\_PERMISSION               | 缺少摄像头访问权限       |
+| UCameraSessionListener.Error.UNKNOWN                      | 摄像头出现未知错误       |
 
 - 网络状态返回
 
-|状态枚举|描述|
-|---|---|
-|UNetworkListener.State.NETWORK\_SPEED|获取当前发送速度|
-|UNetworkListener.State.PUBLISH\_STREAMING\_TIME|获取当前推流时长|
-|UNetworkListener.State.DISCONNECT|网络连接断开|
-|UNetworkListener.State.RECONNECT|网络连接重连|
+| 状态枚举                                        | 描述             |
+| ---                                             | ---              |
+| UNetworkListener.State.NETWORK\_SPEED           | 获取当前发送速度 |
+| UNetworkListener.State.PUBLISH\_STREAMING\_TIME | 获取当前推流时长 |
+| UNetworkListener.State.DISCONNECT               | 网络连接断开     |
+| UNetworkListener.State.RECONNECT                | 网络连接重连     |
 
 <a name="5.2"></a>
 ## 参数设置
@@ -293,24 +295,24 @@ mEasyStreaming.setOnCameraSessionListener(this);
 
 - UAudioProfile：音频参数设置
 
-|参数名|描述|默认值|
-|:---:|---|:---:|
-|bitrate|音频码率：即音频编码器每秒生产出多少数据（单位：kbps）|128|
-|samplerate|音频采样率：录音设备在一秒钟内对声音信号的采集次数|44100|
-|channels|音频采集声道数|2|
+| 参数名     | 描述                                                   | 默认值 |
+| :---:      | ---                                                    | :---:  |
+| bitrate    | 音频码率：即音频编码器每秒生产出多少数据（单位：kbps） | 128    |
+| samplerate | 音频采样率：录音设备在一秒钟内对声音信号的采集次数     | 44100  |
+| channels   | 音频采集声道数                                         | 2      |
 
 - UCameraProfile：摄像头参数设置
 
-|参数名|描述|默认值|
-|:---:|---|:---:|
-|frontCameraFlip|前置摄像头推流是否需要镜像|false|
-|setCameraIndex|需要打开摄像头的index|CAMERA\_FACING\_FRONT|
+| 参数名          | 描述                       | 默认值                |
+| :---:           | ---                        | :---:                 |
+| frontCameraFlip | 前置摄像头推流是否需要镜像 | false                 |
+| setCameraIndex  | 需要打开摄像头的index      | CAMERA\_FACING\_FRONT |
 
 - UFilterProfile：滤镜参数设置
 
-|参数名|描述|默认值|
-|:---:|---|:---:|
-|mode|设置使用的滤镜模式（GPU、CPU）|FilterMode.GPU|
+| 参数名 | 描述                           | 默认值         |
+| :---:  | ---                            | :---:          |
+| mode   | 设置使用的滤镜模式（GPU、CPU） | FilterMode.GPU |
 
 <a name="5.3"></a>
 ## 摄像头操作
@@ -322,13 +324,13 @@ mEasyStreaming.setOnCameraSessionListener(this);
     ```
     boolean isSuccess = mEasyStreaming.switchCamera();
     ```
-    
+
 - **打开、关闭闪光灯** : 只有后置摄像头才可以打开闪光灯，该接口需在启动预览之后调用，并返回操作结果
 
     ```
     boolean isSuccess = mEasyStreaming.toggleFlashMode();
     ```
-    
+
 - **截帧**：注册 UScreenShotListener 监听器，回调返回Bitmap
 
     ```
@@ -365,6 +367,9 @@ USkinBeautyGPUFilter mSkinBeautyGPUFilter = new USkinBeautyGPUFilter();
 mSkinBeautyGPUFilter.setFilterLevel(level1, level2, level3);
 mEasyStreaming.setVideoGPUFilter(mSkinBeautyGPUFilter);
 ```
+
+> 【小细节】  
+> 如果您通过 mEasyStreaming.acquireVideoGPUFilter() 获取滤镜，需在随后调用相应的releaseVideoGPUFilter()方法，同样适用于CPU滤镜。
 
 <a name="5.4.2"></a>
 ### 滤镜组
@@ -555,6 +560,7 @@ mEasyStreaming.setAudioCPUFilter(new AudioMuteFilter());
 
 > 【小细节】  
 > 混音效果请参照 Demo 中的 URawAudioMixFilter
+> 如果您通过 mEasyStreaming.acquireAudioCPUFilter() 获取滤镜，需在随后调用相应的releaseAudioCPUFilter()方法。
 
 如果您希望自定义GPU滤镜，需继承 UAudioCPUFilter 类，并重写以下方法即可，具体写法可参考 Demo 中的 AudioMuteFilter 滤镜。
 
@@ -565,11 +571,10 @@ public void onInit(int size) {
     SIZE = size;
     SIZE_HALF = size/2;
 }
-    
+
 @Override
 public boolean onFrame(byte[] orignBuff, byte[] targetBuff, 
         long presentationTimeMs, int sequenceNum) {
-    
     for (int i = 0; i < SIZE; i++) {
         orignBuff[i] = 0;
     }
@@ -592,13 +597,13 @@ public void onDestroy() {
 
 <a name="6"></a>
 # 6 播放器集成
-详细请参考[UCDMediaPlayer项目](https://github.com/umdk/UCDMediaPlayer_Android)。
+详细请参考[UCDMediaPlayer项目][2]。
 
 <a name="7"></a>
 # 7 反馈和建议
   - 主 页：<https://www.ucloud.cn/>
-  - issue：[查看已有的 issues 和提交 Bug[推荐]](https://github.com/umdk/UCDLive_Android/issues)
-  - 邮 箱：[sdk_spt@ucloud.cn](mailto:sdk_spt@ucloud.cn)
+  - issue：[查看已有 issues 和提交 Bug 推荐][3]
+  - 邮 箱：[sdk_spt@ucloud.cn][4]
 
 ### 问题反馈参考模板
 
@@ -613,6 +618,9 @@ public void onDestroy() {
 
 <a name="8"></a>
 # 8 版本历史
+
+* v1.4.5 (2016.12.08)
+    - 修复url bug
 
 * v1.4.4 (2016.12.07)
     - 增加x86支持
@@ -716,3 +724,7 @@ public void onDestroy() {
     - 基础推流功能
     - 自定义宽高、帧率、比特率
 
+[1]: https://developer.android.com/studio/index.html
+[2]: https://github.com/umdk/UCDMediaPlayer_Android
+[3]: https://github.com/umdk/UCDLive_Android/issues
+[4]: mailto:sdk_spt@ucloud.cn

@@ -8,13 +8,12 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Toast;
 
+import com.ucloud.ulive.example.MainActivity;
 import com.ucloud.ulive.example.R;
-import com.ucloud.ulive.example.preference.Settings;
 import com.ucloud.uvod.UMediaProfile;
 import com.ucloud.uvod.UPlayerStateListener;
 import com.ucloud.uvod.widget.UVideoView;
 
-import static com.ucloud.ulive.example.MainActivity.EXTRA_RTMP_ADDRESS;
 
 public class VideoActivity extends Activity implements UPlayerStateListener {
 
@@ -24,23 +23,19 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
 
     String rtmpPlayStreamUrl;
 
-    Settings mSettings;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
         Intent i = getIntent();
-        if (i.getStringExtra(EXTRA_RTMP_ADDRESS) != null && !i.getStringExtra(EXTRA_RTMP_ADDRESS).isEmpty()) {
-            rtmpPlayStreamUrl = i.getStringExtra(EXTRA_RTMP_ADDRESS);
+        if (i.getStringExtra(MainActivity.KEY_STREAMING_ADDRESS) != null && !i.getStringExtra(MainActivity.KEY_STREAMING_ADDRESS).isEmpty()) {
+            rtmpPlayStreamUrl = i.getStringExtra(MainActivity.KEY_STREAMING_ADDRESS);
         }
 
         mVideoView = (UVideoView) findViewById(R.id.uvideoview);
 
-        mSettings = new Settings(this);
-
-        int videoCaptureOrientation = mSettings.getVideoCaptureOrientation();
+        int videoCaptureOrientation = i.getIntExtra(MainActivity.KEY_CAPTURE_ORIENTATION, 1);
 
         if (videoCaptureOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);

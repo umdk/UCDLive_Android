@@ -2,33 +2,55 @@ package com.ucloud.ulive.example;
 
 import android.Manifest;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ucloud.ulive.UBuild;
+import com.ucloud.ulive.UFilterProfile;
+import com.ucloud.ulive.UVideoProfile;
+import com.ucloud.ulive.common.Utils;
 import com.ucloud.ulive.example.permission.PermissionsActivity;
 import com.ucloud.ulive.example.permission.PermissionsChecker;
-import com.ucloud.ulive.example.play.VideoActivity;
-import com.ucloud.ulive.example.preference.Settings;
-import com.ucloud.ulive.example.preference.SettingsActivity;
 
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
-    public static final String EXTRA_RTMP_ADDRESS = "rtmp_address";
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+
+    public static final String KEY_STREAMING_ADDRESS = "streaming-address";
+
+    public static final String KEY_PLAY_ADDRESS = "play-address";
+
+    public static final String KEY_CAPTURE_ORIENTATION = "capture-orientation";
+
+    public static final String KEY_FILTER = "capture-filter";
+
+    public static final String KEY_FPS = "capture-fps" ;
+
+    public static final String KEY_VIDEO_BITRATE = "video-bitrate" ;
+
+    public static final String KEY_VIDEO_RESOLUTION = "video-resolution" ;
+
+    private static final int REQUEST_CODE = 200;
 
     String streamId = "ucloud_test";
 
-    private int default_index = 0;
+    String[] demoDirects;
+
+    String[] demoNames;
 
     String[] publishUrls = {
             "rtmp://publish3.cdn.ucloud.com.cn/ucloud/%s",
@@ -39,15 +61,37 @@ public class MainActivity extends AppCompatActivity {
             "http://rtmp3.usmtd.ucloud.com.cn/live/%s.flv",
     };
 
-    private EditText mUrlEdtx;
+    @Bind(R.id.listview)
+    ListView listView;
 
-    private static final int REQUEST_CODE = 200;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+
+    @Bind(R.id.txtv_version)
+    TextView versionTxtv;
+
+    @Bind(R.id.rg_filter)
+    RadioGroup filterRg;
+
+    @Bind(R.id.rg_videobitrate)
+    RadioGroup videoBitrateRg;
+
+    @Bind(R.id.rg_videoaspect)
+    RadioGroup resolutionRg;
+
+    @Bind(R.id.edtxt_framerate)
+    EditText framerateEdtxt;
+
+    @Bind(R.id.rg_capture_orientation)
+    RadioGroup captureOrientationRg;
+
+    @Bind(R.id.rg_line)
+    RadioGroup lineRg;
+
+    @Bind(R.id.edtxt_streaming_id)
+    EditText streamIdEdtxt;
 
     private PermissionsChecker mPermissionsChecker; //for android target version >=23
-
-    private Button mLine1Btn;
-
-    private Button mLine2Btn;
 
     String[] permissions = new String[]{
             Manifest.permission.RECORD_AUDIO,
@@ -60,97 +104,32 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         init();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_app, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.action_settings:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                break;
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void init() {
         streamId = (int) Math.floor((new Random().nextDouble() * 10000.0 + 10000.0)) + "";
         mPermissionsChecker = new PermissionsChecker(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        mUrlEdtx = (EditText) findViewById(R.id.stream_id_et);
-        mUrlEdtx.setText(streamId);
-        mLine1Btn = (Button) findViewById(R.id.btn_line1);
-        mLine2Btn = (Button) findViewById(R.id.btn_line2);
-        if (default_index == 0) {
-            mLine1Btn.setAlpha(1.0f);
-            mLine2Btn.setAlpha(0.3f);
-        } else {
-            mLine1Btn.setAlpha(0.3f);
-            mLine2Btn.setAlpha(1.0f);
-        }
+        demoNames = getResources().getStringArray(R.array.demoNames);
+        listView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, demoNames));
+        listView.setOnItemClickListener(this);
+        demoDirects = getResources().getStringArray(R.array.demoDirects);
+        versionTxtv.setText(UBuild.VERSION + " " + getResources().getString(R.string.sdk_address));
+        streamIdEdtxt.setText(streamId);
     }
 
-    public void onPlayBtnClick(View view) {
-        String streamId = mUrlEdtx.getText().toString();
-        if (TextUtils.isEmpty(streamId)) {
-            Toast.makeText(this, "stream id is null", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        startPlayActivity(String.format(playUrls[default_index], streamId));
-    }
-
-    public void onLine1BtnClick(View view) {
-        default_index = 0;
-        mLine1Btn.setAlpha(1.0f);
-        mLine2Btn.setAlpha(0.3f);
-    }
-
-    public void onLine2BtnClick(View view) {
-        default_index = 1;
-        mLine1Btn.setAlpha(0.3f);
-        mLine2Btn.setAlpha(1.0f);
-    }
-
-    public void onPublishBtnClick(View view) {
-        String streamId = mUrlEdtx.getText().toString().trim();
-        if (TextUtils.isEmpty(streamId)) {
-            Toast.makeText(this, "stream id is null", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (mPermissionsChecker.lacksPermissions(permissions)) {
-            startPermissionsActivity();
-        } else {
-            startStreamActivity(String.format(publishUrls[default_index], streamId));
-        }
-    }
-
-    private void startStreamActivity(String url) {
-        Intent intent;
-        intent = new Intent(this, PublishDemo.class);
-        intent.putExtra(MainActivity.EXTRA_RTMP_ADDRESS, url);
+    private void startActivity(int index) {
+        Intent intent = new Intent();
+        intent.putExtra(KEY_FILTER,  filterType(filterRg.getCheckedRadioButtonId()));
+        intent.putExtra(KEY_VIDEO_BITRATE, videoBitrate(videoBitrateRg.getCheckedRadioButtonId()));
+        intent.putExtra(KEY_VIDEO_RESOLUTION, videoResolution(resolutionRg.getCheckedRadioButtonId()));
+        intent.putExtra(KEY_FPS, framerate(framerateEdtxt));
+        intent.putExtra(KEY_CAPTURE_ORIENTATION, captureOrientation(captureOrientationRg.getCheckedRadioButtonId()));
+        line(intent, lineRg.getCheckedRadioButtonId(), streamIdEdtxt);
+        intent.setAction(demoDirects[index]);
         startActivity(intent);
-    }
-
-    private void startPlayActivity(String url) {
-        Intent intent;
-        intent = new Intent(this, VideoActivity.class);
-        intent.putExtra(MainActivity.EXTRA_RTMP_ADDRESS, url);
-        startActivity(intent);
-    }
-
-    private void startPermissionsActivity() {
-        PermissionsActivity.startActivityForResult(this, REQUEST_CODE, permissions);
     }
 
     @Override
@@ -158,7 +137,103 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE) {
             if (!mPermissionsChecker.lacksPermissions(permissions)) {
-                startStreamActivity(String.format(publishUrls[default_index], streamId));
+                startActivity(0);
+            }
+        }
+    }
+
+    private int filterType(int id) {
+        return id == R.id.rb_cpufilter ? UFilterProfile.FilterMode.CPU : UFilterProfile.FilterMode.GPU;
+    }
+
+    private int videoBitrate(int id) {
+        switch (id) {
+            case R.id.rb_videobitrate_low:
+                 return UVideoProfile.VIDEO_BITRATE_LOW;
+            case R.id.rb_videobitrate_normal:
+                return UVideoProfile.VIDEO_BITRATE_NORMAL;
+            case R.id.rb_videobitrate_medium:
+                return UVideoProfile.VIDEO_BITRATE_MEDIUM;
+            case R.id.rb_videobitrate_high:
+                return UVideoProfile.VIDEO_BITRATE_HIGH;
+            default:
+                return UVideoProfile.VIDEO_BITRATE_LOW;
+        }
+    }
+
+    private int videoResolution(int id) {
+        switch (id) {
+            case R.id.rb_videoaspect_auto:
+                return UVideoProfile.Resolution.RATIO_AUTO.ordinal();
+            case R.id.rb_videoaspect_4x3:
+                return UVideoProfile.Resolution.RATIO_4x3.ordinal();
+            case R.id.rb_videoaspect_16x9:
+                return UVideoProfile.Resolution.RATIO_16x9.ordinal();
+            default:
+                return UVideoProfile.Resolution.RATIO_AUTO.ordinal();
+        }
+    }
+
+    private int framerate(EditText editText) {
+        if (editText == null) {
+            return 20;
+        }
+        String framerate = editText.getText().toString();
+
+        if (TextUtils.isEmpty(framerate) || !TextUtils.isDigitsOnly(framerate)) {
+            return 20;
+        } else {
+            return Integer.parseInt(editText.getText().toString().trim());
+        }
+    }
+
+    private int captureOrientation(int id) {
+        return id == R.id.rb_capture_orientation_landspace ? UVideoProfile.ORIENTATION_LANDSCAPE : UVideoProfile.ORIENTATION_PORTRAIT;
+    }
+
+    private void line(Intent intent, int id, EditText editText) {
+        if (id == R.id.rb_line1) {
+            intent.putExtra(KEY_STREAMING_ADDRESS, String.format(publishUrls[0], editText.getText().toString().trim()));
+            intent.putExtra(KEY_PLAY_ADDRESS, String.format(playUrls[0], editText.getText().toString().trim()));
+        } else {
+            intent.putExtra(KEY_STREAMING_ADDRESS, String.format(publishUrls[1], editText.getText().toString().trim()));
+            intent.putExtra(KEY_PLAY_ADDRESS, String.format(playUrls[1], editText.getText().toString().trim()));
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if(!Utils.isNetworkConnected(this)) {
+            Toast.makeText(this, "当前网络不可用.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        switch (Utils.getConnectedType(this)) {
+            case ConnectivityManager.TYPE_MOBILE:
+                Toast.makeText(this, "当前网络: mobile", Toast.LENGTH_SHORT).show();
+                break;
+            case ConnectivityManager.TYPE_ETHERNET:
+                Toast.makeText(this, "当前网络: ehternet", Toast.LENGTH_SHORT).show();
+                break;
+            case ConnectivityManager.TYPE_WIFI:
+                Toast.makeText(this, "当前网络: wifi", Toast.LENGTH_SHORT).show();
+                break;
+        }
+
+        if (demoDirects != null && demoDirects.length > position && !TextUtils.isEmpty(demoDirects[position].trim())) {
+            String streamId = streamIdEdtxt.getText().toString();
+            if (TextUtils.isEmpty(streamId)) {
+                Toast.makeText(this, "streamId is null", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (position == 0){
+                if (mPermissionsChecker.lacksPermissions(permissions)) {
+                    PermissionsActivity.startActivityForResult(this, REQUEST_CODE, permissions);
+                    return;
+                } else {
+                    startActivity(0);
+                }
+            } else {
+                startActivity(1);
             }
         }
     }
