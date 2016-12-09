@@ -37,8 +37,6 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     //gpuimage filter
     /* compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'*/
-//    compile project(':ulive-android-library')
-//    compile project(':uvod-android-library')
     compile project(':ulive-android-sdk')
     compile project(':uvod-android-sdk')
     compile project(':extension-ucloud-faceu')

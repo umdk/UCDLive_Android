@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
@@ -14,27 +15,31 @@ import com.ucloud.uvod.UMediaProfile;
 import com.ucloud.uvod.UPlayerStateListener;
 import com.ucloud.uvod.widget.UVideoView;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 
 public class VideoActivity extends Activity implements UPlayerStateListener {
 
     private static final String TAG = "VideoActivity";
 
-    private UVideoView mVideoView;
+    @Bind(R.id.uvideoview)
+    UVideoView mVideoView;
 
-    String rtmpPlayStreamUrl;
+    String uri;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
-
+        ButterKnife.bind(this);
         Intent i = getIntent();
-        if (i.getStringExtra(MainActivity.KEY_STREAMING_ADDRESS) != null && !i.getStringExtra(MainActivity.KEY_STREAMING_ADDRESS).isEmpty()) {
-            rtmpPlayStreamUrl = i.getStringExtra(MainActivity.KEY_STREAMING_ADDRESS);
+        uri = i.getStringExtra(MainActivity.KEY_PLAY_ADDRESS);
+        if (TextUtils.isEmpty(uri)) {
+            Toast.makeText(this, "uri is null.", Toast.LENGTH_LONG).show();
+            finish();
+            return;
         }
-
-        mVideoView = (UVideoView) findViewById(R.id.uvideoview);
-
         int videoCaptureOrientation = i.getIntExtra(MainActivity.KEY_CAPTURE_ORIENTATION, 1);
 
         if (videoCaptureOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
@@ -48,10 +53,9 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
         profile.setInteger(UMediaProfile.KEY_ENABLE_BACKGROUND_PLAY, 0);
         profile.setInteger(UMediaProfile.KEY_LIVE_STREAMING, 1);
 
-        mVideoView.setMediaPorfile(profile);
-        mVideoView.applyAspectRatio(UVideoView.VIDEO_RATIO_FILL_PARENT);
-        mVideoView.setOnPlayerStateListener(this);
-        mVideoView.setVideoPath(rtmpPlayStreamUrl);
+        mVideoView.setMediaPorfile(profile);//set before setVideoPath
+        mVideoView.setOnPlayerStateListener(this);//set before setVideoPath
+        mVideoView.setVideoPath(uri);
     }
 
     @Override
@@ -84,6 +88,7 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
             case PREPARED:
                 break;
             case START:
+                mVideoView.applyAspectRatio(UVideoView.VIDEO_RATIO_FILL_PARENT);//set after start
                 break;
             case VIDEO_SIZE_CHANGED:
                 break;
