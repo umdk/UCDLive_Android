@@ -49,6 +49,7 @@
                     android:id="@+id/txtv_version"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:autoLink="web"
                     android:text="1.5.0" />
 
             </LinearLayout>

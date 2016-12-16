@@ -26,7 +26,6 @@
             <TextView
                 android:id="@+id/recorded_time_txtv"
                 android:layout_width="wrap_content"
-                android:text="00:00"
                 android:layout_centerInParent="true"
                 android:visibility="invisible"
                 android:layout_height="wrap_content" />

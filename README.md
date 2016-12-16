@@ -100,12 +100,16 @@ UCDLive SDK 是由 UCloud 提供的低延时、高并发的直播云服务。
 <a name="4"></a>
 # 4 快速开始
 
-您可以选择以下两种开始方式，直接运行Demo源码，或者集成 SDK 到已有项目。
+先下载 Git 源码，然后您可以选择以下两种开始方式，直接运行Demo源码，或者集成SDK到已有项目。
+
+```
+git clone https://github.com/umdk/UCDLive_Android.git
+```
 
 <a name="4.1"></a>
 ## 4.1 运行 Demo 源码
 
-打开 Android Studio 菜单 File -> New -> Import Project，选择并指向 SDK 的解压目录，然后点击 OK。若出现库找不到编译失败，更新相应的 SDK 即可。
+打开 Android Studio 菜单 File -> New -> Import Project，选择并指向 git 目录，然后点击 OK 即可。
 
 <a name="4.2"></a>
 ## 4.2 项目集成 SDK
@@ -113,20 +117,20 @@ UCDLive SDK 是由 UCloud 提供的低延时、高并发的直播云服务。
 <a name="4.2.1"></a>
 ### step 1: 导入 SDK 库，并添加依赖
 
-打开 Android Studio 菜单 File -> New -> Import Module，选择并指向 SDK 解压目录下的 ulive-android-sdk 目录，然后点击 finish。
-
-在 settings.gradle 添加以下代码：
-
-```
-include ':ulive-android-sdk'
-```
+在已有项目的根目录下新建libs文件夹，并添加 ulive-android-sdk-1.4.7.aar 包(在 git 目录ulive-demo/libs/路径下)。
 
 在 build.gradle 添加以下代码：
 
 ```
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
 dependencies {
     ...
-    compile project(':ulive-android-sdk')
+    compile(name:'ulive-android-sdk-1.4.7', ext:'aar')
     ...
 }
 ```
@@ -618,6 +622,13 @@ public void onDestroy() {
 
 <a name="8"></a>
 # 8 版本历史
+
+* v1.4.7 (2016.12.16)
+    - 支持推流开始后修改预览大小
+    - 增加UEasyStreaming.isFlashModeOn()
+    - 优化网络速度统计
+    - 支持aar包
+    - 增加Demo中VideoActivity播放重连逻辑
 
 * v1.4.5 (2016.12.08)
     - 修复url bug

@@ -29,6 +29,11 @@ android {
         }
     }
 }
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -37,7 +42,7 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     //gpuimage filter
     /* compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'*/
-    compile project(':ulive-android-sdk')
-    compile project(':uvod-android-sdk')
+    compile(name:'ulive-android-sdk-1.4.7', ext:'aar')
+    compile(name:'uvod-android-sdk-1.5.3', ext:'aar')
     compile project(':extension-ucloud-faceu')
 }
