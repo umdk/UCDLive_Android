@@ -623,6 +623,9 @@ public void onDestroy() {
 <a name="8"></a>
 # 8 版本历史
 
+* v1.4.8 (2016.12.30)
+    - 支持软编
+
 * v1.4.7 (2016.12.16)
     - 支持推流开始后修改预览大小
     - 增加UEasyStreaming.isFlashModeOn()

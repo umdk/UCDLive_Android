@@ -94,6 +94,14 @@
                 android:text="@string/controller_mirror" />
 
             <Button
+                    android:id="@+id/btn_toggle_codec_mode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.7"
+                    android:onClick="onToggleCodecModeBtnClick"
+                    android:text="@string/controller_hw" />
+
+            <Button
                 android:id="@+id/btn_toggle_filter_mode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

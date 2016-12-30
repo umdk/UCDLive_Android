@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     public static final String KEY_FILTER = "capture-filter";
 
+    public static final String KEY_CODEC = "capture-codec";
+
     public static final String KEY_FPS = "capture-fps" ;
 
     public static final String KEY_VIDEO_BITRATE = "video-bitrate" ;
@@ -72,6 +74,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Bind(R.id.rg_filter)
     RadioGroup filterRg;
+
+    @Bind(R.id.rg_codec)
+    RadioGroup codecRg;
 
     @Bind(R.id.rg_videobitrate)
     RadioGroup videoBitrateRg;
@@ -118,11 +123,30 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         demoDirects = getResources().getStringArray(R.array.demoDirects);
         versionTxtv.setText(UBuild.VERSION + " " + getResources().getString(R.string.sdk_address));
         streamIdEdtxt.setText(streamId);
+        filterRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (codecRg.getCheckedRadioButtonId() == R.id.rb_swcodec && checkedId == R.id.rb_gpufilter) {
+                    Toast.makeText(MainActivity.this, "sorry, soft codec just support cpu filter mode", Toast.LENGTH_SHORT).show();
+                    group.check(R.id.rb_cpufilter);
+                }
+            }
+        });
+        codecRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.rb_swcodec && filterRg.getCheckedRadioButtonId() == R.id.rb_gpufilter) {
+                    Toast.makeText(MainActivity.this, "sorry, gpu filter just support hard codec mode", Toast.LENGTH_SHORT).show();
+                    group.check(R.id.rb_hwcodec);
+                }
+            }
+        });
     }
 
     private void startActivity(int index) {
         Intent intent = new Intent();
-        intent.putExtra(KEY_FILTER,  filterType(filterRg.getCheckedRadioButtonId()));
+        intent.putExtra(KEY_FILTER, filterType(filterRg.getCheckedRadioButtonId()));
+        intent.putExtra(KEY_CODEC, codecType(codecRg.getCheckedRadioButtonId()));
         intent.putExtra(KEY_VIDEO_BITRATE, videoBitrate(videoBitrateRg.getCheckedRadioButtonId()));
         intent.putExtra(KEY_VIDEO_RESOLUTION, videoResolution(resolutionRg.getCheckedRadioButtonId()));
         intent.putExtra(KEY_FPS, framerate(framerateEdtxt));
@@ -144,6 +168,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private int filterType(int id) {
         return id == R.id.rb_cpufilter ? UFilterProfile.FilterMode.CPU : UFilterProfile.FilterMode.GPU;
+    }
+
+    private int codecType(int id) {
+        return id == R.id.rb_hwcodec ? UVideoProfile.CODEC_MODE_HARD : UVideoProfile.CODEC_MODE_SOFT;
     }
 
     private int videoBitrate(int id) {

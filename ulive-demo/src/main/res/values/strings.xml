@@ -14,6 +14,8 @@
     <string name="controller_no_mirror">非镜像</string>
     <string name="controller_gpu">GPU</string>
     <string name="controller_cpu">CPU</string>
+    <string name="controller_hw">硬编</string>
+    <string name="controller_sw">软编</string>
     <string name="controller_landspace">横屏</string>
     <string name="controller_portrait">竖屏</string>
     <string name="controller_screenshot">截帧</string>

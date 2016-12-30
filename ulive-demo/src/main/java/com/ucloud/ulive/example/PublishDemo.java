@@ -126,9 +126,6 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
 
     @Bind(R.id.progress3)
     TextView mV3;
-    private int level1 = 60;
-    private int level2 = 26;
-    private int level3 = 15;
 
     @Bind(R.id.filter_level_bar)
     View mFilterLevelBar;
@@ -139,6 +136,11 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
     @Bind(R.id.info_layout)
     FrameLayout mDebugInfoLayout;
 
+    private int level1 = 60;
+    private int level2 = 26;
+    private int level3 = 15;
+
+    private int videoCodecType = UVideoProfile.CODEC_MODE_HARD;
     private int videoFilterType = UFilterProfile.FilterMode.GPU;
     private int videoCaptureOrientation = UVideoProfile.ORIENTATION_PORTRAIT;
     private int videoCaptureFps = 20;
@@ -201,6 +203,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
             return;
         }
         videoFilterType = i.getIntExtra(MainActivity.KEY_FILTER, UFilterProfile.FilterMode.GPU);
+        videoCodecType = i.getIntExtra(MainActivity.KEY_CODEC, UVideoProfile.CODEC_MODE_HARD);
         videoCaptureOrientation  = i.getIntExtra(MainActivity.KEY_CAPTURE_ORIENTATION, UVideoProfile.ORIENTATION_PORTRAIT);
         videoCaptureFps = i.getIntExtra(MainActivity.KEY_FPS, 20);
         videoBitrate = i.getIntExtra(MainActivity.KEY_VIDEO_BITRATE,UVideoProfile.VIDEO_BITRATE_NORMAL);
@@ -348,6 +351,11 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
         } else {
             ((Button)findViewById(R.id.btn_toggle_filter_mode)).setText(getResources().getString(R.string.controller_gpu));
         }
+        if (videoCodecType == UVideoProfile.CODEC_MODE_HARD) {
+            ((Button)findViewById(R.id.btn_toggle_codec_mode)).setText(getResources().getString(R.string.controller_sw));
+        } else {
+            ((Button)findViewById(R.id.btn_toggle_codec_mode)).setText(getResources().getString(R.string.controller_hw));
+        }
     }
 
     public void initStreamingEnv() {
@@ -362,6 +370,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
         UVideoProfile videoProfile = new UVideoProfile().fps(videoCaptureFps)
                 .bitrate(videoBitrate)
                 .resolution(videoResolution)
+                .codecMode(videoCodecType)
                 .captureOrientation(videoCaptureOrientation);
 
         UAudioProfile audioProfile = new UAudioProfile()
@@ -648,13 +657,8 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
         }
     }
 
-    //just support gpu filter & front camera
     public void onToggleFrontCameraOutputFlipBtnClick(View view) {
         if (mEasyStreaming != null) {
-            if (mStreamingProfile != null && videoFilterType == UFilterProfile.FilterMode.CPU) {
-                Toast.makeText(this, "sorry, just support gpu filter -> front camera", Toast.LENGTH_SHORT).show();
-                return;
-            }
             isFrontCameraOutputNeedFlip = !isFrontCameraOutputNeedFlip;
             mEasyStreaming.frontCameraFlipHorizontal(isFrontCameraOutputNeedFlip);
             if (isFrontCameraOutputNeedFlip) {
@@ -669,7 +673,42 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
         }
     }
 
+    public void onToggleCodecModeBtnClick(View view) {
+        if (videoCodecType == UVideoProfile.CODEC_MODE_HARD && videoFilterType == UFilterProfile.FilterMode.GPU) {
+            Toast.makeText(this, "sorry, gpu filter just support hard codec mode", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        isRecording = mEasyStreaming.isRecording();
+        if (isRecording) {
+            mEasyStreaming.stopRecording();
+        }
+        stopPreviewTextureView(false);
+        if (videoCodecType == UVideoProfile.CODEC_MODE_HARD) {
+            videoCodecType = UVideoProfile.CODEC_MODE_SOFT;
+            appendDebugLogInfo("toggle soft codec.");
+            ((Button)view).setText("硬编");
+        } else {
+            videoCodecType = UVideoProfile.CODEC_MODE_HARD;
+            appendDebugLogInfo("toggle hard codec.");
+            ((Button)view).setText("软编");
+        }
+        initStreamingEnv(); // all init, camera index, is mirror
+        if (isNeedRePreview) {
+            mEasyStreaming.startPreview(tempTexture, tempStWidth, tempStHeight);
+        }
+        if (isRecording) {
+            //set before start
+            mStreamingProfile.setStreamUrl(mRtmpAddress);  // delay set rtmp url
+            mEasyStreaming.startRecording();
+            handleShowStreamingInfo(mStreamingProfile);
+        }
+    }
+
     public void onToggleFilterModeBtnClick(View view) {
+        if (videoCodecType == UVideoProfile.CODEC_MODE_SOFT && videoFilterType == UFilterProfile.FilterMode.CPU) {
+            Toast.makeText(this, "sorry, soft codec just support cpu filter mode", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (mEasyStreaming != null) {
             isRecording = mEasyStreaming.isRecording();
             if (isRecording) {
@@ -918,7 +957,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
                         mBitrateTxtv.setText(String.format(getResources().getString(R.string.info_bitrate_bs), (speed) + ""));
                     }
                 }
-                if (mFpsTxtv != null) {
+                if (mFpsTxtv != null && mEasyStreaming != null) {
                     mFpsTxtv.setVisibility(View.VISIBLE);
                     mFpsTxtv.setText(String.format(Locale.US, "draw fps:%.2f, send fps:%.2f", mEasyStreaming.getDrawFps(), mEasyStreaming.getSendFps()));
                 }
@@ -955,6 +994,7 @@ public class PublishDemo extends Activity implements TextureView.SurfaceTextureL
             mOutputStreamInfoTxtv.setVisibility(View.VISIBLE);
             String info = "url:" + streamingProfile.getStreamUrl() + "\n" +
                     "resolution:" + mEasyStreaming.getVideoOutputSize().toString() + "\n" +
+                    "codec type:" + (videoCodecType == UVideoProfile.CODEC_MODE_HARD ? "HARD" : "SOFT") + "\n" +
                     "filter type:" + (videoFilterType == UFilterProfile.FilterMode.GPU ? "GPU" : "CPU") + "\n" +
                     "video bitrate:" + videoBitrateMode(streamingProfile.getVideoProfile().getBitrate()) + "\n" +
                     "audio bitrate:" + audioBitrateMode(streamingProfile.getAudioProfile().getBitrate()) + "\n" +

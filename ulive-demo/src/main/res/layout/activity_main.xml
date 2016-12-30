@@ -90,6 +90,40 @@
             </LinearLayout>
 
             <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dip"
+                    android:orientation="horizontal">
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dip"
+                        android:text="编码类型: " />
+
+                <RadioGroup
+                        android:id="@+id/rg_codec"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    <RadioButton
+                            android:id="@+id/rb_hwcodec"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:text="硬编" />
+
+                    <RadioButton
+                            android:id="@+id/rb_swcodec"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="软编" />
+
+                </RadioGroup>
+
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dip"
