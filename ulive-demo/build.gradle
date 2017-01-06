@@ -43,6 +43,6 @@ dependencies {
     //gpuimage filter
     /* compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'*/
     compile(name:'ulive-android-sdk-1.4.8', ext:'aar')
-    compile(name:'uvod-android-sdk-1.5.4', ext:'aar')
+    compile(name:'uvod-android-sdk-1.5.5', ext:'aar')
     compile project(':extension-ucloud-faceu')
 }
