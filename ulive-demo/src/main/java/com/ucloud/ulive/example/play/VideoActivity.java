@@ -29,9 +29,9 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
 
     String uri;
 
-    private static final int MIN_RECONNECT_READ_FRAME_TIMEOUT_COUNT = 2;
+    private static final int MIN_RECONNECT_READ_FRAME_TIMEOUT_COUNT = 3;
 
-    private static final int MIN_RECONNECT_PREPARE_TIMEOUT_COUNT = 2;
+    private static final int MIN_RECONNECT_PREPARE_TIMEOUT_COUNT = 3;
 
     private static final int MAX_RECONNECT_COUNT = 10;
 
@@ -94,6 +94,7 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
                 Log.i(TAG, "lifecycle->demo->PREPARING");
                 break;
             case PREPARED:
+                prepareTimeoutCount = 0;
                 Log.i(TAG, "lifecycle->demo->PREPARED");
                 break;
             case START:
@@ -135,14 +136,14 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
                 break;
             case PREPARE_TIMEOUT:
                 prepareTimeoutCount++;
-                Log.w(TAG, "lifecycle->demo->PREPARE_TIMEOUT");
+                Log.w(TAG, "lifecycle->demo->PREPARE_TIMEOUT->" + prepareTimeoutCount);
                 if (prepareTimeoutCount >= MIN_RECONNECT_PREPARE_TIMEOUT_COUNT) {//reconnect
                     reconnect();
                 }
                 break;
             case READ_FRAME_TIMEOUT:
-                Log.w(TAG, "lifecycle->demo->READ_FRAME_TIMEOUT");
                 readFrameTimeoutCount++;
+                Log.w(TAG, "lifecycle->demo->READ_FRAME_TIMEOUT->" + readFrameTimeoutCount);
                 if (readFrameTimeoutCount >= MIN_RECONNECT_READ_FRAME_TIMEOUT_COUNT) {//reconnect
                     reconnect();
                 }

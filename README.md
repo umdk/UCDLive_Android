@@ -15,7 +15,7 @@ UCDLive SDK 是由 UCloud 提供的低延时、高并发的直播云服务。
     1. 自动 (根据屏幕大小自动设定)
     2. 640 * 480 (4:3)
     3. 320 * 180 (16:9 Low)
-    4. 640 * 360 (16:9 Normal)
+    4. 640 * 368 (16:9 Normal)
     5. 1280 * 720 (16:9 High)
 - 支持前、后置摄像头动态切换
 - 支持推流横、竖屏动态切换
@@ -35,6 +35,7 @@ UCDLive SDK 是由 UCloud 提供的低延时、高并发的直播云服务。
 - 支持直播鉴黄功能
 - 支持混音效果
 - 支持 ip 推流
+- 支持动态码率设置(硬编)
 
 ## 版本要求
 
@@ -44,9 +45,13 @@ Android 4.3+ (API 18+)
 
 请参考 wiki 文档：[UCDLive_Android 开发指南][1]
 
-<a name="6"></a>
 ## 播放器集成
-详细请参考[UCDMediaPlayer项目][2]。
+
+详细请参考 [UCDMediaPlayer项目][2]。
+
+## 常见问题
+
+详细请见 [UCDLive_Android 常见问题][5]
 
 ## 反馈和建议
   - 主 页：<https://www.ucloud.cn/>
@@ -68,3 +73,4 @@ Android 4.3+ (API 18+)
 [2]: https://github.com/umdk/UCDMediaPlayer_Android
 [3]: https://github.com/umdk/UCDLive_Android/issues
 [4]: mailto:sdk_spt@ucloud.cn
+[5]: https://github.com/umdk/UCDLive_Android/wiki/7-常见问题#7
