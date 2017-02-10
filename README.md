@@ -41,6 +41,10 @@ UCDLive SDK 是由 UCloud 提供的低延时、高并发的直播云服务。
 
 Android 4.3+ (API 18+)
 
+## 下载Apk，体验直播功能
+
+![ulive-demo](screenshot/ulive_demo_qrcode.png)  
+
 ## 使用方法
 
 请参考 wiki 文档：[UCDLive_Android 开发指南][1]
