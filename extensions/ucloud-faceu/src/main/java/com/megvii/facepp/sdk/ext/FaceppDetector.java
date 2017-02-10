@@ -1,19 +1,19 @@
 package com.megvii.facepp.sdk.ext;
 
 import android.content.Context;
-
-
 import android.graphics.Bitmap;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
+import com.lemon.faceu.openglfilter.detect.CvFace;
+import com.lemon.faceu.openglfilter.detect.IFaceDetector;
 import com.lemon.faceu.openglfilter.gpuimage.draw.Rotation;
 import com.lemon.faceu.sdk.utils.JniEntry;
 import com.lemon.faceu.sdk.utils.SdkConstants;
-import com.lemon.faceusdkdemo.detect.IFaceDetector;
 import com.megvii.facepp.sdk.Facepp;
 
 import java.io.ByteArrayOutputStream;
@@ -191,8 +191,12 @@ public class FaceppDetector implements Runnable, IFaceDetector {
     }
 
     @Override
-    public int getFaceDetectResult(PointF[][] detectResult, int imageScaleWidth, int imageScaleHeight,
-                                   int outputWidth, int outputHeight) {
+    public int getFaceDetectResult(CvFace[] detectResult,
+                                   Rect firstFaceRect,
+                                   int imageScaleWidth,
+                                   int imageScaleHeight,
+                                   int outputWidth,
+                                   int outputHeight) {
         float width = 100f, height = 100f;
         Facepp.Face[] cvFaceLst = null;
         int faceCount = 0;
@@ -210,7 +214,7 @@ public class FaceppDetector implements Runnable, IFaceDetector {
         if (null != cvFaceLst) {
             for (int i = 0; i < faceCount; ++i) {
                 PointF[] pointFs = cvFaceLst[i].points;
-                PointF[] fResult = detectResult[i];
+                PointF[] fResult = detectResult[i].getFacePoints();
                 int pointCount = Math.min(pointFs.length, fResult.length);
 
                 // 将坐标计算到屏幕范围内
@@ -222,6 +226,39 @@ public class FaceppDetector implements Runnable, IFaceDetector {
         }
         return faceCount;
     }
+
+//    @Override
+//    public int getFaceDetectResult(PointF[][] detectResult, int imageScaleWidth, int imageScaleHeight,
+//                                   int outputWidth, int outputHeight) {
+//        float width = 100f, height = 100f;
+//        Facepp.Face[] cvFaceLst = null;
+//        int faceCount = 0;
+//        synchronized (FaceppDetector.class) {
+//            width = mSampleWidth;
+//            height = mSampleHeight;
+//
+//            cvFaceLst = mFaceInfoLst;
+//            faceCount = Math.min(mMaxFaceCount, null == mFaceInfoLst ? 0 : mFaceInfoLst.length);
+//        }
+//
+//        int widthTranslate = (imageScaleWidth - outputWidth) / 2;
+//        int heightTranslate = (imageScaleHeight - outputHeight) / 2;
+//
+//        if (null != cvFaceLst) {
+//            for (int i = 0; i < faceCount; ++i) {
+//                PointF[] pointFs = cvFaceLst[i].points;
+//                PointF[] fResult = detectResult[i];
+//                int pointCount = Math.min(pointFs.length, fResult.length);
+//
+//                // 将坐标计算到屏幕范围内
+//                for (int j = 0; j < pointCount; ++j) {
+//                    fResult[j].x = pointFs[j].x / width * imageScaleWidth - widthTranslate;
+//                    fResult[j].y = pointFs[j].y / height * imageScaleHeight - heightTranslate;
+//                }
+//            }
+//        }
+//        return faceCount;
+//    }
 
     @Override
     public void run() {

@@ -1,18 +1,18 @@
 package com.ucloud.ulive.example.ext.faceu;
 
 import android.app.Activity;
-import android.graphics.PointF;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.opengl.GLES20;
 import android.util.Log;
 import android.view.Surface;
 
 import com.lemon.faceu.openglfilter.common.FilterConstants;
+import com.lemon.faceu.openglfilter.detect.CvFace;
 import com.lemon.faceu.openglfilter.detect.DirectionDetector;
+import com.lemon.faceu.openglfilter.detect.IFaceDetector;
 import com.lemon.faceu.openglfilter.gpuimage.base.GPUImageFilterGroupBase;
 import com.lemon.faceu.openglfilter.gpuimage.draw.Rotation;
-import com.lemon.faceusdkdemo.detect.FaceDetectorType;
-import com.lemon.faceusdkdemo.detect.IFaceDetector;
 import com.megvii.facepp.sdk.ext.FaceppDetector;
 import com.ucloud.ulive.UStreamingContext;
 import com.ucloud.ulive.filter.UGPUImageCompat;
@@ -20,12 +20,15 @@ import com.ucloud.ulive.filter.UVideoGPUFilter;
 
 import java.nio.FloatBuffer;
 
+import static com.lemon.faceu.openglfilter.common.FilterConstants.MAX_FACE_COUNT;
+
 public class FaceuCompat extends UVideoGPUFilter implements IFaceDetector.FaceDetectorListener {
 
     private static final String TAG = "FaceuCompat";
 
     private IFaceDetector mFaceDetector;
-    private PointF[][] mFaceDetectResultList;
+    private CvFace[] mFaceDetectResultList;
+    private Rect mFirstFaceRect;
     private DirectionDetector mDirectionDetector;
 
     private GPUImageFilterGroupBase mFaceuFilter;
@@ -49,18 +52,16 @@ public class FaceuCompat extends UVideoGPUFilter implements IFaceDetector.FaceDe
         initFaceDetector(FaceDetectorType.FACEPP);
         mDirectionDetector = new DirectionDetector(false);
         mDirectionDetector.start();
-        mFaceDetectResultList = new PointF[FilterConstants.MAX_FACE_COUNT][106];
-        for (int i = 0; i < FilterConstants.MAX_FACE_COUNT; ++i) {
-            PointF[] pointFs = mFaceDetectResultList[i];
-            for (int j = 0; j < pointFs.length; ++j) {
-                pointFs[j] = new PointF(0, 0);
-            }
+        mFaceDetectResultList = new CvFace[FilterConstants.MAX_FACE_COUNT];
+        for (int i = 0; i < MAX_FACE_COUNT; ++i) {
+            mFaceDetectResultList[i] = new CvFace();
         }
+        mFirstFaceRect = new Rect();
     }
 
     @Override
     public void onDraw(int cameraTexture, int targetFrameBuffer, FloatBuffer shapeBuffer, FloatBuffer textrueBuffer) {
-        int faceCount = mFaceDetector.getFaceDetectResult(mFaceDetectResultList, SIZE_WIDTH, SIZE_HEIGHT, SIZE_WIDTH, SIZE_HEIGHT);
+        int faceCount = mFaceDetector.getFaceDetectResult(mFaceDetectResultList, mFirstFaceRect, SIZE_WIDTH, SIZE_HEIGHT, SIZE_WIDTH, SIZE_HEIGHT);
         mFaceuFilter.setFaceDetResult(faceCount, mFaceDetectResultList, SIZE_WIDTH, SIZE_HEIGHT);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, targetFrameBuffer);
