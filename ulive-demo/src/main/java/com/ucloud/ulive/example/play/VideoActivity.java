@@ -19,6 +19,9 @@ import com.ucloud.uvod.widget.UVideoView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static android.net.wifi.SupplicantState.COMPLETED;
+import static com.ucloud.ulive.UNetworkListener.State.RECONNECT;
+
 
 public class VideoActivity extends Activity implements UPlayerStateListener {
 
@@ -28,18 +31,6 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
     UVideoView mVideoView;
 
     String uri;
-
-    private static final int MIN_RECONNECT_READ_FRAME_TIMEOUT_COUNT = 3;
-
-    private static final int MIN_RECONNECT_PREPARE_TIMEOUT_COUNT = 3;
-
-    private static final int MAX_RECONNECT_COUNT = 10;
-
-    private int readFrameTimeoutCount = 0;
-
-    private int prepareTimeoutCount = 0;
-
-    private int reconnectCount = 0;
 
     private  UMediaProfile profile;
 
@@ -94,7 +85,6 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
                 Log.i(TAG, "lifecycle->demo->PREPARING");
                 break;
             case PREPARED:
-                prepareTimeoutCount = 0;
                 Log.i(TAG, "lifecycle->demo->PREPARED");
                 break;
             case START:
@@ -106,6 +96,9 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
             case COMPLETED:
                 Log.i(TAG, "lifecycle->demo->COMPLETED");
                 break;
+            case RECONNECT:
+                Log.i(TAG, "lifecycle->demo->RECONNECT");
+                break;
         }
     }
 
@@ -115,13 +108,6 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
             case BUFFERING_START:
                 break;
             case BUFFERING_END:
-                readFrameTimeoutCount = 0;
-                prepareTimeoutCount = 0;
-                if (reconnectCount != 0) {
-                    Log.i(TAG, "lifecycle-demo->Play Succeed, reconnect count = " + reconnectCount);
-                    Toast.makeText(this, "Play Succeed, reconnect count = " + reconnectCount, Toast.LENGTH_SHORT).show();
-                    reconnectCount = 0;
-                }
                 break;
             case BUFFERING_UPDATE:
                 break;
@@ -135,39 +121,12 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
                 Toast.makeText(this, "Error: " + extra1, Toast.LENGTH_SHORT).show();
                 break;
             case PREPARE_TIMEOUT:
-                prepareTimeoutCount++;
-                Log.w(TAG, "lifecycle->demo->PREPARE_TIMEOUT->" + prepareTimeoutCount);
-                if (prepareTimeoutCount >= MIN_RECONNECT_PREPARE_TIMEOUT_COUNT) {//reconnect
-                    reconnect();
-                }
                 break;
             case READ_FRAME_TIMEOUT:
-                readFrameTimeoutCount++;
-                Log.w(TAG, "lifecycle->demo->READ_FRAME_TIMEOUT->" + readFrameTimeoutCount);
-                if (readFrameTimeoutCount >= MIN_RECONNECT_READ_FRAME_TIMEOUT_COUNT) {//reconnect
-                    reconnect();
-                }
                 break;
             case UNKNOWN:
                 Toast.makeText(this, "Error: " + extra1, Toast.LENGTH_SHORT).show();
                 break;
-        }
-    }
-
-    private void reconnect() {
-        readFrameTimeoutCount = 0;
-        prepareTimeoutCount = 0;
-        if (reconnectCount < MAX_RECONNECT_COUNT) {
-            reconnectCount++;
-            Log.e(TAG, "lifecycle->demo->Play failed, reconnect count = " + reconnectCount);
-            connect();
-        } else {
-            if (mVideoView != null) {
-                mVideoView.stopPlayback();
-                mVideoView.release(true);
-            }
-            Log.e(TAG, "lifecycle->demo->Play failed, reconnect MAX count = " + reconnectCount + " reconnect stop.");
-            Toast.makeText(this, "Play failed, reconnect MAX count = " + reconnectCount + " reconnect stop.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -176,8 +135,16 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
         profile.setInteger(UMediaProfile.KEY_START_ON_PREPARED, 1);
         profile.setInteger(UMediaProfile.KEY_ENABLE_BACKGROUND_PLAY, 0);
         profile.setInteger(UMediaProfile.KEY_LIVE_STREAMING, 1);
-        profile.setInteger(UMediaProfile.KEY_PREPARE_TIMEOUT, 1000 * 5); //live-streaming 1 default 5s 0 10s
-        profile.setInteger(UMediaProfile.KEY_READ_FRAME_TIMEOUT, 1000 * 5); //live-streaming 1 default 5s 0 10s
+
+        profile.setInteger(UMediaProfile.KEY_PREPARE_TIMEOUT, 1000 * 5);
+        profile.setInteger(UMediaProfile.KEY_MIN_READ_FRAME_TIMEOUT_RECONNECT_INTERVAL, 3);
+
+        profile.setInteger(UMediaProfile.KEY_READ_FRAME_TIMEOUT, 1000 * 5);
+        profile.setInteger(UMediaProfile.KEY_MIN_PREPARE_TIMEOUT_RECONNECT_INTERVAL, 3);
+
+        if (uri != null && uri.endsWith("m3u8")) {
+            profile.setInteger(UMediaProfile.KEY_MAX_CACHED_DURATION, 0);//m3u8 默认不开启延时丢帧策略
+        }
 
         if (mVideoView != null && mVideoView.isInPlaybackState()) {
             mVideoView.stopPlayback();
