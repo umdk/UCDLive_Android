@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ucloud.ulive.example.MainActivity;
@@ -19,9 +20,6 @@ import com.ucloud.uvod.widget.UVideoView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-import static android.net.wifi.SupplicantState.COMPLETED;
-import static com.ucloud.ulive.UNetworkListener.State.RECONNECT;
-
 
 public class VideoActivity extends Activity implements UPlayerStateListener {
 
@@ -29,6 +27,14 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
 
     @Bind(R.id.uvideoview)
     UVideoView mVideoView;
+
+    @Bind(R.id.txtv_loading)
+    View mLoadingView;
+
+    @Bind(R.id.txtv_block_count)
+    TextView mNetworkBlockCount;
+
+    long cacheCount = 0;
 
     String uri;
 
@@ -82,18 +88,21 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
     public void onPlayerStateChanged(State state, int extra1, Object extra2) {
         switch (state) {
             case PREPARING:
+                mLoadingView.setVisibility(View.VISIBLE);
                 Log.i(TAG, "lifecycle->demo->PREPARING");
                 break;
             case PREPARED:
                 Log.i(TAG, "lifecycle->demo->PREPARED");
                 break;
             case START:
+                mLoadingView.setVisibility(View.GONE);
                 Log.i(TAG, "lifecycle->demo->START");
                 mVideoView.applyAspectRatio(UVideoView.VIDEO_RATIO_FILL_PARENT);//set after start
                 break;
             case VIDEO_SIZE_CHANGED:
                 break;
             case COMPLETED:
+                mLoadingView.setVisibility(View.GONE);
                 Log.i(TAG, "lifecycle->demo->COMPLETED");
                 break;
             case RECONNECT:
@@ -106,8 +115,13 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
     public void onPlayerInfo(Info info, int extra1, Object extra2) {
         switch (info) {
             case BUFFERING_START:
+                mLoadingView.setVisibility(View.VISIBLE);
+                cacheCount++;
+                mNetworkBlockCount.setVisibility(View.VISIBLE);
+                mNetworkBlockCount.setText("缓冲次数:" + cacheCount);
                 break;
             case BUFFERING_END:
+                mLoadingView.setVisibility(View.GONE);
                 break;
             case BUFFERING_UPDATE:
                 break;
@@ -135,6 +149,7 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
         profile.setInteger(UMediaProfile.KEY_START_ON_PREPARED, 1);
         profile.setInteger(UMediaProfile.KEY_ENABLE_BACKGROUND_PLAY, 0);
         profile.setInteger(UMediaProfile.KEY_LIVE_STREAMING, 1);
+        profile.setInteger(UMediaProfile.KEY_MEDIACODEC, 1);
 
         profile.setInteger(UMediaProfile.KEY_PREPARE_TIMEOUT, 1000 * 5);
         profile.setInteger(UMediaProfile.KEY_MIN_READ_FRAME_TIMEOUT_RECONNECT_INTERVAL, 3);

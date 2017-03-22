@@ -21,7 +21,7 @@
             android:id="@+id/txt_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="直播结束"
+            android:text="@string/stream_over"
             android:textColor="@color/color_progress"
             android:textSize="30sp" />
 
@@ -47,10 +47,9 @@
             android:id="@+id/btn_finish"
             android:layout_width="fill_parent"
             android:layout_height="45.0dip"
-            android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="15.0dip"
-            android:text="返回首页"
+            android:text="@string/return_index"
             android:textColor="@color/color_progress"
             android:textSize="18.0sp" />
     </LinearLayout>

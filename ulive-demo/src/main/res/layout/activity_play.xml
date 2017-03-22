@@ -13,9 +13,38 @@
         android:onClick="close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:alpha="0.7"
-        android:text="退出"/>
+        android:text="@string/controller_exit"/>
+
+    <TextView
+        android:id="@+id/txtv_block_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/loading"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:maxLines="1"
+        android:layout_margin="15dip"
+        android:layout_centerHorizontal="true"
+        android:textSize="16sp"
+        android:textColor="@android:color/holo_red_light"
+        android:visibility="invisible"
+        />
+
+    <TextView
+        android:id="@+id/txtv_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/loading"
+        android:textColor="@color/color_progress"
+        android:layout_centerInParent="true"
+        android:maxLines="1"
+        android:layout_margin="5dip"
+        android:layout_centerHorizontal="true"
+        android:textSize="16sp"
+        android:visibility="invisible"
+        />
 
 </RelativeLayout>

@@ -43,14 +43,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dip"
-                    android:text="版本: " />
+                    android:text="@string/sdk_version" />
 
                 <TextView
                     android:id="@+id/txtv_version"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:autoLink="web"
-                    android:text="1.5.0" />
+                    android:autoLink="web" />
 
             </LinearLayout>
 
@@ -64,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dip"
-                    android:text="滤镜类型: " />
+                    android:text="@string/filter_mode" />
 
                 <RadioGroup
                     android:id="@+id/rg_filter"
@@ -73,17 +72,17 @@
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/rb_cpufilter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="CPU" />
-
-                    <RadioButton
                         android:id="@+id/rb_gpufilter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="GPU" />
+                        android:text="@string/filter_gpu" />
+
+                    <RadioButton
+                        android:id="@+id/rb_cpufilter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/filter_cpu" />
 
                 </RadioGroup>
 
@@ -99,7 +98,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="5dip"
-                        android:text="编码类型: " />
+                        android:text="@string/codec_mode" />
 
                 <RadioGroup
                         android:id="@+id/rg_codec"
@@ -112,13 +111,13 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:checked="true"
-                            android:text="硬编" />
+                            android:text="@string/controller_hw" />
 
                     <RadioButton
                             android:id="@+id/rb_swcodec"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="软编" />
+                            android:text="@string/controller_sw" />
 
                 </RadioGroup>
 
@@ -138,7 +137,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="5dip"
-                        android:text="视频码率: " />
+                        android:text="@string/video_bitrate" />
 
                     <RadioGroup
                         android:id="@+id/rg_videobitrate"
@@ -150,26 +149,26 @@
                             android:id="@+id/rb_videobitrate_low"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="LOW" />
+                            android:text="@string/videobitrate_low" />
 
                         <RadioButton
                             android:id="@+id/rb_videobitrate_normal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:checked="true"
-                            android:text="NORMAL" />
+                            android:text="@string/videobitrate_normal" />
 
                         <RadioButton
                             android:id="@+id/rb_videobitrate_medium"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="MEDIUM" />
+                            android:text="@string/videobitrate_medium" />
 
                         <RadioButton
                             android:id="@+id/rb_videobitrate_high"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="HIGH" />
+                            android:text="@string/videobitrate_high" />
 
                     </RadioGroup>
                 </LinearLayout>
@@ -183,7 +182,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="5dip"
-                        android:text="采集画幅: " />
+                        android:text="@string/capture_ratio" />
 
                     <RadioGroup
                         android:id="@+id/rg_videoaspect"
@@ -196,19 +195,19 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:checked="true"
-                            android:text="AUTO" />
+                            android:text="@string/videoaspect_auto" />
 
                         <RadioButton
                             android:id="@+id/rb_videoaspect_4x3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="4x3" />
+                            android:text="@string/videoaspect_4x3" />
 
                         <RadioButton
                             android:id="@+id/rb_videoaspect_16x9"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="16x9" />
+                            android:text="@string/videoaspect_16x9" />
 
                     </RadioGroup>
                 </LinearLayout>
@@ -223,16 +222,16 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-
                     android:layout_height="wrap_content"
                     android:padding="5dip"
-                    android:text="采集帧率:" />
+                    android:text="@string/videoframerate" />
 
                 <EditText
                     android:id="@+id/edtxt_framerate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="20" />
+                    android:inputType="numberDecimal"
+                    android:text="@string/videoframerate_default" />
 
             </LinearLayout>
 
@@ -246,7 +245,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dip"
-                    android:text="采集方向: " />
+                    android:text="@string/video_capture_oritiontation" />
 
                 <RadioGroup
                     android:id="@+id/rg_capture_orientation"
@@ -259,13 +258,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="竖屏" />
+                        android:text="@string/portrait_orientation" />
 
                     <RadioButton
                         android:id="@+id/rb_capture_orientation_landspace"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="横屏" />
+                        android:text="@string/landspace_orientation" />
 
                 </RadioGroup>
             </LinearLayout>
@@ -280,7 +279,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dip"
-                    android:text="网络线路: " />
+                    android:text="@string/network_link" />
 
                 <RadioGroup
                     android:id="@+id/rg_line"
@@ -293,13 +292,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checked="true"
-                        android:text="线路1" />
+                        android:text="@string/network_link1" />
 
                     <RadioButton
                         android:id="@+id/rb_line2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="线路2" />
+                        android:text="@string/network_link2" />
 
                 </RadioGroup>
             </LinearLayout>
@@ -314,13 +313,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="5dip"
-                    android:text="推拉流ID: " />
+                    android:text="@string/stream_id" />
 
                 <EditText
                     android:id="@+id/edtxt_streaming_id"
+                    android:inputType="text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ucloud_test" />
+                    android:text="@string/stream_id_default" />
 
             </LinearLayout>
         </LinearLayout>

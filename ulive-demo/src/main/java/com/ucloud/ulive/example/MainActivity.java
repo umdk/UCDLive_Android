@@ -16,10 +16,10 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ucloud.ucommon.Utils;
 import com.ucloud.ulive.UBuild;
 import com.ucloud.ulive.UFilterProfile;
 import com.ucloud.ulive.UVideoProfile;
-import com.ucloud.ulive.common.Utils;
 import com.ucloud.ulive.example.permission.PermissionsActivity;
 import com.ucloud.ulive.example.permission.PermissionsChecker;
 

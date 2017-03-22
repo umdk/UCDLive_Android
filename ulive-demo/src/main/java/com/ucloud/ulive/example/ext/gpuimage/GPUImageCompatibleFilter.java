@@ -1,6 +1,10 @@
 package com.ucloud.ulive.example.ext.gpuimage;
+//gpuimage filter add in build.gradle
 
 /*
+compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'*/
+/*
+
 import android.opengl.GLES20;
 
 import com.ucloud.ulive.filter.UGPUImageCompat;

@@ -39,7 +39,7 @@ public class FaceuHelper {
 
     private static final String TAG = "FaceuHelper";
 
-    private static final String FACEU_RES_DIR = MiscUtils.getSdCardPath() + "/UCloud/Faceu";
+    private static String FACEU_RES_DIR;
 
     public final static int TYPE_CHANGE_FACE = 0;
 
@@ -73,7 +73,22 @@ public class FaceuHelper {
             new EffectItem("30002_6.zip", 1, "discoball"),*/
     };
 
+    public static void deleteDirectory(File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory()) {
+            for (File child : fileOrDirectory.listFiles()) {
+                deleteDirectory(child);
+            }
+        }
+        fileOrDirectory.delete();
+    }
+
     public static void init(final Context context) {
+        FACEU_RES_DIR =  MiscUtils.getSdCardPath() + File.separator + "UCloud" + File.separator + context.getPackageName() + File.separator + "faceu";
+        String olderPath = MiscUtils.getSdCardPath() + File.separator + "UCloud" + File.separator + "Faceu";
+        File f = new File(olderPath);
+        if (f.exists()) {
+            deleteDirectory(f);
+        }
         FilterCore.initialize(context, null);
         new Thread(new Runnable() {
             @Override
@@ -88,10 +103,10 @@ public class FaceuHelper {
     private static void unzipAsset(Context context, String assetName, String unzipDirName) {
         String unzipPath = FACEU_RES_DIR + "/" + unzipDirName;
         if (MiscUtils.isFileExist(unzipPath)) {
-            Log.i(TAG, "lifecycle->faceu->already exist");
+            Log.i(TAG, "faceu resources already exist");
             return;
         } else {
-            Log.i(TAG, "lifecycle->faceu->unzip path->" + unzipPath);
+            Log.i(TAG, "faceu resources unzip path = " + unzipPath);
             MiscUtils.mkdirs(FACEU_RES_DIR);
         }
 
@@ -101,9 +116,9 @@ public class FaceuHelper {
         try {
             inputStream = assetManager.open(assetName);
             dirItems = MResFileReaderBase.getFileListFromZip(inputStream);
-            Log.i(TAG, "lifecycle->faceu->get file list succeed");
+            Log.i(TAG, "faceu get file list succeed.");
         } catch (IOException e) {
-            Log.i(TAG, "lifecycle->faceu->get file list failed");
+            Log.i(TAG, "faceu get file list failed.");
             e.printStackTrace();
             return;
         } finally {
@@ -116,9 +131,9 @@ public class FaceuHelper {
             if (dirItems != null) {
                 MResFileReaderBase.unzipToAFile(inputStream, new File(FACEU_RES_DIR), dirItems);
             }
-            Log.i(TAG, "lifecycle->faceu->unzip succeed");
+            Log.i(TAG, "faceu unzip succeed.");
         } catch (IOException e) {
-            Log.i(TAG, "lifecycle->faceu->unzip failed");
+            Log.e(TAG, "faceu unzip failed.");
             e.printStackTrace();
         } finally {
             MiscUtils.safeClose(inputStream);
@@ -176,5 +191,4 @@ public class FaceuHelper {
 
         return groupBase;
     }
-
 }
