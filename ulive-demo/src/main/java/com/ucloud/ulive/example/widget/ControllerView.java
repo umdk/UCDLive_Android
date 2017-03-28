@@ -489,6 +489,7 @@ public class ControllerView extends RelativeLayout implements View.OnClickListen
                 break;
             case NETWORK_BLOCK:
                 mDebugEnvHolder.networkBlockCount++;
+                mViewHolder.networkBlockCountTxtv.setVisibility(View.VISIBLE);
                 mViewHolder.networkBlockCountTxtv.setText(String.format(getResources().getString(R.string.info_network_block_count), "" + mDebugEnvHolder.networkBlockCount));
                 break;
         }

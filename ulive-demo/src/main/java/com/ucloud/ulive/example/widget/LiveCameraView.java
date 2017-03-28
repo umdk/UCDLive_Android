@@ -193,8 +193,13 @@ public class LiveCameraView extends UAspectFrameLayout implements TextureView.Su
         streamEnvHolder.easyStreamer.setOnCameraSessionListener(mInnerCameraSessionListener);
         streamEnvHolder.easyStreamer.setOnStreamStateListener(mInnerStreamStateListener);
         streamEnvHolder.easyStreamer.setOnNetworkStateListener(mInnerNetworkStateListener);
-        streamEnvHolder.easyStreamer.prepare(streamEnvHolder.streamingProfile);
 
+        boolean isSucceed = streamEnvHolder.easyStreamer.prepare(streamEnvHolder.streamingProfile);
+
+        if (!isSucceed) {
+            Log.e(TAG, "lifecycle->env prepared failed.");
+            Toast.makeText(getContext(), "env prepared failed.", Toast.LENGTH_LONG);
+        }
         initPreviewTextureView();
 
         streamEnvHolder.previewed = true;
