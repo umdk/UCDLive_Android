@@ -23,7 +23,6 @@ import com.ucloud.ulive.example.R;
 import com.ucloud.ulive.example.ext.faceu.FaceuCompat;
 import com.ucloud.ulive.example.filter.audio.UAudioMuteFilter;
 import com.ucloud.ulive.example.filter.audio.URawAudioMixFilter;
-import com.ucloud.ulive.filter.UAudioCPUFilter;
 import com.ucloud.ulive.filter.UVideoGPUFilter;
 import com.ucloud.ulive.filter.UVideoGroupGPUFilter;
 import com.ucloud.ulive.filter.video.cpu.USkinBeautyCPUFilter;
@@ -120,13 +119,13 @@ public class LiveRoomView extends FrameLayout {
 
         @Override
         public boolean onProgressChanaged(int level1, int level2, int level3) {
-            UAudioCPUFilter audioProfile = LiveCameraView.getInstance().acquireAudioCPUFilter();
+            /*UAudioCPUFilter audioProfile = LiveCameraView.getInstance().acquireAudioCPUFilter();
             if (audioProfile != null && audioProfile instanceof URawAudioMixFilter) {
                 URawAudioMixFilter URawAudioMixFilter = (URawAudioMixFilter) audioProfile;
                 URawAudioMixFilter.adjustBackgroundMusicVolumeLevel(level1 * 1.0f /  100.0f);
                 URawAudioMixFilter.adjustMiscVolumeLevel(level2 * 1.0f /  100.0f);
                 LiveCameraView.getInstance().releaseAudioCPUFilter();
-            }
+            }*/
             for(UVideoGPUFilter filter: filters) {
                 if (filter instanceof USkinBeautyGPUFilter) {
                     ((USkinBeautyGPUFilter)filter).setFilterLevel(level1, level2, level3);
@@ -274,8 +273,8 @@ public class LiveRoomView extends FrameLayout {
         public boolean onAudioMixButtonClick() {
             specailEffectHolder.mix = !specailEffectHolder.mix;
             if (specailEffectHolder.mix) {
-                URawAudioMixFilter URawAudioMixFilter = new URawAudioMixFilter(getContext(), com.ucloud.ulive.example.filter.audio.URawAudioMixFilter.Mode.ANY, true);
-                LiveCameraView.getInstance().setAudioCPUFilter(URawAudioMixFilter);
+                URawAudioMixFilter rawAudioMixFilter = new URawAudioMixFilter(getContext(), com.ucloud.ulive.example.filter.audio.URawAudioMixFilter.Mode.ANY, true);
+                LiveCameraView.getInstance().setAudioCPUFilter(rawAudioMixFilter);
             } else {
                 LiveCameraView.getInstance().setAudioCPUFilter(null);
             }
@@ -396,9 +395,17 @@ public class LiveRoomView extends FrameLayout {
                 case PREPARING:
                     break;
                 case PREPARED:
-                    if (LiveCameraView.getInstance().getFilterMode() != mAVOptions.videoFilterMode) {
-                        mAVOptions.videoFilterMode = LiveCameraView.getInstance().getFilterMode();
-                        Log.w(TAG,"sync from cloud adapter must use:" + ((mAVOptions.videoFilterMode == UFilterProfile.FilterMode.CPU) ? "CPU filter" : "GPU filter"));
+                    int filterMode = LiveCameraView.getInstance().getFilterMode();
+                    int codecMode =  LiveCameraView.getInstance().getCodecMode();
+                    if (filterMode != mAVOptions.videoFilterMode || codecMode != mAVOptions.videoCodecType) {
+                        if (filterMode != mAVOptions.videoFilterMode) {
+                            mAVOptions.videoFilterMode = filterMode;
+                            Log.w(TAG, "sync from cloud adapter must use:" + ((mAVOptions.videoFilterMode == UFilterProfile.FilterMode.CPU) ? "CPU filter" : "GPU filter"));
+                        }
+                        if (codecMode != mAVOptions.videoCodecType) {
+                            mAVOptions.videoCodecType = codecMode;
+                            Log.w(TAG, "sync from cloud adapter must use:" + ((mAVOptions.videoCodecType == UVideoProfile.CODEC_MODE_SOFT) ? "SOFT codec" : "HARD codec"));
+                        }
                         viewHolder.mControllerView.updateStreamEnvUI(mAVOptions);
                     }
                     break;

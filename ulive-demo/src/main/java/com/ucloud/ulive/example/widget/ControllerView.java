@@ -467,7 +467,7 @@ public class ControllerView extends RelativeLayout implements View.OnClickListen
                 mViewHolder.networkBlockCountTxtv.setVisibility(View.GONE);
                 break;
             case PREPARED:
-                appendDebugLogInfo("streaming env streaming prepared.");
+                appendDebugLogInfo("streaming env prepared.");
                 break;
             case CONNECTING:
                 appendDebugLogInfo("streaming connecting...");
@@ -476,7 +476,7 @@ public class ControllerView extends RelativeLayout implements View.OnClickListen
                 appendDebugLogInfo("streaming connected.");
                 break;
             case START:
-                appendDebugLogInfo("streaming start.");
+                appendDebugLogInfo("streaming start ip = " + LiveCameraView.getInstance().getServerIPAddress());
                 mViewHolder.toggleRecordBtn.setText(getResources().getString(R.string.controller_stop));
                 break;
             case STOP:
@@ -512,7 +512,7 @@ public class ControllerView extends RelativeLayout implements View.OnClickListen
                 appendDebugLogInfo("url signature failed->" + error.toString());
                 break;
             case IOERROR:
-                appendDebugLogInfo("streaming io error:" + error.toString() + ", extra = " + extra);
+                appendDebugLogInfo("streaming io error:" + error.toString() + ", extra = " + extra + ", server:" + LiveCameraView.getInstance().getServerIPAddress());
                 break;
             case UNKNOWN:
                 appendDebugLogInfo("streaming unknown error");
