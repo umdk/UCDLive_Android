@@ -1,0 +1,20 @@
+<com.ucloud.ulive.example.widget.LiveRoomView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/liveroom">
+
+    <com.ucloud.ulive.example.widget.LiveCameraView
+        android:id="@+id/livecamera"
+        android:background="@color/transparent"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <include layout="@layout/live_camera_panel_view" />
+
+    <include layout="@layout/live_camera_filter_panel_view" />
+
+    <include layout="@layout/live_stream_finished_panel" />
+
+</com.ucloud.ulive.example.widget.LiveRoomView>

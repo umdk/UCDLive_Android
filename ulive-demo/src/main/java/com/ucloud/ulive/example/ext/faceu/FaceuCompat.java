@@ -26,54 +26,54 @@ public class FaceuCompat extends UVideoGPUFilter implements IFaceDetector.FaceDe
 
     private static final String TAG = "FaceuCompat";
 
-    private IFaceDetector mFaceDetector;
-    private CvFace[] mFaceDetectResultList;
-    private Rect mFirstFaceRect;
-    private DirectionDetector mDirectionDetector;
+    private IFaceDetector faceDetector;
+    private CvFace[] faceDetectResultList;
+    private Rect firstFaceRect;
+    private DirectionDetector directionDetector;
 
-    private GPUImageFilterGroupBase mFaceuFilter;
-    private FloatBuffer mGLCubeBuffer;
-    private FloatBuffer mGLTextureBuffer;
+    private GPUImageFilterGroupBase faceuFilter;
+    private FloatBuffer glCubeBuffer;
+    private FloatBuffer glTextureBuffer;
 
-    private Activity mActivity;
-    private int mCameraId = -1;
-    private Rotation mRotation = Rotation.NORMAL;
+    private final Activity activity;
+    private int cameraId = -1;
+    private Rotation rotation = Rotation.NORMAL;
     private boolean isVerticalFlip = true;
 
     public FaceuCompat(Activity activity) {
-        mActivity = activity;
+        this.activity = activity;
     }
 
     @Override
-    public void onInit(int VWidth, int VHeight) {
-        super.onInit(VWidth, VHeight);
-        mFaceuFilter.init();
-        mFaceuFilter.onOutputSizeChanged(VWidth, VHeight);
+    public void onInit(int width, int height) {
+        super.onInit(width, height);
+        faceuFilter.init();
+        faceuFilter.onOutputSizeChanged(width, height);
         initFaceDetector(FaceDetectorType.FACEPP);
-        mDirectionDetector = new DirectionDetector(false);
-        mDirectionDetector.start();
-        mFaceDetectResultList = new CvFace[FilterConstants.MAX_FACE_COUNT];
+        directionDetector = new DirectionDetector(false);
+        directionDetector.start();
+        faceDetectResultList = new CvFace[FilterConstants.MAX_FACE_COUNT];
         for (int i = 0; i < MAX_FACE_COUNT; ++i) {
-            mFaceDetectResultList[i] = new CvFace();
+            faceDetectResultList[i] = new CvFace();
         }
-        mFirstFaceRect = new Rect();
+        firstFaceRect = new Rect();
     }
 
     @Override
     public void onDraw(int cameraTexture, int targetFrameBuffer, FloatBuffer shapeBuffer, FloatBuffer textrueBuffer) {
-        int faceCount = mFaceDetector.getFaceDetectResult(mFaceDetectResultList, mFirstFaceRect, SIZE_WIDTH, SIZE_HEIGHT, SIZE_WIDTH, SIZE_HEIGHT);
-        mFaceuFilter.setFaceDetResult(faceCount, mFaceDetectResultList, SIZE_WIDTH, SIZE_HEIGHT);
+        int faceCount = faceDetector.getFaceDetectResult(faceDetectResultList, firstFaceRect, width, height, width, height);
+        faceuFilter.setFaceDetResult(faceCount, faceDetectResultList, width, height);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, targetFrameBuffer);
-        mFaceuFilter.draw(cameraTexture, targetFrameBuffer, mGLCubeBuffer, mGLTextureBuffer);
+        faceuFilter.draw(cameraTexture, targetFrameBuffer, glCubeBuffer, glTextureBuffer);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 
     @Override
-    public void onDirectionUpdate(int _directionFlag) {
-        if (directionFlag != _directionFlag) {
-            mGLCubeBuffer = UGPUImageCompat.getGPUImageCompatShapeVerticesBuffer();
-            mGLTextureBuffer = UGPUImageCompat.getGPUImageCompatTextureVerticesBuffer(directionFlag);
+    public void onDirectionUpdate(int directionFlag) {
+        if (this.directionFlag != directionFlag) {
+            glCubeBuffer = UGPUImageCompat.getShapeVerticesBuffer();
+            glTextureBuffer = UGPUImageCompat.getTextureVerticesBuffer(this.directionFlag);
         }
     }
 
@@ -82,51 +82,52 @@ public class FaceuCompat extends UVideoGPUFilter implements IFaceDetector.FaceDe
     }
 
     public void setFaceuFilter(GPUImageFilterGroupBase faceuFilter) {
-        mFaceuFilter = faceuFilter;
+        this.faceuFilter = faceuFilter;
     }
 
     private void initFaceDetector(FaceDetectorType type) {
-        if (null != mFaceDetector) {
+        if (null != faceDetector) {
             return;
         }
-        mFaceDetector = new FaceppDetector(this);
-        mFaceDetector.switchMaxFaceCount(FilterConstants.MAX_FACE_COUNT); // 需要在init之前调用
-        mFaceDetector.init(UStreamingContext.appContext);
+        faceDetector = new FaceppDetector(this);
+        faceDetector.switchMaxFaceCount(FilterConstants.MAX_FACE_COUNT); // 需要在init之前调用
+        faceDetector.init(UStreamingContext.APP_CONTEXT);
     }
 
     public void updateCameraFrame(int cameraId, final byte[] data, int width, int height) {
         try {
-            if (mCameraId != cameraId) {
-                mRotation = getRotation(cameraId);
-                mCameraId = cameraId;
-                isVerticalFlip = mCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT;
+            if (this.cameraId != cameraId) {
+                rotation = getRotation(cameraId);
+                this.cameraId = cameraId;
+                isVerticalFlip = this.cameraId == Camera.CameraInfo.CAMERA_FACING_FRONT;
             }
-            if (null != mFaceDetector && null != mDirectionDetector) {
-                mFaceDetector.onFrameAvailable(width, height, mRotation, isVerticalFlip, data, mDirectionDetector.getDirection());
+            if (null != faceDetector && null != directionDetector) {
+                faceDetector.onFrameAvailable(width, height, rotation, isVerticalFlip, data, directionDetector.getDirection());
             }
-        }catch (Exception e) {
+        }
+        catch (Exception e) {
             Log.d(TAG, "lifecycle->updateCameraFrame->failed.");
         }
     }
 
     @Override
     public void onDestroy() {
-        mFaceuFilter.onDestroy();
-        mFaceuFilter.releaseNoGLESRes();
-        if (null != mDirectionDetector) {
-            mDirectionDetector.stop();
-            mDirectionDetector = null;
+        faceuFilter.onDestroy();
+        faceuFilter.releaseNoGLESRes();
+        if (null != directionDetector) {
+            directionDetector.stop();
+            directionDetector = null;
         }
-        if (null != mFaceDetector) {
-            mFaceDetector.uninit();
-            mFaceDetector = null;
+        if (null != faceDetector) {
+            faceDetector.uninit();
+            faceDetector = null;
         }
     }
 
     private Rotation getRotation(int cameraId) {
         Camera.CameraInfo info = new Camera.CameraInfo();
         Camera.getCameraInfo(cameraId, info);
-        int rotationInt = mActivity.getWindowManager().getDefaultDisplay().getRotation();
+        int rotationInt = activity.getWindowManager().getDefaultDisplay().getRotation();
         int degrees = 0;
         switch (rotationInt) {
             case Surface.ROTATION_0:
@@ -141,11 +142,14 @@ public class FaceuCompat extends UVideoGPUFilter implements IFaceDetector.FaceDe
             case Surface.ROTATION_270:
                 degrees = 270;
                 break;
+            default:
+                break;
         }
         // 前后摄像头横竖屏旋转角度不一样
         if (cameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             degrees = (info.orientation + degrees) % 360;
-        } else if (cameraId == Camera.CameraInfo.CAMERA_FACING_BACK){
+        }
+        else if (cameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
             degrees = (info.orientation - degrees + 360) % 360;
         }
         Rotation rotation = Rotation.NORMAL;
@@ -159,8 +163,9 @@ public class FaceuCompat extends UVideoGPUFilter implements IFaceDetector.FaceDe
             case 270:
                 rotation = Rotation.ROTATION_270;
                 break;
+            default:
+                break;
         }
         return rotation;
     }
-
 }

@@ -5,10 +5,10 @@ import android.content.pm.PackageManager;
 import android.support.v4.content.ContextCompat;
 
 public class PermissionsChecker {
-    private final Context mContext;
+    private final Context context;
 
     public PermissionsChecker(Context context) {
-        mContext = context.getApplicationContext();
+        this.context = context.getApplicationContext();
     }
 
     public boolean lacksPermissions(String... permissions) {
@@ -21,6 +21,6 @@ public class PermissionsChecker {
     }
 
     private boolean lacksPermission(String permission) {
-        return ContextCompat.checkSelfPermission(mContext, permission) == PackageManager.PERMISSION_DENIED;
+        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_DENIED;
     }
 }

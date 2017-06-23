@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.ucloud.ulive.example.widget.FilterControllerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/filter_controller_view"
+    android:layout_width="300dip"
+    android:layout_height="wrap_content"
+    android:layout_gravity="start|top"
+    android:layout_margin="20dip"
+    android:orientation="vertical"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <SeekBar
+            android:id="@+id/seek_bar_skin_blur"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:maxHeight="10dip"
+            android:minHeight="10dip"
+            android:max="100" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/skin_blur"
+            android:textColor="@color/blue" />
+
+        <TextView
+            android:id="@+id/txtv_skin_blur_progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/blue" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <SeekBar
+            android:id="@+id/seek_bar_skin_whitening"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:maxHeight="10dip"
+            android:minHeight="10dip"
+            android:max="100" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/skin_whitening"
+            android:textColor="@color/blue" />
+
+
+        <TextView
+            android:id="@+id/txtv_skin_whitening_progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/blue" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <SeekBar
+            android:id="@+id/seek_bar_skin_ruddy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:maxHeight="10dip"
+            android:minHeight="10dip"
+            android:layout_weight="8"
+            android:max="100" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/skin_ruddy"
+            android:textColor="@color/blue" />
+
+
+        <TextView
+            android:id="@+id/txtv_skin_ruddy_progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/blue" />
+
+    </LinearLayout>
+
+</com.ucloud.ulive.example.widget.FilterControllerView>

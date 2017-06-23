@@ -10,6 +10,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            ndkBuild {
+                arguments "NDK_APPLICATION_MK:=src/main/jni/Application.mk"
+            }
+        }
     }
     buildTypes {
         release {
@@ -19,13 +24,13 @@ android {
 //                abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86'
                 //如果使用到第三方库没有完整提供,选择共有完整的类型，下同 UCloud 完整提供 armeabi,armeabi-v7a,arm64-v8a,x86
                 //由于使用了第三方贴纸没有完整提供armeabi x86
-                abiFilters 'armeabi-v7a','arm64-v8a'
+                abiFilters 'armeabi-v7a'
             }
         }
         debug {
             jniDebuggable true
             ndk {
-                abiFilters 'armeabi-v7a','arm64-v8a'
+                abiFilters 'armeabi-v7a'
             }
         }
     }
@@ -35,6 +40,12 @@ android {
     sourceSets {
         main {
             assets.srcDirs = ['assets']
+            jniLibs.srcDir 'libs'
+        }
+    }
+    externalNativeBuild {
+        ndkBuild {
+            path 'src/main/jni/Android.mk'
         }
     }
 }
@@ -47,15 +58,12 @@ repositories {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs/armeabi-v7a', include: '*/so')
     compile 'com.android.support:appcompat-v7:' + rootProject.ext.LIB_APPCOMPAT_V7
     compile 'com.android.support:preference-v7:' + rootProject.ext.LIB_PREFERENCE_V7
     compile 'com.jakewharton:butterknife:7.0.1'
-    compile(name: 'ucommon-android-sdk-1.0.1', ext: 'aar')
-    compile(name: 'ulive-android-sdk-1.5.3-rc1', ext: 'aar')
-    compile(name: 'uvod-android-sdk-1.6.0', ext: 'aar')
-
-/*    compile project(':ucommon-android-sdk')
-    compile project(':ulive-android-sdk')
-    compile project(':uvod-android-sdk')*/
     compile project(':extension-ucloud-faceu')
+    compile(name: 'ucommon-android-sdk-1.0.3', ext: 'aar')
+    compile(name: 'ulive-android-sdk-1.5.3', ext: 'aar')
+    compile(name: 'uvod-android-sdk-1.6.1', ext: 'aar')
 }

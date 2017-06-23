@@ -17,6 +17,8 @@ import com.ucloud.uvod.UMediaProfile;
 import com.ucloud.uvod.UPlayerStateListener;
 import com.ucloud.uvod.widget.UVideoView;
 
+import java.util.Locale;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -26,19 +28,17 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
     private static final String TAG = "VideoActivity";
 
     @Bind(R.id.uvideoview)
-    UVideoView mVideoView;
+    UVideoView videoView;
 
     @Bind(R.id.txtv_loading)
-    View mLoadingView;
+    View loadingView;
 
     @Bind(R.id.txtv_block_count)
-    TextView mNetworkBlockCount;
+    TextView networkBlockCountTxtv;
 
-    long cacheCount = 0;
+    private long cacheCount = 0;
 
-    String uri;
-
-    private  UMediaProfile profile;
+    private String uri;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,7 +56,8 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
 
         if (videoCaptureOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        } else {
+        }
+        else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
         connect();
@@ -65,19 +66,19 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
     @Override
     public void onPause() {
         super.onPause();
-        mVideoView.onPause();
+        videoView.onPause();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mVideoView.onResume();
+        videoView.onResume();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mVideoView.onDestroy();
+        videoView.onDestroy();
     }
 
     public void close(View view) {
@@ -88,25 +89,27 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
     public void onPlayerStateChanged(State state, int extra1, Object extra2) {
         switch (state) {
             case PREPARING:
-                mLoadingView.setVisibility(View.VISIBLE);
+                loadingView.setVisibility(View.VISIBLE);
                 Log.i(TAG, "lifecycle->demo->PREPARING");
                 break;
             case PREPARED:
                 Log.i(TAG, "lifecycle->demo->PREPARED");
                 break;
             case START:
-                mLoadingView.setVisibility(View.GONE);
+                loadingView.setVisibility(View.GONE);
                 Log.i(TAG, "lifecycle->demo->START");
-                mVideoView.applyAspectRatio(UVideoView.VIDEO_RATIO_FILL_PARENT);//set after start
+                videoView.applyAspectRatio(UVideoView.VIDEO_RATIO_FILL_PARENT); //set after start
                 break;
             case VIDEO_SIZE_CHANGED:
                 break;
             case COMPLETED:
-                mLoadingView.setVisibility(View.GONE);
+                loadingView.setVisibility(View.GONE);
                 Log.i(TAG, "lifecycle->demo->COMPLETED");
                 break;
             case RECONNECT:
                 Log.i(TAG, "lifecycle->demo->RECONNECT");
+                break;
+            default:
                 break;
         }
     }
@@ -115,15 +118,17 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
     public void onPlayerInfo(Info info, int extra1, Object extra2) {
         switch (info) {
             case BUFFERING_START:
-                mLoadingView.setVisibility(View.VISIBLE);
+                loadingView.setVisibility(View.VISIBLE);
                 cacheCount++;
-                mNetworkBlockCount.setVisibility(View.VISIBLE);
-                mNetworkBlockCount.setText("缓冲次数:" + cacheCount);
+                networkBlockCountTxtv.setVisibility(View.VISIBLE);
+                networkBlockCountTxtv.setText(String.format(Locale.US, "缓冲次数:%d", cacheCount));
                 break;
             case BUFFERING_END:
-                mLoadingView.setVisibility(View.GONE);
+                loadingView.setVisibility(View.GONE);
                 break;
             case BUFFERING_UPDATE:
+                break;
+            default:
                 break;
         }
     }
@@ -141,11 +146,13 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
             case UNKNOWN:
                 Toast.makeText(this, "Error: " + extra1, Toast.LENGTH_SHORT).show();
                 break;
+            default:
+                break;
         }
     }
 
     private void connect() {
-        profile = new UMediaProfile();
+        UMediaProfile profile = new UMediaProfile();
         profile.setInteger(UMediaProfile.KEY_START_ON_PREPARED, 1);
         profile.setInteger(UMediaProfile.KEY_ENABLE_BACKGROUND_PLAY, 0);
         profile.setInteger(UMediaProfile.KEY_LIVE_STREAMING, 1);
@@ -158,18 +165,19 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
         profile.setInteger(UMediaProfile.KEY_MIN_PREPARE_TIMEOUT_RECONNECT_INTERVAL, 3);
 
         if (uri != null && uri.endsWith("m3u8")) {
-            profile.setInteger(UMediaProfile.KEY_MAX_CACHED_DURATION, 0);//m3u8 默认不开启延时丢帧策略
+            profile.setInteger(UMediaProfile.KEY_MAX_CACHED_DURATION, 0); //m3u8 默认不开启延时丢帧策略
         }
 
-        if (mVideoView != null && mVideoView.isInPlaybackState()) {
-            mVideoView.stopPlayback();
-            mVideoView.release(true);
+        if (videoView != null && videoView.isInPlaybackState()) {
+            videoView.stopPlayback();
+            videoView.release(true);
         }
-        if (mVideoView != null) {
-            mVideoView.setMediaPorfile(profile);//set before setVideoPath
-            mVideoView.setOnPlayerStateListener(this);//set before setVideoPath
-            mVideoView.setVideoPath(uri);
-        } else {
+        if (videoView != null) {
+            videoView.setMediaPorfile(profile); //set before setVideoPath
+            videoView.setOnPlayerStateListener(this); //set before setVideoPath
+            videoView.setVideoPath(uri);
+        }
+        else {
             Log.e(TAG, "lifecycle->dmeo->Are you findViewById(.....) bind UVideoView");
             Toast.makeText(this, "Are you findViewById(.....) bind UVideoView", Toast.LENGTH_SHORT).show();
         }

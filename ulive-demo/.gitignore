@@ -1,3 +1,4 @@
 /build
 *.iml
+.externalNativeBuild/
 .DS_Store

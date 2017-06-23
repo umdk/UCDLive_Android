@@ -9,54 +9,56 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-public class UWhiteningGPUVideoFilter extends UVideoGPUFilter {
+final class UWhiteningGPUVideoFilter extends UVideoGPUFilter {
 
-    byte[] colorMap;
+    private final byte[] colorMap;
 
-    protected int glProgram;
+    private int glProgram;
 
-    protected int glCamTextureLoc;
+    private int glCamTextureLoc;
 
-    protected int glCamPostionLoc;
+    private int glCamPostionLoc;
 
-    protected int glCamTextureCoordLoc;
+    private int glCamTextureCoordLoc;
 
-    protected int glColorMapTextureLoc;
+    private int glColorMapTextureLoc;
 
-    protected static String VERTEXSHADER = "" +
-            "attribute vec4 aCamPosition;\n" +
-            "attribute vec2 aCamTextureCoord;\n" +
-            "varying vec2 vCamTextureCoord;\n" +
-            "void main(){\n" +
-            "   gl_Position= aCamPosition;\n" +
-            "   vCamTextureCoord = aCamTextureCoord;\n" +
-            "}";
-    protected static String FRAGMENTSHADER = "" +
-            "precision mediump float;\n" +
-            "varying mediump vec2 vCamTextureCoord;\n" +
-            "uniform sampler2D uCamTexture;\n" +
-            "uniform sampler2D uColorMapTexture;\n" +
-            "void main(){\n" +
-            "   vec4 c1 = texture2D(uCamTexture, vCamTextureCoord);\n" +
-            "   float r = texture2D(uColorMapTexture, vec2(c1.r,0.0)).r;\n" +
-            "   float g = texture2D(uColorMapTexture, vec2(c1.g,0.0)).g;\n" +
-            "   float b = texture2D(uColorMapTexture, vec2(c1.b,0.0)).b;\n" +
-            "   gl_FragColor = vec4(r,g,b,1.0);\n" +
-            "}";
-    protected int imageTexture;
+    private static final String VERTEX_SHADER = ""
+            + "attribute vec4 aCamPosition;"
+            + "attribute vec2 aCamTextureCoord;"
+            + "varying vec2 vCamTextureCoord;"
+            + "void main(){"
+            + "   gl_Position= aCamPosition;"
+            + "   vCamTextureCoord = aCamTextureCoord;"
+            + "}";
 
-    public UWhiteningGPUVideoFilter() {
+    private static final String FRAGMENT_SHADER = ""
+            + "precision mediump float;"
+            + "varying mediump vec2 vCamTextureCoord;"
+            + "uniform sampler2D uCamTexture;"
+            + "uniform sampler2D uColorMapTexture;"
+            + "void main(){"
+            + "   vec4 c1 = texture2D(uCamTexture, vCamTextureCoord);"
+            + "   float r = texture2D(uColorMapTexture, vec2(c1.r,0.0)).r;"
+            + "   float g = texture2D(uColorMapTexture, vec2(c1.g,0.0)).g;"
+            + "   float b = texture2D(uColorMapTexture, vec2(c1.b,0.0)).b;"
+            + "   gl_FragColor = vec4(r,g,b,1.0);"
+            + "}";
+
+    private int imageTexture;
+
+    private UWhiteningGPUVideoFilter() {
         colorMap = new byte[1024];
         int cur = -1;
         for (int i = 0; i < 256; i++) {
             colorMap[++cur] = ((byte) (int) (255 * Math.pow(i / 255.0, 0.7)));
-            colorMap[++cur] = ((byte) (int) (255 * Math.pow(i / 255.0, 0.7)));;
-            colorMap[++cur] = ((byte) (int) (255 * Math.pow(i / 255.0, 0.65)));;
+            colorMap[++cur] = ((byte) (int) (255 * Math.pow(i / 255.0, 0.7)));
+            colorMap[++cur] = ((byte) (int) (255 * Math.pow(i / 255.0, 0.65)));
             colorMap[++cur] = 0;
         }
     }
 
-    public static int createProgram(String vertexShaderCode, String fragmentShaderCode) {
+    private static int createProgram(String vertexShaderCode, String fragmentShaderCode) {
         if (vertexShaderCode == null || fragmentShaderCode == null) {
             throw new RuntimeException("invalid shader code");
         }
@@ -88,9 +90,9 @@ public class UWhiteningGPUVideoFilter extends UVideoGPUFilter {
     }
 
     @Override
-    public void onInit(int VWidth, int VHeight) {
-        super.onInit(VWidth, VHeight);
-        int texture[] = new int[1];
+    public void onInit(int width, int height) {
+        super.onInit(width, height);
+        int[] texture = new int[1];
         GLES20.glGenTextures(1, texture, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture[0]);
         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
@@ -109,7 +111,7 @@ public class UWhiteningGPUVideoFilter extends UVideoGPUFilter {
         GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, 256, 1, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, result);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         imageTexture = texture[0];
-        glProgram = createProgram(VERTEXSHADER, FRAGMENTSHADER);
+        glProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
         GLES20.glUseProgram(glProgram);
         glCamTextureLoc = GLES20.glGetUniformLocation(glProgram, "uCamTexture");
         glColorMapTextureLoc = GLES20.glGetUniformLocation(glProgram, "uColorMapTexture");
@@ -137,7 +139,7 @@ public class UWhiteningGPUVideoFilter extends UVideoGPUFilter {
         GLES20.glVertexAttribPointer(glCamTextureCoordLoc, 2,
                 GLES20.GL_FLOAT, false,
                 2 * 4, textrueBuffer);
-        GLES20.glViewport(0, 0, SIZE_WIDTH, SIZE_HEIGHT);
+        GLES20.glViewport(0, 0, width, height);
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawIndecesBuffer.limit(), GLES20.GL_UNSIGNED_SHORT, drawIndecesBuffer);

@@ -13,17 +13,13 @@ import com.ucloud.ulive.example.R;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-/**
- * Created by lw.tan on 2017/3/10.
- */
-
 public class FilterControllerView extends LinearLayout implements SeekBar.OnSeekBarChangeListener {
 
-    public static int level1 = 60;
+    public static int LEVEL1 = 60;
 
-    public static int level2 = 26;
+    public static int LEVEL2 = 26;
 
-    public static int level3 = 15;
+    public static int LEVEL3 = 15;
 
     @Bind(R.id.seek_bar_skin_blur)
     SeekBar skinBlur;
@@ -43,7 +39,7 @@ public class FilterControllerView extends LinearLayout implements SeekBar.OnSeek
     @Bind(R.id.txtv_skin_whitening_progress)
     TextView skinWhiteningProgress;
 
-    private Listener mListener;
+    private ProgressListener progressListener;
 
     public FilterControllerView(Context context) {
         super(context);
@@ -71,8 +67,8 @@ public class FilterControllerView extends LinearLayout implements SeekBar.OnSeek
         skinWhitening.setOnSeekBarChangeListener(this);
     }
 
-    public void setListener(Listener listener) {
-        mListener = listener;
+    public void setListener(ProgressListener listener) {
+        progressListener = listener;
     }
 
     @Override
@@ -80,19 +76,21 @@ public class FilterControllerView extends LinearLayout implements SeekBar.OnSeek
         switch (seekBar.getId()) {
             case R.id.seek_bar_skin_blur:
                 skinBlurProgress.setText(String.valueOf(progress));
-                level1 = progress;
+                LEVEL1 = progress;
                 break;
             case R.id.seek_bar_skin_whitening:
                 skinWhiteningProgress.setText(String.valueOf(progress));
-                level2 = progress;
+                LEVEL2 = progress;
                 break;
             case R.id.seek_bar_skin_ruddy:
                 skinRuddyProgress.setText(String.valueOf(progress));
-                level3 = progress;
+                LEVEL3 = progress;
+                break;
+            default:
                 break;
         }
-        if (mListener != null) {
-            mListener.onProgressChanaged(level1, level2, level3);
+        if (progressListener != null) {
+            progressListener.onProgressChanaged(LEVEL1, LEVEL2, LEVEL3);
         }
     }
 
@@ -120,7 +118,7 @@ public class FilterControllerView extends LinearLayout implements SeekBar.OnSeek
         skinRuddyProgress.setText(String.valueOf(level3));
     }
 
-    public interface Listener {
-        public boolean onProgressChanaged(int level1, int level2, int level3);
+    public interface ProgressListener {
+        boolean onProgressChanaged(int level1, int level2, int level3);
     }
 }

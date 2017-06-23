@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ucloud.ulive.example" >
+    <!-- float window -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
-        android:name="com.ucloud.ulive.example.AppContext"
-        android:theme="@style/BlueTheme" >
+        android:name=".AppContext"
+        android:theme="@style/BlueTheme">
 
         <activity
-            android:name="com.ucloud.ulive.example.MainActivity"
+            android:name=".MainActivity"
             android:theme="@style/BlueTheme"
+            android:launchMode="singleTask"
             android:screenOrientation="sensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,9 +31,24 @@
         <activity
             android:name="com.ucloud.ulive.example.stream.PublishDemo"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTask"
             android:theme="@style/BlueTheme" >
             <intent-filter>
                 <action android:name="ucloud.intent.action.ulive.example.publish" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.ucloud.ulive.screen.ScreenCaptureActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:configChanges="orientation|keyboardHidden|screenSize"/>
+
+        <activity
+            android:name="com.ucloud.ulive.example.screen.ScreenDemo"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/BlueTheme" >
+            <intent-filter>
+                <action android:name="ucloud.intent.action.ulive.example.screen" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -45,12 +64,16 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ext.agora.ChatActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTask" >
+            <intent-filter>
+                <action android:name="ucloud.intent.action.ulive.example.chat" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
-
-    <supports-screens android:resizeable="true"
-        android:smallScreens="true"
-        android:normalScreens="true"
-        android:largeScreens="true"
-        android:anyDensity="true" />
-
 </manifest>

@@ -9,7 +9,7 @@ public enum FaceDetectorType {
     SENSETIME,
     ULSEE;
 
-    public int asInt() {
+    private int asInt() {
         switch (this) {
             case FACEPP:
                 return 1;
@@ -17,12 +17,14 @@ public enum FaceDetectorType {
                 return 2;
             case ULSEE:
                 return 3;
+            default:
+                break;
         }
 
         return 1;
     }
 
-    public static FaceDetectorType fromInt(int type) {
+    private static FaceDetectorType fromInt(int type) {
         switch (type) {
             case 1:
                 return FACEPP;
@@ -39,7 +41,8 @@ public enum FaceDetectorType {
         int nextType = type.asInt() + 1;
         if (fromInt(nextType) == null) {
             return fromInt(1);
-        } else {
+        }
+        else {
             return fromInt(nextType);
         }
     }

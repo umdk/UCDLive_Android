@@ -18,28 +18,24 @@ import com.ucloud.ulive.USize;
 import com.ucloud.ulive.UStreamStateListener;
 import com.ucloud.ulive.UStreamingProfile;
 import com.ucloud.ulive.example.AVOption;
-import com.ucloud.ulive.example.StreamProfileUtil;
+import com.ucloud.ulive.example.utils.StreamProfileUtil;
 import com.ucloud.ulive.widget.UAspectFrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by lw.tan on 2017/3/1.
- */
-
 public class LiveCameraView extends UAspectFrameLayout implements TextureView.SurfaceTextureListener {
 
-    public static final String TAG = "LiveCameraView";
+    private static final String TAG = "LiveCameraView";
 
     //Views
-    protected TextureView mTexturePreview;
+    private TextureView textureView;
 
-    protected List<UCameraSessionListener> mOuterCameraSessionListeners = new ArrayList<>();
+    private final List<UCameraSessionListener> outerCameraSessionListeners = new ArrayList<>();
 
-    protected List<UStreamStateListener> mOuterStreamStateListeners = new ArrayList<>();
+    private final List<UStreamStateListener> outerStreamStateListeners = new ArrayList<>();
 
-    protected List<UNetworkListener> mOuterNetworkListeners = new ArrayList<>();
+    private final List<UNetworkListener> outerNetworkListeners = new ArrayList<>();
 
     public LiveCameraView(Context context) {
         super(context);
@@ -49,23 +45,23 @@ public class LiveCameraView extends UAspectFrameLayout implements TextureView.Su
         super(context, attrs);
     }
 
-    private static StreamEnvHodler streamEnvHolder = new StreamEnvHodler();
+    private static final StreamEnvHodler STREAM_ENV_HOLDER = new StreamEnvHodler();
 
     public void addCameraSessionListener(UCameraSessionListener listener) {
-        if (listener != null && !mOuterCameraSessionListeners.contains(listener)) {
-            mOuterCameraSessionListeners.add(listener);
+        if (listener != null && !outerCameraSessionListeners.contains(listener)) {
+            outerCameraSessionListeners.add(listener);
         }
     }
 
     public void addStreamStateListener(UStreamStateListener listener) {
-        if (listener != null && !mOuterStreamStateListeners.contains(listener)) {
-            mOuterStreamStateListeners.add(listener);
+        if (listener != null && !outerStreamStateListeners.contains(listener)) {
+            outerStreamStateListeners.add(listener);
         }
     }
 
     public void addNetworkListener(UNetworkListener listener) {
-        if (listener != null && !mOuterNetworkListeners.contains(listener)) {
-            mOuterNetworkListeners.add(listener);
+        if (listener != null && !outerNetworkListeners.contains(listener)) {
+            outerNetworkListeners.add(listener);
         }
     }
 
@@ -73,83 +69,104 @@ public class LiveCameraView extends UAspectFrameLayout implements TextureView.Su
         if (profile == null) {
             throw new IllegalArgumentException("AVOption is null.");
         }
-        streamEnvHolder.avOption = profile;
-        streamEnvHolder.streamingProfile = StreamProfileUtil.build(profile);
-        if (streamEnvHolder.avOption.videoCaptureOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+        STREAM_ENV_HOLDER.avOption = profile;
+        STREAM_ENV_HOLDER.streamingProfile = StreamProfileUtil.build(profile);
+        if (STREAM_ENV_HOLDER.avOption.videoCaptureOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             if (getContext() instanceof Activity) {
-                ((Activity)getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            }
-        } else {
-            if (getContext() instanceof Activity) {
-                ((Activity)getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                ((Activity) getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             }
         }
-        innerStartPreview(streamEnvHolder.streamingProfile);
+        else {
+            if (getContext() instanceof Activity) {
+                ((Activity) getContext()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            }
+        }
+        innerStartPreview(STREAM_ENV_HOLDER.streamingProfile);
     }
 
-    public void startPreview() {
-        if (streamEnvHolder.easyStreamer != null &&
-                streamEnvHolder.tempSurfaceTextureAvalible
-                && streamEnvHolder.tempTexture != null
-                && streamEnvHolder.tempStWidth > 0
-                && streamEnvHolder.tempStHeight > 0) {
-            streamEnvHolder.easyStreamer.startPreview(streamEnvHolder.tempTexture, streamEnvHolder.tempStWidth, streamEnvHolder.tempStHeight);
-        } else {
-
+    protected void startPreview() {
+        if (STREAM_ENV_HOLDER.easyStreamer != null
+                && STREAM_ENV_HOLDER.tempSurfaceTextureAvalible
+                && STREAM_ENV_HOLDER.tempTexture != null
+                && STREAM_ENV_HOLDER.tempStWidth > 0
+                && STREAM_ENV_HOLDER.tempStHeight > 0) {
+            STREAM_ENV_HOLDER.easyStreamer.startPreview(STREAM_ENV_HOLDER.tempTexture, STREAM_ENV_HOLDER.tempStWidth, STREAM_ENV_HOLDER.tempStHeight);
         }
-        streamEnvHolder.previewed = true;
+        STREAM_ENV_HOLDER.previewed = true;
     }
 
     public void startRecording() {
+        if (STREAM_ENV_HOLDER.avOption != null && !isPreviewed()) {
+            init(STREAM_ENV_HOLDER.avOption);
+        }
         if (!isPreviewed()) {
             Toast.makeText(getContext(), "call start after previewed.", Toast.LENGTH_SHORT).show();
             return;
         }
-        streamEnvHolder.streamingProfile.setStreamUrl(streamEnvHolder.avOption.streamUrl);
-        getInstance().startRecording();
+        STREAM_ENV_HOLDER.streamingProfile.setStreamUrl(STREAM_ENV_HOLDER.avOption.streamUrl);
+        getEasyStreaming().startRecording();
     }
 
     public void stopRecordingAndDismissPreview() {
-        stopPreviewTextureView(true);//if true preview ui gone.
+        stopPreviewTextureView(true); //if true preview ui gone.
     }
 
     public void stopRecordingNoDismissPreview() {
         stopPreviewTextureView(false);
     }
 
+    private void stoRecordingStilCpature() {
+        try {
+            if (STREAM_ENV_HOLDER.easyStreamer != null) {
+                STREAM_ENV_HOLDER.easyStreamer.stopRecording();
+            }
+        }
+        catch (Exception e) {
+            textureView = null;
+            STREAM_ENV_HOLDER.easyStreamer = null;
+            STREAM_ENV_HOLDER.previewed = false;
+            Log.e(TAG, "lifecycle->demo->stopPreviewTextureView->failed.");
+        }
+    }
+
     public void stopRecording() {
-        stopRecordingNoDismissPreview();
+//        stopRecordingNoDismissPreview();
+        stoRecordingStilCpature();
     }
 
     public boolean isRecording() {
-        if (streamEnvHolder.easyStreamer != null) {
-            return streamEnvHolder.easyStreamer.isRecording();
-        } else {
+        if (STREAM_ENV_HOLDER.easyStreamer != null) {
+            return STREAM_ENV_HOLDER.easyStreamer.isRecording();
+        }
+        else {
             return false;
         }
     }
 
     public boolean switchCamera() {
-        if (streamEnvHolder.easyStreamer != null) {
-            return streamEnvHolder.easyStreamer.switchCamera();
-        } else {
+        if (STREAM_ENV_HOLDER.easyStreamer != null) {
+            return STREAM_ENV_HOLDER.easyStreamer.switchCamera();
+        }
+        else {
             return false;
         }
     }
 
     public boolean toggleFlashMode() {
-        if (streamEnvHolder.easyStreamer != null) {
-            return streamEnvHolder.easyStreamer.toggleFlashMode();
-        } else {
+        if (STREAM_ENV_HOLDER.easyStreamer != null) {
+            return STREAM_ENV_HOLDER.easyStreamer.toggleFlashMode();
+        }
+        else {
             return false;
         }
     }
 
     public boolean applyFrontCameraFlip(boolean state) {
-        if (streamEnvHolder.easyStreamer != null) {
-            streamEnvHolder.easyStreamer.frontCameraFlipHorizontal(state);
+        if (STREAM_ENV_HOLDER.easyStreamer != null) {
+            STREAM_ENV_HOLDER.easyStreamer.frontCameraFlipHorizontal(state);
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     }
@@ -158,109 +175,111 @@ public class LiveCameraView extends UAspectFrameLayout implements TextureView.Su
         onPause();
         onDestroy();
         stopRecordingAndDismissPreview();
-        streamEnvHolder.easyStreamer = null;
-        streamEnvHolder.streamingProfile = null;
-        streamEnvHolder.tempSurfaceTextureAvalible = false;
-        streamEnvHolder.tempTexture = null;
-        streamEnvHolder.tempStHeight = 0;
-        streamEnvHolder.tempStWidth = 0;
-        mOuterCameraSessionListeners.clear();
-        mOuterNetworkListeners.clear();
-        mOuterStreamStateListeners.clear();
+        STREAM_ENV_HOLDER.easyStreamer = null;
+        STREAM_ENV_HOLDER.streamingProfile = null;
+        STREAM_ENV_HOLDER.tempSurfaceTextureAvalible = false;
+        STREAM_ENV_HOLDER.tempTexture = null;
+        STREAM_ENV_HOLDER.tempStHeight = 0;
+        STREAM_ENV_HOLDER.tempStWidth = 0;
+        outerCameraSessionListeners.clear();
+        outerNetworkListeners.clear();
+        outerStreamStateListeners.clear();
     }
 
     public void onPause() {
-        if (streamEnvHolder.easyStreamer != null) {
-            streamEnvHolder.easyStreamer.onPause();
+        if (STREAM_ENV_HOLDER.easyStreamer != null) {
+            STREAM_ENV_HOLDER.easyStreamer.onPause();
         }
     }
 
     public void onDestroy() {
-        if (streamEnvHolder.easyStreamer != null) {
-            streamEnvHolder.easyStreamer.onDestroy();
+        if (STREAM_ENV_HOLDER.easyStreamer != null) {
+            STREAM_ENV_HOLDER.easyStreamer.onDestroy();
+            STREAM_ENV_HOLDER.easyStreamer = null;
         }
     }
 
     private void innerStartPreview(UStreamingProfile profile) {
-
 //        setShowMode(Mode.ORIGIN);
         setShowMode(Mode.FULL);
 
-        streamEnvHolder.easyStreamer = getInstance();
+        STREAM_ENV_HOLDER.easyStreamer = getEasyStreaming();
 
-        streamEnvHolder.streamingProfile = profile;
+        STREAM_ENV_HOLDER.streamingProfile = profile;
 
-        streamEnvHolder.easyStreamer.setOnCameraSessionListener(mInnerCameraSessionListener);
-        streamEnvHolder.easyStreamer.setOnStreamStateListener(mInnerStreamStateListener);
-        streamEnvHolder.easyStreamer.setOnNetworkStateListener(mInnerNetworkStateListener);
+        STREAM_ENV_HOLDER.easyStreamer.setOnCameraSessionListener(innerCameraSessionListener);
+        STREAM_ENV_HOLDER.easyStreamer.setOnStreamStateListener(innerStreamStateListener);
+        STREAM_ENV_HOLDER.easyStreamer.setOnNetworkStateListener(innerNetworkStateListener);
 
-        boolean isSucceed = streamEnvHolder.easyStreamer.prepare(streamEnvHolder.streamingProfile);
+        boolean isSucceed = STREAM_ENV_HOLDER.easyStreamer.prepare(STREAM_ENV_HOLDER.streamingProfile);
 
         if (!isSucceed) {
             Log.e(TAG, "lifecycle->env prepared failed.");
-            Toast.makeText(getContext(), "env prepared failed.", Toast.LENGTH_LONG);
+            Toast.makeText(getContext(), "env prepared failed.", Toast.LENGTH_LONG).show();
         }
         initPreviewTextureView();
 
-        streamEnvHolder.previewed = true;
+        STREAM_ENV_HOLDER.previewed = true;
     }
 
     private void initPreviewTextureView() {
-        if (mTexturePreview == null) {
-            mTexturePreview = new TextureView(getContext());
+        if (textureView == null) {
+            textureView = new TextureView(getContext());
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
             params.gravity = Gravity.CENTER;
             this.removeAllViews();
-            this.addView(mTexturePreview);
-            mTexturePreview.setKeepScreenOn(true);
-            mTexturePreview.setSurfaceTextureListener(this);
+            this.addView(textureView);
+            textureView.setKeepScreenOn(true);
+            textureView.setSurfaceTextureListener(this);
         }
     }
 
     private void stopPreviewTextureView(boolean isRelase) {
         try {
-            if (streamEnvHolder.easyStreamer != null) {
-                streamEnvHolder.easyStreamer.stopRecording();
-                streamEnvHolder.easyStreamer.stopPreview(isRelase);
-                streamEnvHolder.easyStreamer.onDestroy();
-                streamEnvHolder.tempSurfaceTextureAvalible = !isRelase;
+            if (STREAM_ENV_HOLDER.easyStreamer != null) {
+                STREAM_ENV_HOLDER.easyStreamer.stopRecording();
+                STREAM_ENV_HOLDER.easyStreamer.stopPreview(isRelase);
+                STREAM_ENV_HOLDER.easyStreamer.onDestroy();
+                STREAM_ENV_HOLDER.tempSurfaceTextureAvalible = !isRelase;
                 if (isRelase) {
                     removeAllViews();
-                    mTexturePreview = null;
+                    textureView = null;
                 }
-                streamEnvHolder.easyStreamer = null;
+                STREAM_ENV_HOLDER.easyStreamer = null;
             }
-        } catch (Exception e) {
-            mTexturePreview = null;
-            streamEnvHolder.easyStreamer = null;
+        }
+        catch (Exception e) {
+            textureView = null;
+            STREAM_ENV_HOLDER.easyStreamer = null;
             Log.e(TAG, "lifecycle->demo->stopPreviewTextureView->failed.");
-        } finally {
-            streamEnvHolder.previewed = false;
+        }
+        finally {
+            STREAM_ENV_HOLDER.previewed = false;
         }
     }
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        if (streamEnvHolder.easyStreamer != null) {
-            streamEnvHolder.easyStreamer.startPreview(surface, width, height);
+        if (STREAM_ENV_HOLDER.easyStreamer != null) {
+            STREAM_ENV_HOLDER.easyStreamer.startPreview(surface, width, height);
         }
-        streamEnvHolder.tempTexture = surface;
-        streamEnvHolder.tempStWidth = width;
-        streamEnvHolder.tempStHeight = height;
+        STREAM_ENV_HOLDER.tempTexture = surface;
+        STREAM_ENV_HOLDER.tempStWidth = width;
+        STREAM_ENV_HOLDER.tempStHeight = height;
     }
 
     @Override
     public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-        if (streamEnvHolder.easyStreamer != null) {
-            streamEnvHolder.easyStreamer.updatePreview(width, height);
+        if (STREAM_ENV_HOLDER.easyStreamer != null) {
+            STREAM_ENV_HOLDER.easyStreamer.updatePreview(width, height);
         }
     }
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        if (streamEnvHolder.easyStreamer != null) {
-            streamEnvHolder.previewed = false;
-            streamEnvHolder.easyStreamer.stopPreview(true);
+        if (STREAM_ENV_HOLDER.easyStreamer != null) {
+            STREAM_ENV_HOLDER.previewed = false;
+            STREAM_ENV_HOLDER.easyStreamer.stopPreview(true);
         }
         return true;
     }
@@ -270,81 +289,86 @@ public class LiveCameraView extends UAspectFrameLayout implements TextureView.Su
 
     }
 
-    UCameraSessionListener mInnerCameraSessionListener = new UCameraSessionListener() {
+    private final UCameraSessionListener innerCameraSessionListener = new UCameraSessionListener() {
         @Override
-        public USize[] onPreviewSizeChoose(int cameraId, List<USize> cameraSupportPreviewSize) {
-            if (mOuterCameraSessionListeners != null && mOuterCameraSessionListeners.size() >= 1) {
+        public USize[] onPreviewSizeChoose(int cameraId, List<USize> supportPreviewSizeList) {
+            if (outerCameraSessionListeners != null && outerCameraSessionListeners.size() >= 1) {
                 //return the last
-                return mOuterCameraSessionListeners.get(mOuterCameraSessionListeners.size() - 1).onPreviewSizeChoose(cameraId, cameraSupportPreviewSize);
+                return outerCameraSessionListeners.get(outerCameraSessionListeners.size() - 1).onPreviewSizeChoose(cameraId, supportPreviewSizeList);
             }
             return null;
         }
 
         @Override
-        public void onCameraOpenSucceed(int cameraId, List<Integer> supportCameraIndex, int width, int height) {
-            for(UCameraSessionListener listener: mOuterCameraSessionListeners) {
-                listener.onCameraOpenSucceed(cameraId, supportCameraIndex, width, height);
+        public void onCameraOpenSucceed(int cameraId, List<Integer> supportCameraIndexList, int width, int height) {
+            for (UCameraSessionListener listener: outerCameraSessionListeners) {
+                listener.onCameraOpenSucceed(cameraId, supportCameraIndexList, width, height);
             }
         }
 
         @Override
         public void onCameraError(UCameraSessionListener.Error error, Object extra) {
-            for(UCameraSessionListener listener: mOuterCameraSessionListeners) {
+            for (UCameraSessionListener listener: outerCameraSessionListeners) {
                 listener.onCameraError(error, extra);
             }
         }
 
         @Override
         public void onCameraFlashSwitched(int cameraId, boolean currentState) {
-            for(UCameraSessionListener listener: mOuterCameraSessionListeners) {
+            for (UCameraSessionListener listener: outerCameraSessionListeners) {
                 listener.onCameraFlashSwitched(cameraId, currentState);
             }
         }
 
         @Override
         public void onPreviewFrame(int cameraId, byte[] data, int width, int height) {
-            for(UCameraSessionListener listener: mOuterCameraSessionListeners) {
+            for (UCameraSessionListener listener: outerCameraSessionListeners) {
                 listener.onPreviewFrame(cameraId, data, width, height);
             }
         }
     };
 
-    UStreamStateListener mInnerStreamStateListener = new UStreamStateListener() {
+    private final UStreamStateListener innerStreamStateListener = new UStreamStateListener() {
         @Override
         public void onStateChanged(UStreamStateListener.State state, Object extra) {
-            for(UStreamStateListener listener: mOuterStreamStateListeners) {
+            for (UStreamStateListener listener: outerStreamStateListeners) {
                 listener.onStateChanged(state, extra);
             }
         }
 
         @Override
         public void onStreamError(UStreamStateListener.Error error, Object extra) {
-            for(UStreamStateListener listener: mOuterStreamStateListeners) {
+            for (UStreamStateListener listener: outerStreamStateListeners) {
                 listener.onStreamError(error, extra);
             }
         }
     };
 
-    UNetworkListener mInnerNetworkStateListener = new UNetworkListener() {
+    private final UNetworkListener innerNetworkStateListener = new UNetworkListener() {
 
         @Override
         public void onNetworkStateChanged(UNetworkListener.State state, Object extra) {
-            for(UNetworkListener listener: mOuterNetworkListeners) {
+            for (UNetworkListener listener: outerNetworkListeners) {
                 listener.onNetworkStateChanged(state, extra);
             }
         }
     };
 
 
-    public synchronized static UEasyStreaming getInstance() {
-        if (streamEnvHolder.easyStreamer == null) {
-            streamEnvHolder.easyStreamer = UEasyStreaming.Factory.newInstance();
+    public static synchronized UEasyStreaming getEasyStreaming() {
+        if (STREAM_ENV_HOLDER.easyStreamer == null) {
+            STREAM_ENV_HOLDER.easyStreamer = UEasyStreaming.Factory.newInstance();
         }
-        return streamEnvHolder.easyStreamer;
+        return STREAM_ENV_HOLDER.easyStreamer;
+    }
+
+    @Deprecated
+    public static synchronized UEasyStreaming getInstance() {
+        return getEasyStreaming();
     }
 
     public synchronized boolean isPreviewed() {
-        return streamEnvHolder.previewed;
+        return STREAM_ENV_HOLDER.previewed;
     }
 
     private static class StreamEnvHodler {

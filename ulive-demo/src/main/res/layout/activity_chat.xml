@@ -1,0 +1,72 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.ucloud.ulive.example.widget.LiveCameraView
+        android:id="@+id/livecamera"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="@color/transparent" />
+
+    <ScrollView
+        android:id="@+id/scrollview_rightbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:orientation="vertical">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.7"
+                android:onClick="onSwitchCamera"
+                android:text="@string/controller_camera" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.7"
+                android:onClick="onStartRtmp"
+                android:text="@string/controller_start_rtmp" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.7"
+                android:onClick="onStopRtmp"
+                android:text="@string/controller_stop_rtmp" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.7"
+                android:onClick="onJoinChannel"
+                android:text="@string/controller_start_line" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.7"
+                android:onClick="onLeaveChannel"
+                android:text="@string/controller_stop_line" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.7"
+                android:onClick="onExit"
+                android:text="@string/controller_exit" />
+        </LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/txtv_stream_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|top" />
+</merge>

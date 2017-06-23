@@ -8,72 +8,71 @@ import android.media.AudioTrack;
 import java.util.LinkedList;
 
 /**
- * Created by lw.tan on 2016/10/25.
+ * @author lw.tan on 2016/10/25.
  */
-
-public class URawAudioPlayer {
+class URawAudioPlayer {
 
     private static final String TAG = "URawAudioPlayer";
 
-    private final static int STREAM_TYPE = AudioManager.STREAM_MUSIC;
+    private static final int STREAM_TYPE = AudioManager.STREAM_MUSIC;
 
-    private final static int SAMPLE_RATE_IN_HZ = 44100;
+    private static final int SAMPLE_RATE_IN_HZ = 44100;
 
-    private final static int CHANNEL_CONFIG = AudioFormat.CHANNEL_OUT_STEREO;
+    private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_OUT_STEREO;
 
-    private final static int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
+    private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
 
     private final Object syncObject = new Object();
 
-    private LinkedList<byte[]> mAudioBuffer = new LinkedList<>();
+    private final LinkedList<byte[]> audioBuffer = new LinkedList<>();
 
-    private LinkedList<byte[]> mAudioPool = new LinkedList<>();
+    private final LinkedList<byte[]> audioPool = new LinkedList<>();
 
-    private boolean mIsRunning;
+    private boolean isRunning;
 
-    private int mBufferSize;
+    private final int bufferSize;
 
-    public URawAudioPlayer(int bufferSize) {
-        mIsRunning = false;
-        mBufferSize = bufferSize;
+    URawAudioPlayer(int bufferSize) {
+        isRunning = false;
+        this.bufferSize = bufferSize;
     }
 
     public void start() {
-        if (mIsRunning) {
+        if (isRunning) {
             return;
         }
-        mIsRunning = true;
+        isRunning = true;
         synchronized (syncObject) {
-            mAudioBuffer.clear();
+            audioBuffer.clear();
         }
-        PlayThread playThread = new PlayThread(mBufferSize);
+        PlayThread playThread = new PlayThread(bufferSize);
         playThread.start();
     }
 
     public void stop() {
-        mIsRunning = false;
+        isRunning = false;
     }
 
     public void sendAudio(byte[] data) {
         synchronized (syncObject) {
-            if (!mIsRunning) {
+            if (!isRunning) {
                 return;
             }
             byte[] tempData = get(data.length);
             System.arraycopy(data, 0, tempData, 0, tempData.length);
-            mAudioBuffer.add(tempData);
+            audioBuffer.add(tempData);
         }
     }
 
     public boolean isPlaying() {
-        return mIsRunning;
+        return isRunning;
     }
 
-    private class PlayThread extends Thread {
+    private final class PlayThread extends Thread {
 
-        private int bufferSize;
+        private final int bufferSize;
 
-        public PlayThread(int bufferSize) {
+        private PlayThread(int bufferSize) {
             super("URawAudioPlayer-PlayThread");
             this.bufferSize = bufferSize;
         }
@@ -81,7 +80,7 @@ public class URawAudioPlayer {
         public void run() {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
             AudioTrack audioTrack = null;
-            while (mIsRunning && (audioTrack == null || (audioTrack.getState() != AudioRecord.STATE_INITIALIZED))) {
+            while (isRunning && (audioTrack == null || (audioTrack.getState() != AudioRecord.STATE_INITIALIZED))) {
                 if (audioTrack != null) {
                     audioTrack.release();
                 }
@@ -89,10 +88,10 @@ public class URawAudioPlayer {
                 yield();
             }
             audioTrack.play();
-            while (mIsRunning) {
+            while (isRunning) {
                 synchronized (syncObject) {
-                    if (!mAudioBuffer.isEmpty()) {
-                        byte[] data = mAudioBuffer.removeFirst();
+                    if (!audioBuffer.isEmpty()) {
+                        byte[] data = audioBuffer.removeFirst();
                         audioTrack.write(data, 0, data.length);
                         release(data);
                     }
@@ -105,20 +104,19 @@ public class URawAudioPlayer {
 
     private byte[] get(int size) {
         synchronized (syncObject) {
-            if (mAudioPool.size() > 0) {
-                byte[] bytes = mAudioPool.removeFirst();
-                return bytes;
-            } else {
-                byte[] bytes = new byte[size];
-                return bytes;
+            if (audioPool.size() > 0) {
+                return audioPool.removeFirst();
+            }
+            else {
+                return new byte[size];
             }
         }
     }
 
     private void release(byte[] data) {
         synchronized (syncObject) {
-            if (mAudioPool.size() < 2) {
-               mAudioPool.add(data);
+            if (audioPool.size() < 2) {
+                audioPool.add(data);
             }
         }
     }

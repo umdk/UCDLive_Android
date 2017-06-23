@@ -25,12 +25,17 @@
     <string name="controller_texture">动态贴纸</string>
     <string name="controller_camera">摄像头</string>
     <string name="controller_exit">退出</string>
+    <string name="controller_float_window">开启悬浮窗</string>
+    <string name="controller_no_float_window">关闭悬浮窗</string>
+    <string name="controller_start_rtmp">开始RTMP推流</string>
+    <string name="controller_stop_rtmp">结束RTMP推流</string>
+    <string name="controller_start_line">发起连麦</string>
+    <string name="controller_stop_line">结束连麦</string>
     <string name="debug_debug">[调  试]</string>
     <string name="debug_copy">[复  制]</string>
     <string name="debug_clear">[清  屏]</string>
     <string name="info_bitrate">%1$sK/s</string>
     <string name="info_bitrate_bs">%1$sB/s</string>
-    <string name="info_fps">%1$sfps</string>
     <string name="info_time">00:00</string>
     <string name="info_network_block_count">network block count: %1$s</string>
     <string name="video_bitrate">视频码率: </string>
@@ -63,4 +68,6 @@
     <string name="skin_whitening">美白</string>
     <string name="skin_ruddy">红润</string>
     <string name="loading">玩命加载中....</string>
+    <string name="float_window_permission_request_failed">悬浮窗权限申请失败，请到设置开启相关权限</string>
+    <string name="app_id">""</string>
 </resources>

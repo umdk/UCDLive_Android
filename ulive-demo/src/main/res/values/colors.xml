@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="transparent">#00000000</color>
-    <color name="black">#ff000000</color>
     <color name="blue">#2196F3</color>
     <color name="color_progress">#2196F3</color>
     <color name="dark_blue">#1976D2</color>
     <color name="accent_blue">#448AFF</color>
+    <color name="color_stream_finished_bg">#ab000000</color>
 </resources>

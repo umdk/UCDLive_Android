@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     public static final String KEY_STREAMING_ADDRESS = "streaming-address";
 
+    public static final String KEY_STREAMING_ID = "streaming-id";
+
     public static final String KEY_PLAY_ADDRESS = "play-address";
 
     public static final String KEY_CAPTURE_ORIENTATION = "capture-orientation";
@@ -40,27 +42,31 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     public static final String KEY_CODEC = "capture-codec";
 
-    public static final String KEY_FPS = "capture-fps" ;
+    public static final String KEY_FPS = "capture-fps";
 
-    public static final String KEY_VIDEO_BITRATE = "video-bitrate" ;
+    public static final String KEY_VIDEO_BITRATE = "video-bitrate";
 
-    public static final String KEY_VIDEO_RESOLUTION = "video-resolution" ;
+    public static final String KEY_VIDEO_RESOLUTION = "video-resolution";
+
+    public static final String KEY_ENCRYPTION_MODE = "encryption-mode"; //for argo
+
+    public static final String KEY_ENCRYPTION_KEY = "encryption-key"; //for argo
 
     private static final int REQUEST_CODE = 200;
 
-    String streamId = "ucloud_test";
+    private String streamId = "ucloud_test";
 
-    String[] demoDirects;
+    private String[] demoDirects;
 
-    String[] demoNames;
+    private String[] demoNames;
 
-    String[] publishUrls = {
-            "rtmp://publish3.cdn.ucloud.com.cn/ucloud/%s",
-            "rtmp://publish3.usmtd.ucloud.com.cn/live/%s"};
+    private final String[] publishUrls = {
+        "rtmp://publish3.cdn.ucloud.com.cn/ucloud/%s",
+        "rtmp://publish3.usmtd.ucloud.com.cn/live/%s"};
 
-    String[] playUrls = {
-            "http://vlive3.rtmp.cdn.ucloud.com.cn/ucloud/%s.flv",
-            "http://rtmp3.usmtd.ucloud.com.cn/live/%s.flv",
+    private final String[] playUrls = {
+        "http://vlive3.rtmp.cdn.ucloud.com.cn/ucloud/%s.flv",
+        "http://rtmp3.usmtd.ucloud.com.cn/live/%s.flv",
     };
 
     @Bind(R.id.listview)
@@ -96,13 +102,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Bind(R.id.edtxt_streaming_id)
     EditText streamIdEdtxt;
 
-    private PermissionsChecker mPermissionsChecker; //for android target version >=23
+    private PermissionsChecker permissionsChecker; //for android target version >=23
 
-    String[] permissions = new String[]{
-            Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.CAMERA,
-            Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    private int currentPosition = 0;
+
+    private final String[] permissions = new String[]{
+        Manifest.permission.RECORD_AUDIO,
+        Manifest.permission.CAMERA,
+        Manifest.permission.READ_PHONE_STATE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
     @Override
@@ -115,13 +123,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private void init() {
         streamId = (int) Math.floor((new Random().nextDouble() * 10000.0 + 10000.0)) + "";
-        mPermissionsChecker = new PermissionsChecker(this);
+        permissionsChecker = new PermissionsChecker(this);
+        if (toolbar == null || listView == null) {
+            Toast.makeText(this, "butter knife bind view failed.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
         setSupportActionBar(toolbar);
         demoNames = getResources().getStringArray(R.array.demoNames);
         listView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, demoNames));
         listView.setOnItemClickListener(this);
         demoDirects = getResources().getStringArray(R.array.demoDirects);
-        versionTxtv.setText(UBuild.VERSION + " " + getResources().getString(R.string.sdk_address));
+        versionTxtv.setText(String.format("%s %s", UBuild.VERSION, getResources().getString(R.string.sdk_address)));
         streamIdEdtxt.setText(streamId);
         filterRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -152,6 +165,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         intent.putExtra(KEY_FPS, framerate(framerateEdtxt));
         intent.putExtra(KEY_CAPTURE_ORIENTATION, captureOrientation(captureOrientationRg.getCheckedRadioButtonId()));
         line(intent, lineRg.getCheckedRadioButtonId(), streamIdEdtxt);
+
+        intent.putExtra(KEY_STREAMING_ID, streamIdEdtxt.getText().toString());
+        intent.putExtra(KEY_ENCRYPTION_KEY, "Encryption");
+        intent.putExtra(KEY_ENCRYPTION_MODE, "AES-128-XTS");
+//        intent.putExtra(KEY_ENCRYPTION_MODE, "AES-256-XTS");
         intent.setAction(demoDirects[index]);
         startActivity(intent);
     }
@@ -160,8 +178,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE) {
-            if (!mPermissionsChecker.lacksPermissions(permissions)) {
-                startActivity(0);
+            if (!permissionsChecker.lacksPermissions(permissions)) {
+                startActivity(currentPosition);
             }
         }
     }
@@ -177,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private int videoBitrate(int id) {
         switch (id) {
             case R.id.rb_videobitrate_low:
-                 return UVideoProfile.VIDEO_BITRATE_LOW;
+                return UVideoProfile.VIDEO_BITRATE_LOW;
             case R.id.rb_videobitrate_normal:
                 return UVideoProfile.VIDEO_BITRATE_NORMAL;
             case R.id.rb_videobitrate_medium:
@@ -210,7 +228,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         if (TextUtils.isEmpty(framerate) || !TextUtils.isDigitsOnly(framerate)) {
             return 20;
-        } else {
+        }
+        else {
             return Integer.parseInt(editText.getText().toString().trim());
         }
     }
@@ -223,7 +242,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if (id == R.id.rb_line1) {
             intent.putExtra(KEY_STREAMING_ADDRESS, String.format(publishUrls[0], editText.getText().toString().trim()));
             intent.putExtra(KEY_PLAY_ADDRESS, String.format(playUrls[0], editText.getText().toString().trim()));
-        } else {
+        }
+        else {
             intent.putExtra(KEY_STREAMING_ADDRESS, String.format(publishUrls[1], editText.getText().toString().trim()));
             intent.putExtra(KEY_PLAY_ADDRESS, String.format(playUrls[1], editText.getText().toString().trim()));
         }
@@ -231,7 +251,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if(!Utils.isNetworkConnected(this)) {
+        currentPosition = position;
+        if (!Utils.isNetworkConnected(this)) {
             Toast.makeText(this, "当前网络不可用.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -245,6 +266,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             case ConnectivityManager.TYPE_WIFI:
                 Toast.makeText(this, "当前网络: wifi", Toast.LENGTH_SHORT).show();
                 break;
+            default:
+                break;
         }
 
         if (demoDirects != null && demoDirects.length > position && !TextUtils.isEmpty(demoDirects[position].trim())) {
@@ -253,15 +276,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 Toast.makeText(this, "streamId is null", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (position == 0){
-                if (mPermissionsChecker.lacksPermissions(permissions)) {
+            if (position == 0 || position == 1 || position == 2) {
+                if (permissionsChecker.lacksPermissions(permissions)) {
                     PermissionsActivity.startActivityForResult(this, REQUEST_CODE, permissions);
-                    return;
-                } else {
-                    startActivity(0);
                 }
-            } else {
-                startActivity(1);
+                else {
+                    startActivity(position);
+                }
+            }
+            else {
+                startActivity(3);
             }
         }
     }
