@@ -30,7 +30,7 @@ public class MediaManager extends IRtcEngineEventHandler {
 
     private AgoraVideoSource videoSource;
 
-    private int videoProfile = VideoProfile.VIDEO_PROFILE_360P;  //640*360
+    private int videoProfile = VideoProfile.VIDEO_PROFILE_240P;  //320*240
 
     private boolean swapWidth = true;
 
@@ -79,7 +79,8 @@ public class MediaManager extends IRtcEngineEventHandler {
         String appId = context.getString(R.string.app_id);
 
         if (TextUtils.isEmpty(appId)) {
-            throw new IllegalArgumentException("Please set your app_id to strings.app_id");
+           Log.e(TAG, "Please set your app_id to strings.app_id");
+           return;
         }
 
         Log.d(TAG, "init " + appId + ", sdk version:" +  RtcEngine.getSdkVersion());
@@ -122,10 +123,12 @@ public class MediaManager extends IRtcEngineEventHandler {
 
     public void leaveChannel() {
         Log.d(TAG, "leaveChannel " + channelId);
-        rtcEngine.stopAudioRecording();
-        rtcEngine.leaveChannel();
-        rtcEngine.stopPreview();
-        channelId = null;
+        if (rtcEngine != null) {
+            rtcEngine.stopAudioRecording();
+            rtcEngine.leaveChannel();
+            rtcEngine.stopPreview();
+            channelId = null;
+        }
     }
 
     @Override

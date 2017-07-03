@@ -97,8 +97,8 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
                 break;
             case START:
                 loadingView.setVisibility(View.GONE);
+                videoView.applyAspectRatio(UVideoView.VIDEO_RATIO_FILL_PARENT);
                 Log.i(TAG, "lifecycle->demo->START");
-                videoView.applyAspectRatio(UVideoView.VIDEO_RATIO_FILL_PARENT); //set after start
                 break;
             case VIDEO_SIZE_CHANGED:
                 break;
@@ -107,7 +107,15 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
                 Log.i(TAG, "lifecycle->demo->COMPLETED");
                 break;
             case RECONNECT:
-                Log.i(TAG, "lifecycle->demo->RECONNECT");
+                if (extra1 < 0) {
+                    Log.e(TAG, "lifecycle->demo->RECONNECT reconnect failed.");
+                }
+                else if (extra1 == 0) {
+                    Log.e(TAG, "lifecycle->demo->RECONNECT reconnect failed & info = " + extra2);
+                }
+                else {
+                    Log.e(TAG, "lifecycle->demo->RECONNECT reconnect count = " + extra1 + ", info = " + extra2);
+                }
                 break;
             default:
                 break;
@@ -127,6 +135,10 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
                 loadingView.setVisibility(View.GONE);
                 break;
             case BUFFERING_UPDATE:
+                break;
+            case VIDEO_RENDERING_START:
+                break;
+            case AUDIO_RENDERING_START:
                 break;
             default:
                 break;
@@ -153,16 +165,23 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
 
     private void connect() {
         UMediaProfile profile = new UMediaProfile();
-        profile.setInteger(UMediaProfile.KEY_START_ON_PREPARED, 1);
-        profile.setInteger(UMediaProfile.KEY_ENABLE_BACKGROUND_PLAY, 0);
-        profile.setInteger(UMediaProfile.KEY_LIVE_STREAMING, 1);
-        profile.setInteger(UMediaProfile.KEY_MEDIACODEC, 1);
+        profile.setInteger(UMediaProfile.KEY_START_ON_PREPARED, 1); //当prepread成功后自动开始播放，(无须自己监听prepared消息调用start方法) 直播推荐开启(1开启，0不开启), 默认不开启
+        profile.setInteger(UMediaProfile.KEY_LIVE_STREAMING, 1); //标识播放的流为直播源，还是点播源(0点播，1直播),播放器对不同场景，做了不同的优化
+        profile.setInteger(UMediaProfile.KEY_MEDIACODEC, 0); //视频解码方式，推荐软解, (默认为0软解)
+        profile.setInteger(UMediaProfile.KEY_RENDER_SURFACUE, 1); //视频渲染方式，推荐
 
-        profile.setInteger(UMediaProfile.KEY_PREPARE_TIMEOUT, 1000 * 5);
-        profile.setInteger(UMediaProfile.KEY_MIN_READ_FRAME_TIMEOUT_RECONNECT_INTERVAL, 3);
+        profile.setInteger(UMediaProfile.KEY_PREPARE_TIMEOUT, 1000 * 15); //设置第一次播放流地址时，PREPARE_TIMEOUT超时时间(超过设置的值，sdk内部会做重连动作，单位ms)
+        profile.setInteger(UMediaProfile.KEY_READ_FRAME_TIMEOUT, 1000 * 15); //设置播放过程中，READ_FRAME_TIMEOUT网络卡顿出现读取数据超时(超过设置的值，sdk内部会做重连动作，单位ms)
+        //若需要区分4G是否继续播放等与用户确认相关的操作，设置为0，自行根据Android API监听网络状态调用setVideoPath做重连控制操作。
+        profile.setInteger(UMediaProfile.KEY_ENABLE_NETWORK_RECOVERY_RECONNECT, 1); //当发生网络切换恢复时SDK内部会做重连（默认为0不开启)
+        profile.setInteger(UMediaProfile.KEY_MAX_RECONNECT_COUNT, 5); //当发生IOERROR PREPARE_TIMEOUT READ_FRAME_TIMEOUT 最大重连次数，默认5次
 
-        profile.setInteger(UMediaProfile.KEY_READ_FRAME_TIMEOUT, 1000 * 5);
-        profile.setInteger(UMediaProfile.KEY_MIN_PREPARE_TIMEOUT_RECONNECT_INTERVAL, 3);
+        profile.setInteger(UMediaProfile.KEY_ENABLE_BACKGROUND_PLAY, 1); //设置切换到后台是否继续播放，直播推荐开启，(默认为0不开启)
+
+        //设置播放器允许累积的最大延迟，当网络发生波动，SDK内部会做跳帧处理，若设置的太小容易频繁丢帧，一般推荐2s左右，播放器跳帧时会参考该值，适用直播 单位ms
+        profile.setInteger(UMediaProfile.KEY_MAX_CACHED_DURATION, 2000);
+        profile.setInteger(UMediaProfile.KEY_CHECK_DROP_FRAME_INTERVAL, 1000 * 30); //设置丢帧的检测频率，适用直播 默认30s检测一次 单位ms
+        //以上两个参数决定了播放器网络波动后的延时&平滑度
 
         if (uri != null && uri.endsWith("m3u8")) {
             profile.setInteger(UMediaProfile.KEY_MAX_CACHED_DURATION, 0); //m3u8 默认不开启延时丢帧策略
@@ -176,10 +195,6 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
             videoView.setMediaPorfile(profile); //set before setVideoPath
             videoView.setOnPlayerStateListener(this); //set before setVideoPath
             videoView.setVideoPath(uri);
-        }
-        else {
-            Log.e(TAG, "lifecycle->dmeo->Are you findViewById(.....) bind UVideoView");
-            Toast.makeText(this, "Are you findViewById(.....) bind UVideoView", Toast.LENGTH_SHORT).show();
         }
     }
 }

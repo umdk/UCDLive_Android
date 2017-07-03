@@ -144,7 +144,7 @@ public class ChatActivity extends Activity {
         }
         //当前仅GPU模式下支持连麦
         avOption.videoFilterMode = UFilterProfile.FilterMode.GPU;
-        avOption.videoCodecType = i.getIntExtra(MainActivity.KEY_CODEC, UVideoProfile.CODEC_MODE_HARD);
+        avOption.videoCodecType = UVideoProfile.CODEC_MODE_HARD;
         avOption.videoCaptureOrientation = i.getIntExtra(MainActivity.KEY_CAPTURE_ORIENTATION, UVideoProfile.ORIENTATION_PORTRAIT);
         avOption.videoFramerate = i.getIntExtra(MainActivity.KEY_FPS, 20);
         avOption.videoBitrate = i.getIntExtra(MainActivity.KEY_VIDEO_BITRATE, UVideoProfile.VIDEO_BITRATE_NORMAL);
@@ -186,12 +186,20 @@ public class ChatActivity extends Activity {
     }
 
     public void onJoinChannel(View view) {
+        if (avOption.videoFilterMode != UFilterProfile.FilterMode.GPU) {
+            Toast.makeText(ChatActivity.this, "抱歉,当前仅GPU模式下支持连麦.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (LiveCameraView.getEasyStreaming().getFilterMode() != UFilterProfile.FilterMode.GPU) {
+            Toast.makeText(ChatActivity.this, "抱歉,当前设备不支持连麦.", Toast.LENGTH_SHORT).show();
+            return;
+        }
         String appId = getString(R.string.app_id);
         if (TextUtils.isEmpty(appId)) {
             Toast.makeText(this, "Please set your app_id to strings.app_id", Toast.LENGTH_LONG).show();
             return;
         }
-
         setOnProcessedFrameListener();
         agoraRTCClient.joinChannel(avOption.streamId, 0);
         agoraRTCClient.startReceiveRemoteData();

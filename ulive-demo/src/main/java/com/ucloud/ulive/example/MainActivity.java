@@ -52,7 +52,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     public static final String KEY_ENCRYPTION_KEY = "encryption-key"; //for argo
 
-    private static final int REQUEST_CODE = 200;
+    private static final int LIVE_REQUEST_CODE = 200;
+
+    private static final int PLAYER_REQUEST_CODE = 201;
 
     private String streamId = "ucloud_test";
 
@@ -106,11 +108,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private int currentPosition = 0;
 
-    private final String[] permissions = new String[]{
+    private final String[] liveNeedPermissions = new String[]{
         Manifest.permission.RECORD_AUDIO,
         Manifest.permission.CAMERA,
         Manifest.permission.READ_PHONE_STATE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+    private final String[] playerNeedPermissions = new String[]{
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
     @Override
@@ -177,8 +183,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE) {
-            if (!permissionsChecker.lacksPermissions(permissions)) {
+        if (requestCode == LIVE_REQUEST_CODE) {
+            if (!permissionsChecker.lacksPermissions(liveNeedPermissions)) {
+                startActivity(currentPosition);
+            }
+        } else if(requestCode == PLAYER_REQUEST_CODE) {
+            if (!permissionsChecker.lacksPermissions(playerNeedPermissions)) {
                 startActivity(currentPosition);
             }
         }
@@ -277,15 +287,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 return;
             }
             if (position == 0 || position == 1 || position == 2) {
-                if (permissionsChecker.lacksPermissions(permissions)) {
-                    PermissionsActivity.startActivityForResult(this, REQUEST_CODE, permissions);
+                if (permissionsChecker.lacksPermissions(liveNeedPermissions)) {
+                    PermissionsActivity.startActivityForResult(this, LIVE_REQUEST_CODE, liveNeedPermissions);
                 }
                 else {
                     startActivity(position);
                 }
             }
             else {
-                startActivity(3);
+                if (permissionsChecker.lacksPermissions(playerNeedPermissions)) {
+                    PermissionsActivity.startActivityForResult(this, PLAYER_REQUEST_CODE, playerNeedPermissions);
+                }
+                else {
+                    startActivity(3);
+                }
             }
         }
     }
