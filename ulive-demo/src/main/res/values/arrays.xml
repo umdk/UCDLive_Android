@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="demoNames">
-        <item>推流</item>
-        <item>连麦</item>
-        <item>录屏</item>
-        <item>播放</item>
+        <item>RTMP推流(音频+Camera)</item>
+        <item>RTMP推流(音频+Screen)</item>
+        <item>RTMP推流(1v1连麦)</item>
+        <item>RTMP推流(纯音频)</item>
+        <item>播放(视频)</item>
     </string-array>
+
     <string-array name="demoDirects">
-        <item>ucloud.intent.action.ulive.example.publish</item>
-        <item>ucloud.intent.action.ulive.example.chat</item>
-        <item>ucloud.intent.action.ulive.example.screen</item>
-        <item>ucloud.intent.action.ulive.example.play</item>
+        <item>ucloud.intent.action.ulive.example.publish.camera</item>
+        <item>ucloud.intent.action.ulive.example.publish.screen</item>
+        <item>ucloud.intent.action.ulive.example.publish.chat</item>
+        <item>ucloud.intent.action.ulive.example.publish.audio</item>
+        <item>ucloud.intent.action.ulive.example.play.video</item>
     </string-array>
 </resources>

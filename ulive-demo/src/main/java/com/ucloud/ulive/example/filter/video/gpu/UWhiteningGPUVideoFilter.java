@@ -2,14 +2,12 @@ package com.ucloud.ulive.example.filter.video.gpu;
 
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
-
 import com.ucloud.ulive.filter.UVideoGPUFilter;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-final class UWhiteningGPUVideoFilter extends UVideoGPUFilter {
+public final class UWhiteningGPUVideoFilter extends UVideoGPUFilter {
 
     private final byte[] colorMap;
 
@@ -24,21 +22,21 @@ final class UWhiteningGPUVideoFilter extends UVideoGPUFilter {
     private int glColorMapTextureLoc;
 
     private static final String VERTEX_SHADER = ""
-            + "attribute vec4 aCamPosition;"
-            + "attribute vec2 aCamTextureCoord;"
-            + "varying vec2 vCamTextureCoord;"
+            + "attribute vec4 position;"
+            + "attribute vec2 inputTextureCoordinate;"
+            + "varying vec2 textureCoordinate;"
             + "void main(){"
-            + "   gl_Position= aCamPosition;"
-            + "   vCamTextureCoord = aCamTextureCoord;"
+            + "   gl_Position= position;"
+            + "   textureCoordinate = inputTextureCoordinate;"
             + "}";
 
     private static final String FRAGMENT_SHADER = ""
             + "precision mediump float;"
-            + "varying mediump vec2 vCamTextureCoord;"
-            + "uniform sampler2D uCamTexture;"
+            + "varying mediump vec2 textureCoordinate;"
+            + "uniform sampler2D inputImageTexture;"
             + "uniform sampler2D uColorMapTexture;"
             + "void main(){"
-            + "   vec4 c1 = texture2D(uCamTexture, vCamTextureCoord);"
+            + "   vec4 c1 = texture2D(inputImageTexture, textureCoordinate);"
             + "   float r = texture2D(uColorMapTexture, vec2(c1.r,0.0)).r;"
             + "   float g = texture2D(uColorMapTexture, vec2(c1.g,0.0)).g;"
             + "   float b = texture2D(uColorMapTexture, vec2(c1.b,0.0)).b;"
@@ -47,7 +45,7 @@ final class UWhiteningGPUVideoFilter extends UVideoGPUFilter {
 
     private int imageTexture;
 
-    private UWhiteningGPUVideoFilter() {
+    public UWhiteningGPUVideoFilter() {
         colorMap = new byte[1024];
         int cur = -1;
         for (int i = 0; i < 256; i++) {
@@ -113,10 +111,10 @@ final class UWhiteningGPUVideoFilter extends UVideoGPUFilter {
         imageTexture = texture[0];
         glProgram = createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
         GLES20.glUseProgram(glProgram);
-        glCamTextureLoc = GLES20.glGetUniformLocation(glProgram, "uCamTexture");
+        glCamTextureLoc = GLES20.glGetUniformLocation(glProgram, "inputImageTexture");
         glColorMapTextureLoc = GLES20.glGetUniformLocation(glProgram, "uColorMapTexture");
-        glCamPostionLoc = GLES20.glGetAttribLocation(glProgram, "aCamPosition");
-        glCamTextureCoordLoc = GLES20.glGetAttribLocation(glProgram, "aCamTextureCoord");
+        glCamPostionLoc = GLES20.glGetAttribLocation(glProgram, "position");
+        glCamTextureCoordLoc = GLES20.glGetAttribLocation(glProgram, "inputTextureCoordinate");
     }
 
     @Override

@@ -1,8 +1,9 @@
 package com.ucloud.ulive.example.filter.video.cpu;
 
+
 import com.ucloud.ulive.filter.UVideoCPUFilter;
 
-class UGrayCPUFilter extends UVideoCPUFilter {
+public class UGrayCPUFilter extends UVideoCPUFilter {
     @Override
     public boolean onFrame(byte[] orignBuff, byte[] targetBuff, long presentationTimeMs, int sequenceNum) {
         System.arraycopy(orignBuff, 0, targetBuff, 0, sizeY);
@@ -12,4 +13,3 @@ class UGrayCPUFilter extends UVideoCPUFilter {
         return true;
     }
 }
-

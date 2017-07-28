@@ -44,6 +44,7 @@ public class URemoteAudioMixFilter extends UAudioCPUFilter {
         try {
             remoteAudioData = new byte[size];
             averageAudioMixer = new AverageAudioMixer();
+            Log.e(TAG, "lifecycle->demo->URemoteAudioMixFilter->onInit.");
         }
         catch (Exception e) {
             Log.e(TAG, "lifecycle->demo->URemoteAudioMixFilter->onInit failed.");

@@ -14,7 +14,7 @@
         <activity
             android:name=".MainActivity"
             android:theme="@style/BlueTheme"
-            android:launchMode="singleTask"
+            android:launchMode="standard"
             android:screenOrientation="sensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,7 +34,7 @@
             android:launchMode="singleTask"
             android:theme="@style/BlueTheme" >
             <intent-filter>
-                <action android:name="ucloud.intent.action.ulive.example.publish" />
+                <action android:name="ucloud.intent.action.ulive.example.publish.camera" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -44,11 +44,12 @@
             android:configChanges="orientation|keyboardHidden|screenSize"/>
 
         <activity
-            android:name="com.ucloud.ulive.example.screen.ScreenDemo"
+            android:name="com.ucloud.ulive.example.stream.ScreenDemo"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:launchMode="singleTask"
             android:theme="@style/BlueTheme" >
             <intent-filter>
-                <action android:name="ucloud.intent.action.ulive.example.screen" />
+                <action android:name="ucloud.intent.action.ulive.example.publish.screen" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -58,9 +59,9 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" >
+            android:theme="@style/BlueTheme" >
             <intent-filter>
-                <action android:name="ucloud.intent.action.ulive.example.play" />
+                <action android:name="ucloud.intent.action.ulive.example.play.video" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -69,9 +70,21 @@
             android:name=".ext.agora.ChatActivity"
             android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/BlueTheme"
             android:launchMode="singleTask" >
             <intent-filter>
-                <action android:name="ucloud.intent.action.ulive.example.chat" />
+                <action android:name="ucloud.intent.action.ulive.example.publish.chat" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+                android:name="com.ucloud.ulive.example.stream.AudioDemo"
+                android:configChanges="orientation|keyboardHidden|screenSize"
+                android:launchMode="singleTask"
+                android:theme="@style/BlueTheme" >
+            <intent-filter>
+                <action android:name="ucloud.intent.action.ulive.example.publish.audio" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

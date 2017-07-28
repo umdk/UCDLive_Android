@@ -73,7 +73,7 @@ public class URawAudioMixFilter extends UAudioCPUFilter {
 
     private void init() {
         try {
-            bgmInputStream = context.getAssets().open("raw_audio_mix_bg.pcm");
+            bgmInputStream = context.getAssets().open("UCloudResource/raw_audio_mix_bg.pcm");
             bgmInputStream.mark(bgmInputStream.available());
             bgm = new byte[size];
             averageAudioMixer = new AverageAudioMixer();
@@ -155,7 +155,6 @@ public class URawAudioMixFilter extends UAudioCPUFilter {
             if (context != null) {
                 context.unregisterReceiver(headsetPlugReceiver);
             }
-            context = null;
             bgm = null;
             averageAudioMixer = null;
             if (rawAudioPlayer != null) {

@@ -1,28 +1,25 @@
-package com.ucloud.ulive.example.ext.gpuimage;
 //gpuimage filter add in build.gradle
+/*compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'*/
 
-/*
-compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'*/
-/*
-
+package com.ucloud.ulive.example.ext.gpuimage;
 import android.opengl.GLES20;
 
 import com.ucloud.ulive.filter.UGPUImageCompat;
-import com.ucloud.ulive.filter.UVideoGPUFilter;
 
 import java.nio.FloatBuffer;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageFilterGroup;
 
 
-public class GPUImageCompatibleFilter<T extends GPUImageFilter> extends UVideoGPUFilter {
+public class GPUImageCompatibleFilter<T extends GPUImageFilter> extends UGPUImageCompat {
 
     private T innerGPUImageFilter;
 
-    private FloatBuffer innerShapeBuffer;
-    private FloatBuffer innerTextureBuffer;
-
     public GPUImageCompatibleFilter(T filter) {
+        if (filter instanceof GPUImageFilterGroup) {
+            throw new IllegalStateException("不支持适配GPUImage的组合滤镜");
+        }
         innerGPUImageFilter = filter;
     }
 
@@ -31,10 +28,10 @@ public class GPUImageCompatibleFilter<T extends GPUImageFilter> extends UVideoGP
     }
 
     @Override
-    public void onInit(int VWidth, int VHeight) {
-        super.onInit(VWidth, VHeight);
+    public void onInit(int width, int height) {
         innerGPUImageFilter.init();
-        innerGPUImageFilter.onOutputSizeChanged(VWidth, VHeight);
+        innerGPUImageFilter.onOutputSizeChanged(width, height);
+        isInitialized = true;
     }
 
     @Override
@@ -46,16 +43,11 @@ public class GPUImageCompatibleFilter<T extends GPUImageFilter> extends UVideoGP
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         innerGPUImageFilter.destroy();
     }
 
     @Override
-    public void onDirectionUpdate(int _directionFlag) {
-        if (directionFlag != _directionFlag) {
-            innerShapeBuffer = UGPUImageCompat.getGPUImageCompatShapeVerticesBuffer();
-            innerTextureBuffer = UGPUImageCompat.getGPUImageCompatTextureVerticesBuffer(directionFlag);
-        }
+    public void onDirectionUpdate(int directionFlag) {
+        super.onDirectionUpdate(directionFlag);
     }
 }
-*/

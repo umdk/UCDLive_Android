@@ -5,9 +5,12 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.support.v7.widget.AppCompatSpinner;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -39,7 +42,7 @@ import static com.ucloud.ulive.example.R.id.btn_toggle_caputre_orientation;
 
 public class CameraControllerView extends RelativeLayout implements View.OnClickListener, UCameraSessionListener, UStreamStateListener, UNetworkListener {
 
-    private static final String TAG = "ControllerView";
+    private static final String TAG = "CameraControllerView";
 
     class ViewHolder {
         @Bind(R.id.btn_switch_camera)
@@ -96,9 +99,6 @@ public class CameraControllerView extends RelativeLayout implements View.OnClick
         @Bind(R.id.txtv_copy_to_clipboard)
         TextView copyToClipboardTxtv;
 
-        @Bind(R.id.btn_toggle_filter)
-        Button toggleFilterBtn;
-
         @Bind(R.id.btn_toggle_record)
         Button toggleRecordBtn;
 
@@ -123,6 +123,9 @@ public class CameraControllerView extends RelativeLayout implements View.OnClick
         @Bind(R.id.imgview_cameraframe)
         ImageView hintCameraFrameImgView;
 
+        @Bind(R.id.spinner_beatuy)
+        AppCompatSpinner beautySpinner;
+
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
             registerListener();
@@ -144,7 +147,19 @@ public class CameraControllerView extends RelativeLayout implements View.OnClick
             toggleFlashmodeBtn.setOnClickListener(CameraControllerView.this);
             switchCameraBtn.setOnClickListener(CameraControllerView.this);
             toggleFaceDetectorBtn.setOnClickListener(CameraControllerView.this);
-            toggleFilterBtn.setOnClickListener(CameraControllerView.this);
+            beautySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (clickListener != null) {
+                        clickListener.onBeautyTypeItemSelectedListener(position, id);
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
 
             //debug pannel
             copyToClipboardTxtv.setOnClickListener(CameraControllerView.this);
@@ -154,6 +169,8 @@ public class CameraControllerView extends RelativeLayout implements View.OnClick
     }
 
     private ViewHolder viewHolder;
+
+    private AVOption avOption;
 
     private DebugEnvHolder debugEnvHolder;
 
@@ -192,6 +209,15 @@ public class CameraControllerView extends RelativeLayout implements View.OnClick
         if (avOption == null || viewHolder == null) {
             return;
         }
+        this.avOption = avOption;
+
+        if (avOption.videoFilterMode == UFilterProfile.FilterMode.GPU) {
+            viewHolder.beautySpinner.setAdapter(new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, LiveRoomView.GPU_FILTERS_NAME));
+        }
+        else {
+            viewHolder.beautySpinner.setAdapter(new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, LiveRoomView.CPU_FILTERS_NAME));
+        }
+
         if (avOption.videoCaptureOrientation == UVideoProfile.ORIENTATION_PORTRAIT) {
             viewHolder.toggleCaputreOrientationBtn.setText(getResources().getString(R.string.controller_landspace));
         }
@@ -338,11 +364,6 @@ public class CameraControllerView extends RelativeLayout implements View.OnClick
             case R.id.btn_toggle_face_detector:
                 if (clickListener != null) {
                     clickListener.onFaceDetectorButtonClick();
-                }
-                break;
-            case R.id.btn_toggle_filter:
-                if (clickListener != null) {
-                    clickListener.onBeautyButtonClick();
                 }
                 break;
             default:
@@ -625,13 +646,13 @@ public class CameraControllerView extends RelativeLayout implements View.OnClick
 
         boolean onFaceDetectorButtonClick();
 
-        boolean onBeautyButtonClick();
-
         boolean onDebugVisibleButtonClick();
 
         boolean onClearDebugButtonClick();
 
         boolean onCopyToClipboardButtonClick();
+
+        boolean onBeautyTypeItemSelectedListener(int position, long id);
     }
 
     public static class ClickListenerImpl implements IClickListener {
@@ -697,11 +718,6 @@ public class CameraControllerView extends RelativeLayout implements View.OnClick
         }
 
         @Override
-        public boolean onBeautyButtonClick() {
-            return false;
-        }
-
-        @Override
         public boolean onDebugVisibleButtonClick() {
             return false;
         }
@@ -713,6 +729,11 @@ public class CameraControllerView extends RelativeLayout implements View.OnClick
 
         @Override
         public boolean onCopyToClipboardButtonClick() {
+            return false;
+        }
+
+        @Override
+        public boolean onBeautyTypeItemSelectedListener(int position, long id) {
             return false;
         }
     }

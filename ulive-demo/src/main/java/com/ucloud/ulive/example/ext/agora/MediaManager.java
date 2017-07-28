@@ -30,7 +30,7 @@ public class MediaManager extends IRtcEngineEventHandler {
 
     private AgoraVideoSource videoSource;
 
-    private int videoProfile = VideoProfile.VIDEO_PROFILE_240P;  //320*240
+    private int videoProfile = VideoProfile.VIDEO_PROFILE_240P;  //320 * 240
 
     private boolean swapWidth = true;
 

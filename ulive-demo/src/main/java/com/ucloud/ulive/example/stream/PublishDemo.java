@@ -21,6 +21,7 @@ import butterknife.ButterKnife;
 
 /**
  * @author lw.tan on 2017/3/1.
+ * (RTMP推流)Camera采集 + 音频
  */
 
 public class PublishDemo extends Activity {
@@ -42,7 +43,7 @@ public class PublishDemo extends Activity {
 
         liveRoomView.attachView(liveCameraView);
 
-        liveRoomView.startPreview(avOption);
+        liveRoomView.init(avOption);
     }
 
     private void initConfig() {

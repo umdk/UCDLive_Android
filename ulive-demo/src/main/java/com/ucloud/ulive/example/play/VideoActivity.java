@@ -3,6 +3,7 @@ package com.ucloud.ulive.example.play;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -47,6 +48,7 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
         ButterKnife.bind(this);
         Intent i = getIntent();
         uri = i.getStringExtra(MainActivity.KEY_PLAY_ADDRESS);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
         if (TextUtils.isEmpty(uri)) {
             Toast.makeText(this, "uri is null.", Toast.LENGTH_LONG).show();
             finish();
@@ -126,19 +128,24 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
     public void onPlayerInfo(Info info, int extra1, Object extra2) {
         switch (info) {
             case BUFFERING_START:
+                Log.i(TAG, "lifecycle->demo->BUFFERING_START");
                 loadingView.setVisibility(View.VISIBLE);
                 cacheCount++;
                 networkBlockCountTxtv.setVisibility(View.VISIBLE);
                 networkBlockCountTxtv.setText(String.format(Locale.US, "缓冲次数:%d", cacheCount));
                 break;
             case BUFFERING_END:
+                Log.i(TAG, "lifecycle->demo->BUFFERING_END");
                 loadingView.setVisibility(View.GONE);
                 break;
             case BUFFERING_UPDATE:
+//                Log.i(TAG, "lifecycle->demo->BUFFERING_UPDATE extra1 = " + extra1 + ", extra2 = " + extra2);
                 break;
             case VIDEO_RENDERING_START:
+                Log.i(TAG, "lifecycle->demo->VIDEO_RENDERING_START");
                 break;
             case AUDIO_RENDERING_START:
+                Log.i(TAG, "lifecycle->demo->AUDIO_RENDERING_START");
                 break;
             default:
                 break;
@@ -181,12 +188,13 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
         //设置播放器允许累积的最大延迟，当网络发生波动，SDK内部会做跳帧处理，若设置的太小容易频繁丢帧，一般推荐2s左右，播放器跳帧时会参考该值，适用直播 单位ms
         profile.setInteger(UMediaProfile.KEY_MAX_CACHED_DURATION, 2000);
         profile.setInteger(UMediaProfile.KEY_CHECK_DROP_FRAME_INTERVAL, 1000 * 30); //设置丢帧的检测频率，适用直播 默认30s检测一次 单位ms
-        //以上两个参数决定了播放器网络波动后的延时&平滑度
+        //以上两个参数决定了播放器网络抖动后的延时&平滑度
+
+        profile.setInteger(UMediaProfile.KEY_DROP_FRAME_MODE, 1); //设置网络抖动后，丢帧的模式， 0 追帧(视频会有快放效果), 1跳帧 (视频没有快放效果)，适用直播，默认为1
 
         if (uri != null && uri.endsWith("m3u8")) {
             profile.setInteger(UMediaProfile.KEY_MAX_CACHED_DURATION, 0); //m3u8 默认不开启延时丢帧策略
         }
-
         if (videoView != null && videoView.isInPlaybackState()) {
             videoView.stopPlayback();
             videoView.release(true);

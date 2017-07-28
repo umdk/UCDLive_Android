@@ -21,6 +21,7 @@
     <string name="controller_portrait">竖屏</string>
     <string name="controller_captureframe">截帧</string>
     <string name="controller_beatuy">美颜</string>
+    <string name="controller_special_filter">风格</string>
     <string name="controller_flash">闪光灯</string>
     <string name="controller_texture">动态贴纸</string>
     <string name="controller_camera">摄像头</string>
@@ -64,10 +65,9 @@
     <string name="codec_mode">编码类型: </string>
     <string name="return_index">返回首页</string>
     <string name="stream_over">直播结束</string>
-    <string name="skin_blur">磨皮</string>
-    <string name="skin_whitening">美白</string>
-    <string name="skin_ruddy">红润</string>
+    <string name="skin_beauty">强度</string>
+    <string name="skin_mask">遮罩</string>
     <string name="loading">玩命加载中....</string>
     <string name="float_window_permission_request_failed">悬浮窗权限申请失败，请到设置开启相关权限</string>
-    <string name="app_id">""</string>
+    <string name="app_id">f6da0ba61b7d409280d3623320c425ba</string>
 </resources>

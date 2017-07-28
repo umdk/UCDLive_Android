@@ -56,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private static final int PLAYER_REQUEST_CODE = 201;
 
+    private static final int LIVE_AUDIO_REQUEST_CODE = 202;
+
     private String streamId = "ucloud_test";
 
     private String[] demoDirects;
@@ -108,6 +110,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private int currentPosition = 0;
 
+    /**
+     * 音频 +视频(Camera + Screen)
+     */
     private final String[] liveNeedPermissions = new String[]{
         Manifest.permission.RECORD_AUDIO,
         Manifest.permission.CAMERA,
@@ -115,8 +120,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
+    /**
+     * 纯音频
+     */
+    private final String[] liveAudioNeedPermissions = new String[]{
+        Manifest.permission.RECORD_AUDIO,
+        Manifest.permission.READ_PHONE_STATE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
     private final String[] playerNeedPermissions = new String[]{
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
     @Override
@@ -187,8 +201,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             if (!permissionsChecker.lacksPermissions(liveNeedPermissions)) {
                 startActivity(currentPosition);
             }
-        } else if(requestCode == PLAYER_REQUEST_CODE) {
+        }
+        else if (requestCode == PLAYER_REQUEST_CODE) {
             if (!permissionsChecker.lacksPermissions(playerNeedPermissions)) {
+                startActivity(currentPosition);
+            }
+        }
+        else if (requestCode == LIVE_AUDIO_REQUEST_CODE) {
+            if (!permissionsChecker.lacksPermissions(liveAudioNeedPermissions)) {
                 startActivity(currentPosition);
             }
         }
@@ -286,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 Toast.makeText(this, "streamId is null", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (position == 0 || position == 1 || position == 2) {
+            if (position == 0 || position == 1 || position == 2) { //音视频推流 权限检查
                 if (permissionsChecker.lacksPermissions(liveNeedPermissions)) {
                     PermissionsActivity.startActivityForResult(this, LIVE_REQUEST_CODE, liveNeedPermissions);
                 }
@@ -294,12 +314,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     startActivity(position);
                 }
             }
-            else {
+            else if (position == 3) { //纯音频推流 权限检查
+                if (permissionsChecker.lacksPermissions(liveAudioNeedPermissions)) {
+                    PermissionsActivity.startActivityForResult(this, LIVE_AUDIO_REQUEST_CODE, liveAudioNeedPermissions);
+                }
+                else {
+                    startActivity(position);
+                }
+            }
+            else { //播放 权限检查
                 if (permissionsChecker.lacksPermissions(playerNeedPermissions)) {
                     PermissionsActivity.startActivityForResult(this, PLAYER_REQUEST_CODE, playerNeedPermissions);
                 }
                 else {
-                    startActivity(3);
+                    startActivity(4);
                 }
             }
         }
