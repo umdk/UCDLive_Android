@@ -104,7 +104,7 @@ public class FloatingWindow extends LiveCameraView implements View.OnTouchListen
     public void show() {
         windowManager.addView(this, windowParams);
         startPreview();
-//        setShowMode(Mode.ORIGIN);
+        setShowMode(Mode.ORIGIN);
         isHide = false;
     }
 
@@ -128,12 +128,12 @@ public class FloatingWindow extends LiveCameraView implements View.OnTouchListen
         hide();
         initWindow();
         init(avOption);
-//        if (avOption.videoCaptureOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-//            setAspectRatio(((float) previewWidth) / previewHeight);
-//        }
-//        else {
-//            setAspectRatio(((float) previewHeight) / previewWidth);
-//        }
+        if (avOption.videoCaptureOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            setAspectRatio(((float) previewWidth) / previewHeight);
+        }
+        else {
+            setAspectRatio(((float) previewHeight) / previewWidth);
+        }
         show();
     }
 
@@ -211,12 +211,12 @@ public class FloatingWindow extends LiveCameraView implements View.OnTouchListen
         public void onCameraOpenSucceed(int cameraId, List<Integer> supportCameraIndex, int width, int height) {
             previewWidth = width;
             previewHeight = height;
-//            if (avOption.videoCaptureOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-//                setAspectRatio(((float) width) / height);
-//            }
-//            else {
-//                setAspectRatio(((float) height) / width);
-//            }
+            if (avOption.videoCaptureOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+                setAspectRatio(((float) width) / height);
+            }
+            else {
+                setAspectRatio(((float) height) / width);
+            }
         }
 
         @Override

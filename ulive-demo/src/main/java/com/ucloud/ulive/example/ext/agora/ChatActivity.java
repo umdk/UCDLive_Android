@@ -112,8 +112,6 @@ public class ChatActivity extends Activity {
             finish();
             return;
         }
-        //当前仅GPU模式下支持连麦
-//        avOption.videoFilterMode = UFilterProfile.FilterMode.GPU;
         avOption.videoFilterMode = i.getIntExtra(MainActivity.KEY_FILTER, UFilterProfile.FilterMode.GPU);
         avOption.videoCodecType = UVideoProfile.CODEC_MODE_HARD;
         avOption.videoCaptureOrientation = i.getIntExtra(MainActivity.KEY_CAPTURE_ORIENTATION, UVideoProfile.ORIENTATION_PORTRAIT);

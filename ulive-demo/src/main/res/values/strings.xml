@@ -69,5 +69,5 @@
     <string name="skin_mask">遮罩</string>
     <string name="loading">玩命加载中....</string>
     <string name="float_window_permission_request_failed">悬浮窗权限申请失败，请到设置开启相关权限</string>
-    <string name="app_id">f6da0ba61b7d409280d3623320c425ba</string>
+    <string name="app_id"></string>
 </resources>

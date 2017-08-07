@@ -22,6 +22,7 @@ import com.ucloud.ulive.example.utils.StreamProfileUtil;
 import com.ucloud.ulive.filter.UAudioCPUFilter;
 import com.ucloud.ulive.filter.UVideoCPUFilter;
 import com.ucloud.ulive.filter.UVideoGPUFilter;
+import com.ucloud.ulive.widget.UAspectFrameLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,7 @@ import java.util.List;
 
       依赖已经管理好了推流的状态信息
  */
-public class LiveCameraView extends FrameLayout {
+public class LiveCameraView extends UAspectFrameLayout {
 
     private static final String TAG = "LiveCameraView";
 
@@ -330,7 +331,7 @@ public class LiveCameraView extends FrameLayout {
      * @param profile 推流参数信息
      */
     private void innerStartPreview(UStreamingProfile profile) {
-//        setShowMode(Mode.FULL);
+        setShowMode(Mode.FULL);
         STREAM_ENV_HOLDER.easyStreamer = getEasyStreaming();
         STREAM_ENV_HOLDER.streamingProfile = profile;
         STREAM_ENV_HOLDER.easyStreamer.setOnCameraSessionListener(innerCameraSessionListener);
@@ -433,12 +434,12 @@ public class LiveCameraView extends FrameLayout {
 
         @Override
         public void onCameraOpenSucceed(int cameraId, List<Integer> supportCameraIndexList, int width, int height) {
-//            if (STREAM_ENV_HOLDER.avOption.videoCaptureOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-//                setAspectRatio(((float) width) / height);
-//            }
-//            else {
-//                setAspectRatio(((float) height) / width);
-//            }
+            if (STREAM_ENV_HOLDER.avOption.videoCaptureOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+                setAspectRatio(((float) width) / height);
+            }
+            else {
+                setAspectRatio(((float) height) / width);
+            }
 
             for (UCameraSessionListener listener: outerCameraSessionListeners) {
                 listener.onCameraOpenSucceed(cameraId, supportCameraIndexList, width, height);
