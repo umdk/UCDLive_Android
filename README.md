@@ -49,6 +49,10 @@ Android 4.3+ (API 18+)
 
 请参考 wiki 文档：[UCDLive_Android 开发指南][1]
 
+## 版本历史
+
+请参考 wiki 文档：[版本历史][6]
+
 ## 播放器集成
 
 详细请参考 [UCDMediaPlayer项目][2]。
@@ -78,3 +82,4 @@ Android 4.3+ (API 18+)
 [3]: https://github.com/umdk/UCDLive_Android/issues
 [4]: mailto:sdk_spt@ucloud.cn
 [5]: https://github.com/umdk/UCDLive_Android/wiki/7-常见问题#7
+[6]: https://github.com/umdk/UCDLive_Android/wiki/9-版本历史#9
