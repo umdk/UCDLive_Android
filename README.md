@@ -2,8 +2,8 @@
 
 UCDLive SDK 是由 UCloud 提供的低延时、高并发的直播云服务。
 
-![screenshot-1](screenshot/screenshot-1.png)  
- 
+![screenshot-1](screenshot/screenshot-1.png)
+
 ## 功能特性
 
 - 支持音视频硬编、软编(H.264 & AAC)
