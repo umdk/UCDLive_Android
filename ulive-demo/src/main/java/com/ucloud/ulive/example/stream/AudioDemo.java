@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.ucloud.ulive.UAudioStreaming;
 import com.ucloud.ulive.UVideoProfile;
 import com.ucloud.ulive.example.AVOption;
+import com.ucloud.ulive.example.BaseActivity;
 import com.ucloud.ulive.example.MainActivity;
 import com.ucloud.ulive.example.R;
 import com.ucloud.ulive.example.filter.audio.UAudioMuteFilter;
@@ -22,26 +23,26 @@ import com.ucloud.ulive.example.filter.audio.URawAudioMixFilter;
 import com.ucloud.ulive.example.utils.StreamProfileUtil;
 import com.ucloud.ulive.example.widget.AudioControllerView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
  * @author michael on 2017/07/18.
  * 纯音频RTMP推流
  */
-public class AudioDemo extends Activity {
+public class AudioDemo extends BaseActivity {
 
     private AVOption avOption;
 
     private UAudioStreaming streamer;
 
-    @Bind(R.id.live_finish_container)
+    @BindView(R.id.live_finish_container)
     View streamOverContainer;
 
-    @Bind(R.id.live_audio_panel)
+    @BindView(R.id.live_audio_panel)
     AudioControllerView controllerView;
 
-    @Bind(R.id.btn_finish)
+    @BindView(R.id.btn_finish)
     Button backMainIndexButton;
 
     private EffectHolder effectHolder;

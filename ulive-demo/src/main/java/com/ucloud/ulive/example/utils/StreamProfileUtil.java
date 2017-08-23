@@ -21,7 +21,7 @@ public final class StreamProfileUtil {
 
         public static final int DEFAULT_CAPTURE_ORIENTATION = UVideoProfile.ORIENTATION_PORTRAIT;
 
-        public static final int DEFAULT_VIDEO_BITRATE = UVideoProfile.VIDEO_BITRATE_NORMAL;
+        public static final int DEFAULT_VIDEO_BITRATE = UVideoProfile.VIDEO_BITRATE_MEDIUM;
 
         public static final int DEFAULT_VIDEO_CAPTURE_FPS = 20;
 
@@ -78,14 +78,22 @@ public final class StreamProfileUtil {
                                           int cameraIndex,
                                           String streamUrl) {
         UVideoProfile videoProfile = new UVideoProfile().fps(fps)
-                .bitrate(videoBitrate)
+                .bitrate(videoBitrate) //设置初始码率 推荐设置600kbps
+                .minBitrate(UVideoProfile.VIDEO_BITRATE_NORMAL) //设置最低码率 400kbps
+                .maxBitrate(UVideoProfile.VIDEO_BITRATE_HIGH) //设置最高码率 800kbps 当网络发生拥塞，
+                //关于最低、最高码率：(SDK内部会动态调整音视频码率)
+                //1.可自行调整最低码率的值，若最小码率与初始码率相差较小，当网络拥塞时，抗抖动的能力就比较小，整体帧率会较低。
+                //2.降码率，对音视频的质量肯定有影响，一般推荐设置一个您认为能够接受的最低效果的值，当网络恢复通畅时，内部会逐步稳定提高码率。
+                //3.若流畅优先，视频码率最低推荐可设置200kbps，画质优先推荐成400kbps (初始码率600kbps的情况)，其它您自定义的值也适用。
                 .resolution(videoResolution)
                 .codecMode(videoCodecType)
                 .captureOrientation(captureOrientation);
 
         UAudioProfile audioProfile = new UAudioProfile()
                 .source(audioSource)
-                .bitrate(audioBitrate)
+                .bitrate(audioBitrate) //设置初始码率 推荐设置64kbps
+                .minBitrate(UAudioProfile.AUDIO_BITRATE_LOW) //设置最低码率 48kbps
+                .maxBitrate(UAudioProfile.AUDIO_BITRATE_HIGH) //设置最高码率 128kbps
                 .channels(audioChannels)
                 .samplerate(audioSampleRate);
 

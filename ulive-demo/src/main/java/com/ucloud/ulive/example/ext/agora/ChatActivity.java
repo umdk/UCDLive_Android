@@ -1,6 +1,5 @@
 package com.ucloud.ulive.example.ext.agora;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -16,6 +15,7 @@ import com.ucloud.ulive.UEasyStreaming;
 import com.ucloud.ulive.UFilterProfile;
 import com.ucloud.ulive.UVideoProfile;
 import com.ucloud.ulive.example.AVOption;
+import com.ucloud.ulive.example.BaseActivity;
 import com.ucloud.ulive.example.MainActivity;
 import com.ucloud.ulive.example.R;
 import com.ucloud.ulive.example.ext.agora.filter.URemoteAudioMixFilter;
@@ -23,17 +23,17 @@ import com.ucloud.ulive.example.widget.LiveCameraView;
 import com.ucloud.ulive.framework.AudioBufferFormat;
 import com.ucloud.ulive.framework.ImageBufferFormat;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ChatActivity extends Activity {
+public class ChatActivity extends BaseActivity {
 
     private static final String TAG = "ChatActivity";
 
-    @Bind(R.id.livecamera)
+    @BindView(R.id.livecamera)
     LiveCameraView cameraPreview;
 
-    @Bind(R.id.txtv_stream_id)
+    @BindView(R.id.txtv_stream_id)
     TextView streamIdTextv;
 
     private AVOption avOption;
@@ -159,6 +159,9 @@ public class ChatActivity extends Activity {
         cameraPreview.onDestroy();
         RemoteAudioCacheUtil.getInstance().release();
         specailEffectHolder.line = false;
+        if (agoraRTCClient != null) {
+            agoraRTCClient.release();
+        }
     }
 
     public void onJoinChannel(View view) {

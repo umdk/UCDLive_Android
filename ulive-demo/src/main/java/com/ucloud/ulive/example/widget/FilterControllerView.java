@@ -9,20 +9,20 @@ import android.widget.TextView;
 
 import com.ucloud.ulive.example.R;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class FilterControllerView extends LinearLayout implements SeekBar.OnSeekBarChangeListener {
 
     public static int LEVEL1 = 60;//0-100
 
-    @Bind(R.id.seek_bar_skin_beauty)
+    @BindView(R.id.seek_bar_skin_beauty)
     SeekBar skinBeauty;
 
-    @Bind(R.id.txtv_skin_blur_progress)
+    @BindView(R.id.txtv_skin_blur_progress)
     TextView skinBlurProgress;
 
-    @Bind(R.id.ll_level1)
+    @BindView(R.id.ll_level1)
     View level1Container;
 
     //REMOVED

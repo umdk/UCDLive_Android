@@ -4,8 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,13 +20,16 @@ import com.ucloud.ulive.UFilterProfile;
 import com.ucloud.ulive.UVideoProfile;
 import com.ucloud.ulive.example.permission.PermissionsActivity;
 import com.ucloud.ulive.example.permission.PermissionsChecker;
+import com.ucloud.ulive.example.utils.DemoStatistics;
+import com.ucloud.ulive.example.utils.StreamProfileUtil;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.Random;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class MainActivity extends BaseActivity implements AdapterView.OnItemClickListener {
 
     public static final String KEY_STREAMING_ADDRESS = "streaming-address";
 
@@ -73,37 +74,34 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         "http://rtmp3.usmtd.ucloud.com.cn/live/%s.flv",
     };
 
-    @Bind(R.id.listview)
+    @BindView(R.id.listview)
     ListView listView;
 
-    @Bind(R.id.toolbar)
-    Toolbar toolbar;
-
-    @Bind(R.id.txtv_version)
+    @BindView(R.id.txtv_version)
     TextView versionTxtv;
 
-    @Bind(R.id.rg_filter)
+    @BindView(R.id.rg_filter)
     RadioGroup filterRg;
 
-    @Bind(R.id.rg_codec)
+    @BindView(R.id.rg_codec)
     RadioGroup codecRg;
 
-    @Bind(R.id.rg_videobitrate)
+    @BindView(R.id.rg_videobitrate)
     RadioGroup videoBitrateRg;
 
-    @Bind(R.id.rg_videoaspect)
+    @BindView(R.id.rg_videoaspect)
     RadioGroup resolutionRg;
 
-    @Bind(R.id.edtxt_framerate)
+    @BindView(R.id.edtxt_framerate)
     EditText framerateEdtxt;
 
-    @Bind(R.id.rg_capture_orientation)
+    @BindView(R.id.rg_capture_orientation)
     RadioGroup captureOrientationRg;
 
-    @Bind(R.id.rg_line)
+    @BindView(R.id.rg_line)
     RadioGroup lineRg;
 
-    @Bind(R.id.edtxt_streaming_id)
+    @BindView(R.id.edtxt_streaming_id)
     EditText streamIdEdtxt;
 
     private PermissionsChecker permissionsChecker; //for android target version >=23
@@ -144,17 +142,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private void init() {
         streamId = (int) Math.floor((new Random().nextDouble() * 10000.0 + 10000.0)) + "";
         permissionsChecker = new PermissionsChecker(this);
-        if (toolbar == null || listView == null) {
-            Toast.makeText(this, "butter knife bind view failed.", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-        setSupportActionBar(toolbar);
         demoNames = getResources().getStringArray(R.array.demoNames);
         listView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, demoNames));
         listView.setOnItemClickListener(this);
         demoDirects = getResources().getStringArray(R.array.demoDirects);
-        versionTxtv.setText(String.format("%s %s", UBuild.VERSION, getResources().getString(R.string.sdk_address)));
+        versionTxtv.setText(String.format("%s %s", UBuild.NAME + "-" +UBuild.VERSION, getResources().getString(R.string.sdk_address)));
         streamIdEdtxt.setText(streamId);
         filterRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -174,6 +166,18 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 }
             }
         });
+        if(StreamProfileUtil.AVOptionsHolder.DEFAULT_VIDEO_BITRATE == UVideoProfile.VIDEO_BITRATE_LOW) {
+            videoBitrateRg.check(R.id.rb_videobitrate_low);
+        }
+        else if(StreamProfileUtil.AVOptionsHolder.DEFAULT_VIDEO_BITRATE == UVideoProfile.VIDEO_BITRATE_NORMAL) {
+            videoBitrateRg.check(R.id.rb_videobitrate_normal);
+        }
+        else if(StreamProfileUtil.AVOptionsHolder.DEFAULT_VIDEO_BITRATE == UVideoProfile.VIDEO_BITRATE_MEDIUM) {
+            videoBitrateRg.check(R.id.rb_videobitrate_medium);
+        }
+        else if(StreamProfileUtil.AVOptionsHolder.DEFAULT_VIDEO_BITRATE == UVideoProfile.VIDEO_BITRATE_HIGH) {
+            videoBitrateRg.check(R.id.rb_videobitrate_high);
+        }
     }
 
     private void startActivity(int index) {
@@ -185,11 +189,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         intent.putExtra(KEY_FPS, framerate(framerateEdtxt));
         intent.putExtra(KEY_CAPTURE_ORIENTATION, captureOrientation(captureOrientationRg.getCheckedRadioButtonId()));
         line(intent, lineRg.getCheckedRadioButtonId(), streamIdEdtxt);
-
         intent.putExtra(KEY_STREAMING_ID, streamIdEdtxt.getText().toString());
         intent.putExtra(KEY_ENCRYPTION_KEY, "Encryption");
         intent.putExtra(KEY_ENCRYPTION_MODE, "AES-128-XTS");
-//        intent.putExtra(KEY_ENCRYPTION_MODE, "AES-256-XTS");
         intent.setAction(demoDirects[index]);
         startActivity(intent);
     }
@@ -311,6 +313,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     PermissionsActivity.startActivityForResult(this, LIVE_REQUEST_CODE, liveNeedPermissions);
                 }
                 else {
+                    if (position == 0) {
+                        MobclickAgent.onEvent(this, DemoStatistics.RTMP_CAMERA_BUTTON);
+                    }
+                    else if (position == 1) {
+                        MobclickAgent.onEvent(this, DemoStatistics.RTMP_SCREEN_BUTTON);
+                    }
+                    else {
+                        MobclickAgent.onEvent(this, DemoStatistics.RTMP_1V1_LINE_BUTTON);
+                    }
                     startActivity(position);
                 }
             }
@@ -319,6 +330,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     PermissionsActivity.startActivityForResult(this, LIVE_AUDIO_REQUEST_CODE, liveAudioNeedPermissions);
                 }
                 else {
+                    MobclickAgent.onEvent(this, DemoStatistics.RTMP_ONLY_AUDIO_BUTTON);
                     startActivity(position);
                 }
             }
@@ -327,6 +339,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     PermissionsActivity.startActivityForResult(this, PLAYER_REQUEST_CODE, playerNeedPermissions);
                 }
                 else {
+                    MobclickAgent.onEvent(this, DemoStatistics.RTMP_PLAY_BUTTON);
                     startActivity(4);
                 }
             }

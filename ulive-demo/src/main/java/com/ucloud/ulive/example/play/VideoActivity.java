@@ -1,6 +1,5 @@
 package com.ucloud.ulive.example.play;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
@@ -12,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ucloud.ulive.example.BaseActivity;
 import com.ucloud.ulive.example.MainActivity;
 import com.ucloud.ulive.example.R;
 import com.ucloud.uvod.UMediaProfile;
@@ -20,21 +20,21 @@ import com.ucloud.uvod.widget.UVideoView;
 
 import java.util.Locale;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class VideoActivity extends Activity implements UPlayerStateListener {
+public class VideoActivity extends BaseActivity implements UPlayerStateListener {
 
     private static final String TAG = "VideoActivity";
 
-    @Bind(R.id.uvideoview)
+    @BindView(R.id.uvideoview)
     UVideoView videoView;
 
-    @Bind(R.id.txtv_loading)
+    @BindView(R.id.txtv_loading)
     View loadingView;
 
-    @Bind(R.id.txtv_block_count)
+    @BindView(R.id.txtv_block_count)
     TextView networkBlockCountTxtv;
 
     private long cacheCount = 0;

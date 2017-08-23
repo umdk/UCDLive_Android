@@ -34,7 +34,7 @@ import com.ucloud.ulive.filter.video.gpu.USkinSpecialEffectsFilter;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import jp.co.cyberagent.android.gpuimage.GPUImageEmbossFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageGrayscaleFilter;
@@ -48,16 +48,16 @@ public class LiveRoomView extends FrameLayout {
     class ViewHolder {
         LiveCameraView liveCameraView;
 
-        @Bind(R.id.camera_controller_view)
+        @BindView(R.id.camera_controller_view)
         CameraControllerView cameraControllerView;
 
-        @Bind(R.id.live_finish_container)
+        @BindView(R.id.live_finish_container)
         View streamOverContainer;
 
-        @Bind(R.id.btn_finish)
+        @BindView(R.id.btn_finish)
         Button backMainIndexButton;
 
-        @Bind(R.id.filter_controller_view)
+        @BindView(R.id.filter_controller_view)
         FilterControllerView filterControllerView;
 
         ViewHolder(View view) {

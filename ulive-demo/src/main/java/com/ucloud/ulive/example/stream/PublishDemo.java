@@ -1,6 +1,5 @@
 package com.ucloud.ulive.example.stream;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -11,12 +10,13 @@ import android.widget.Toast;
 import com.ucloud.ulive.UFilterProfile;
 import com.ucloud.ulive.UVideoProfile;
 import com.ucloud.ulive.example.AVOption;
+import com.ucloud.ulive.example.BaseActivity;
 import com.ucloud.ulive.example.MainActivity;
 import com.ucloud.ulive.example.R;
 import com.ucloud.ulive.example.widget.LiveCameraView;
 import com.ucloud.ulive.example.widget.LiveRoomView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -24,12 +24,12 @@ import butterknife.ButterKnife;
  * (RTMP推流)Camera采集 + 音频
  */
 
-public class PublishDemo extends Activity {
+public class PublishDemo extends BaseActivity {
 
-    @Bind(R.id.liveroom)
+    @BindView(R.id.liveroom)
     LiveRoomView liveRoomView;
 
-    @Bind(R.id.livecamera)
+    @BindView(R.id.livecamera)
     LiveCameraView liveCameraView;
 
     private AVOption avOption;

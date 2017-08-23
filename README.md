@@ -3,39 +3,40 @@
 UCDLive SDK 是由 UCloud 提供的低延时、高并发的直播云服务。
 
 ![screenshot-1](screenshot/screenshot-1.png)  
-![screenshot-2](screenshot/screenshot-2.png)  
-![screenshot-3](screenshot/screenshot-3.png)  
-![screenshot-4](screenshot/screenshot-4.png)  
-
+ 
 ## 功能特性
 
 - 支持音视频硬编、软编(H.264 & AAC)
 - 支持 RTMP 封包 & 推流
-- 支持5种清晰度切换
+- 支持多种分辨率及自定义
     1. 自动 (根据屏幕大小自动设定)
     2. 640 * 480 (4:3)
     3. 320 * 180 (16:9 Low)
     4. 640 * 368 (16:9 Normal)
     5. 1280 * 720 (16:9 High)
+    6. 支持自定义
 - 支持前、后置摄像头动态切换
 - 支持推流横、竖屏动态切换
 - 支持滤镜模式(CPU & GPU)动态切换
-- 支持视频镜像、非镜像操作
+- 支持前置摄像头编码镜像操作
 - 支持静音操作
 - 支持闪关灯操作
 - 支持自动对焦
 - 支持截帧操作
-- 支持美颜滤镜(磨皮、美白、红润)，可设置5种效果等级
+- 支持内置美颜滤镜
+- 支持多种风格的滤镜
 - 支持动态贴纸(Faceu等)
-- 支持自定义滤镜，兼容GPUImage
+- 支持自定义滤镜（兼容android-GPUImage）
 - 支持音视频源数据回调，可自定义数据处理
-- 支持 arm、armv7a、arm64-v8a、x86 主流芯片体系架构
+- 支持 armeabi、armv7a、arm64-v8a、x86 主流芯片体系架构
 - 支持 RTMP 推流地址鉴权功能
 - 支持云适配功能
 - 支持直播鉴黄功能
 - 支持混音效果
 - 支持 ip 推流
-- 支持动态码率设置(硬编)
+- 支持动态码率调节
+- 支持码率自适应
+- 支持1v1连麦
 
 ## 版本要求
 

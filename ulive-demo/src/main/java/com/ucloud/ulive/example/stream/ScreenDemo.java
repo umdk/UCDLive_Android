@@ -18,22 +18,23 @@ import android.widget.Toast;
 import com.ucloud.ulive.UScreenStreaming;
 import com.ucloud.ulive.UVideoProfile;
 import com.ucloud.ulive.example.AVOption;
+import com.ucloud.ulive.example.BaseActivity;
 import com.ucloud.ulive.example.MainActivity;
 import com.ucloud.ulive.example.R;
 import com.ucloud.ulive.example.filter.audio.UAudioMuteFilter;
 import com.ucloud.ulive.example.filter.audio.URawAudioMixFilter;
-import com.ucloud.ulive.example.widget.FloatingWindow;
 import com.ucloud.ulive.example.utils.StreamProfileUtil;
+import com.ucloud.ulive.example.widget.FloatingWindow;
 import com.ucloud.ulive.example.widget.ScreenControllerView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
  * @author michael on 2017/04/18.
  * (RTMP推流) 采集屏幕 + 音频
  */
-public class ScreenDemo extends Activity {
+public class ScreenDemo extends BaseActivity {
 
     private static final int OVERLAY_PERMISSION_REQ_CODE = 1234;
 
@@ -41,13 +42,13 @@ public class ScreenDemo extends Activity {
 
     private UScreenStreaming streamer;
 
-    @Bind(R.id.live_finish_container)
+    @BindView(R.id.live_finish_container)
     View streamOverContainer;
 
-    @Bind(R.id.live_screen_panel)
+    @BindView(R.id.live_screen_panel)
     ScreenControllerView controllerView;
 
-    @Bind(R.id.btn_finish)
+    @BindView(R.id.btn_finish)
     Button backMainIndexButton;
 
     private EffectHolder effectHolder;

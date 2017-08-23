@@ -35,7 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.ucloud.ulive.example.R.id.btn_toggle_caputre_orientation;
@@ -45,85 +45,85 @@ public class CameraControllerView extends RelativeLayout implements View.OnClick
     private static final String TAG = "CameraControllerView";
 
     class ViewHolder {
-        @Bind(R.id.btn_switch_camera)
+        @BindView(R.id.btn_switch_camera)
         Button switchCameraBtn;
 
-        @Bind(R.id.btn_toggle_face_detector)
+        @BindView(R.id.btn_toggle_face_detector)
         Button toggleFaceDetectorBtn;
 
-        @Bind(R.id.btn_toggle_flashmode)
+        @BindView(R.id.btn_toggle_flashmode)
         Button toggleFlashmodeBtn;
 
-        @Bind(R.id.fl_bottombar)
+        @BindView(R.id.fl_bottombar)
         View bottombar;
 
-        @Bind(R.id.btn_toggle_codec_mode)
+        @BindView(R.id.btn_toggle_codec_mode)
         Button toggleCodecModeBtn;
 
-        @Bind(R.id.btn_toggle_render_mode)
+        @BindView(R.id.btn_toggle_render_mode)
         Button toggleRenderModeBtn;
 
-        @Bind(btn_toggle_caputre_orientation)
+        @BindView(btn_toggle_caputre_orientation)
         Button toggleCaputreOrientationBtn;
 
-        @Bind(R.id.btn_exit)
+        @BindView(R.id.btn_exit)
         Button exitBtn;
 
-        @Bind(R.id.scrollview_rightbar)
+        @BindView(R.id.scrollview_rightbar)
         ScrollView rightbarScrollView;
 
-        @Bind(R.id.txtv_bitrate)
+        @BindView(R.id.txtv_bitrate)
         TextView bitrateTxtv;
 
-        @Bind(R.id.txtv_recording_time)
+        @BindView(R.id.txtv_recording_time)
         TextView recordingTimeTxtv;
 
-        @Bind(R.id.txtv_framerate)
+        @BindView(R.id.txtv_framerate)
         TextView framerateTxtv;
 
-        @Bind(R.id.txtv_stream_env_info)
+        @BindView(R.id.txtv_stream_env_info)
         TextView streamEnvInfoTxtv;
 
-        @Bind(R.id.txtv_network_block_count)
+        @BindView(R.id.txtv_network_block_count)
         TextView networkBlockCountTxtv;
 
-        @Bind(R.id.txtv_debug_log)
+        @BindView(R.id.txtv_debug_log)
         TextView debugLogTxtv;
 
-        @Bind(R.id.scrollview_debug_log_pannel)
+        @BindView(R.id.scrollview_debug_log_pannel)
         ScrollView debugLogPannelScrollView;
 
-        @Bind(R.id.fl_debug_info_pannel)
+        @BindView(R.id.fl_debug_info_pannel)
         FrameLayout debugInfoPannel;
 
-        @Bind(R.id.txtv_copy_to_clipboard)
+        @BindView(R.id.txtv_copy_to_clipboard)
         TextView copyToClipboardTxtv;
 
-        @Bind(R.id.btn_toggle_record)
+        @BindView(R.id.btn_toggle_record)
         Button toggleRecordBtn;
 
-        @Bind(R.id.btn_toggle_mute)
+        @BindView(R.id.btn_toggle_mute)
         Button toggleMuteBtn;
 
-        @Bind(R.id.btn_toggle_mix)
+        @BindView(R.id.btn_toggle_mix)
         Button toggleMixBtn;
 
-        @Bind(R.id.btn_toggle_mirror)
+        @BindView(R.id.btn_toggle_mirror)
         Button toggleMirrorBtn;
 
-        @Bind(R.id.txtv_toggle_debug_log_vivisble)
+        @BindView(R.id.txtv_toggle_debug_log_vivisble)
         TextView toggleDebugLogVivisbleTxtv;
 
-        @Bind(R.id.txtv_clear_debug_log)
+        @BindView(R.id.txtv_clear_debug_log)
         TextView clearDebugLogTxtv;
 
-        @Bind(R.id.btn_captureframe)
+        @BindView(R.id.btn_captureframe)
         Button captureframeBtn;
 
-        @Bind(R.id.imgview_cameraframe)
+        @BindView(R.id.imgview_cameraframe)
         ImageView hintCameraFrameImgView;
 
-        @Bind(R.id.spinner_beatuy)
+        @BindView(R.id.spinner_beatuy)
         AppCompatSpinner beautySpinner;
 
         ViewHolder(View view) {

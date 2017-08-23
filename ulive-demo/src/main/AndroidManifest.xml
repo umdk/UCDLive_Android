@@ -88,5 +88,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <meta-data android:value="599a7f1ca325112b78000037" android:name="UMENG_APPKEY"/>
+        <meta-data android:value="github" android:name="UMENG_CHANNEL"/>
     </application>
 </manifest>

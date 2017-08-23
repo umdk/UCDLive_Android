@@ -26,7 +26,7 @@ import com.ucloud.ulive.example.R;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class AudioControllerView extends RelativeLayout implements View.OnClickListener, UStreamStateListener, UNetworkListener {
@@ -36,52 +36,52 @@ public class AudioControllerView extends RelativeLayout implements View.OnClickL
     private UAudioStreaming streamer;
 
     class ViewHolder {
-        @Bind(R.id.btn_exit)
+        @BindView(R.id.btn_exit)
         Button exitBtn;
 
-        @Bind(R.id.scrollview_rightbar)
+        @BindView(R.id.scrollview_rightbar)
         ScrollView rightbarScrollView;
 
-        @Bind(R.id.txtv_bitrate)
+        @BindView(R.id.txtv_bitrate)
         TextView bitrateTxtv;
 
-        @Bind(R.id.txtv_recording_time)
+        @BindView(R.id.txtv_recording_time)
         TextView recordingTimeTxtv;
 
-        @Bind(R.id.txtv_framerate)
+        @BindView(R.id.txtv_framerate)
         TextView framerateTxtv;
 
-        @Bind(R.id.txtv_stream_env_info)
+        @BindView(R.id.txtv_stream_env_info)
         TextView streamEnvInfoTxtv;
 
-        @Bind(R.id.txtv_network_block_count)
+        @BindView(R.id.txtv_network_block_count)
         TextView networkBlockCountTxtv;
 
-        @Bind(R.id.txtv_debug_log)
+        @BindView(R.id.txtv_debug_log)
         TextView debugLogTxtv;
 
-        @Bind(R.id.scrollview_debug_log_pannel)
+        @BindView(R.id.scrollview_debug_log_pannel)
         ScrollView debugLogPannelScrollView;
 
-        @Bind(R.id.fl_debug_info_pannel)
+        @BindView(R.id.fl_debug_info_pannel)
         FrameLayout debugInfoPannel;
 
-        @Bind(R.id.txtv_copy_to_clipboard)
+        @BindView(R.id.txtv_copy_to_clipboard)
         TextView copyToClipboardTxtv;
 
-        @Bind(R.id.btn_toggle_record)
+        @BindView(R.id.btn_toggle_record)
         Button toggleRecordBtn;
 
-        @Bind(R.id.btn_toggle_mute)
+        @BindView(R.id.btn_toggle_mute)
         Button toggleMuteBtn;
 
-        @Bind(R.id.btn_toggle_mix)
+        @BindView(R.id.btn_toggle_mix)
         Button toggleMixBtn;
 
-        @Bind(R.id.txtv_toggle_debug_log_vivisble)
+        @BindView(R.id.txtv_toggle_debug_log_vivisble)
         TextView toggleDebugLogVivisbleTxtv;
 
-        @Bind(R.id.txtv_clear_debug_log)
+        @BindView(R.id.txtv_clear_debug_log)
         TextView clearDebugLogTxtv;
 
         ViewHolder(View view) {
