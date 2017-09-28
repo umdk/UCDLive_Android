@@ -48,7 +48,8 @@ Android 4.3+ (API 18+)
 
 ## 使用方法
 
-请参考 wiki 文档：[UCDLive_Android 开发指南][1]
+wiki 文档：请参考[UCDLive_Android 开发指南][1]
+API 文档：请参考Demo下的javadoc目录
 
 ## 版本历史
 
