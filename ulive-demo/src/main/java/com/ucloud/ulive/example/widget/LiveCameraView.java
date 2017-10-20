@@ -349,6 +349,7 @@ public class LiveCameraView extends UAspectFrameLayout {
      */
     private void initPreviewTextureView() {
         if (textureView == null) {
+            STREAM_ENV_HOLDER.previewed = true; //记录当前LiveCameraView是否处于预览状态
             textureView = new TextureView(getContext());
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
             params.gravity = Gravity.CENTER;
