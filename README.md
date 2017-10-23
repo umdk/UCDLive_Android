@@ -59,6 +59,10 @@ API 文档：请参考Demo下的javadoc目录
 
 详细请参考 [UCDMediaPlayer项目][2]。
 
+## 项目上线注意事项
+
+详细请参考 [项目上线注意事项][7]。
+
 ## 常见问题
 
 详细请见 [UCDLive_Android 常见问题][5]
@@ -85,3 +89,4 @@ API 文档：请参考Demo下的javadoc目录
 [4]: mailto:sdk_spt@ucloud.cn
 [5]: https://github.com/umdk/UCDLive_Android/wiki/7-常见问题#7
 [6]: https://github.com/umdk/UCDLive_Android/wiki/9-版本历史#9
+[7]: https://github.com/umdk/UCDLive_Android/wiki/10-项目上线注意事项#10
