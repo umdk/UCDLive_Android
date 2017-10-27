@@ -23,7 +23,6 @@ android {
             ndk {
 //                abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a', 'x86'
                 //如果使用到第三方库没有完整提供,选择共有完整的类型，下同 UCloud 完整提供 armeabi,armeabi-v7a,arm64-v8a,x86
-                //由于使用了第三方贴纸没有完整提供armeabi x86
                 abiFilters 'armeabi-v7a'
             }
         }
@@ -60,12 +59,11 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile fileTree(dir: 'libs/armeabi-v7a', include: '*/so')
     compile 'com.android.support:preference-v7:' + rootProject.ext.LIB_PREFERENCE_V7
-    compile project(':extension-ucloud-faceu')
     compile 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     compile 'com.umeng.analytics:analytics:latest.integration'
     compile(name: 'ucommon-android-sdk-2.0.0', ext: 'aar')
-    compile(name: 'ulive-android-sdk-2.0.0', ext: 'aar')
-    compile(name: 'uvod-android-sdk-2.0.0', ext: 'aar')
+    compile(name: 'ulive-android-sdk-2.0.1', ext: 'aar')
+    compile(name: 'uvod-android-sdk-2.0.1', ext: 'aar')
 }

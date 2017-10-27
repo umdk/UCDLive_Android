@@ -4,13 +4,13 @@
 #include <android/log.h>
 #include "include/IAgoraMediaEngine.h"
 #include "include/IAgoraRtcEngine.h"
-
+#include <vector>
+using namespace std;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static agora::media::IVideoFrameObserver::VideoFrame remoteFrame;
 
-static int remoteUid = -1;
-
+static std::vector<unsigned int> remoteUids;
 static uint8* dst_rgba;
 static uint64 dst_rgba_length = 0;
 
@@ -28,6 +28,7 @@ static FILE* file;
 #endif
 
 #define LOG_TAG "remote_data_observer"
+#define LOGD(...)    ((void)__android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__))
 
 // from android samples
 /* return current time in milliseconds */
@@ -57,7 +58,7 @@ public:
 
 	virtual bool onPlaybackAudioFrame(AudioFrame& audioFrame) override {
 #if DEBUG
-        __android_log_print(ANDROID_LOG_INFO, "onPlaybackAudioFrame",  "samples %d, bytesPerSample %d, channels %d, samplesPerSec %d",
+        LOGD("onPlaybackAudioFrame->samples %d, bytesPerSample %d, channels %d, samplesPerSec %d",
         audioFrame.samples, audioFrame.bytesPerSample, audioFrame.channels, audioFrame.samplesPerSec);
 #endif
 
@@ -81,7 +82,7 @@ class AgoraVideoFrameObserver : public agora::media::IVideoFrameObserver
 public:
 	virtual bool onCaptureVideoFrame(VideoFrame& videoFrame) override
 	{
-        //__android_log_print(ANDROID_LOG_INFO, "onCaptureVideoFrame",  " width %d, height %d, rotate %d", videoFrame.width, videoFrame.height, videoFrame.rotation);
+        //LOGD("onCaptureVideoFrame->width %d, height %d, rotate %d", videoFrame.width, videoFrame.height, videoFrame.rotation);
 
 		return true;
 	}
@@ -94,15 +95,6 @@ public:
 		fwrite(videoFrame.uBuffer, videoFrame.height*videoFrame.width/4, 1, file);
 		fwrite(videoFrame.vBuffer, videoFrame.height*videoFrame.width/4, 1, file);
 #endif
-        //__android_log_print(ANDROID_LOG_INFO, "onRenderVideoFrame",  " width %d, height %d, yStride %d, uStride %d, vStride %d, rotation %d",
-        //videoFrame.width, videoFrame.height, videoFrame.yStride, videoFrame.uStride, videoFrame.vStride, videoFrame.rotation);
-
-        if (remoteUid == -1 || remoteUid == uid) { // temporarily just use one remote stream;
-            remoteFrame = videoFrame;
-			remoteUid = uid;
-        } else {
-            return -1;
-        }
 
         hasRemoteVideo = true;
 		int width = videoFrame.width;
@@ -113,6 +105,28 @@ public:
         }
 
         pthread_mutex_lock(&mutex);
+
+		vector<unsigned int>::iterator it;
+		int isContains = 0;
+		for (it = remoteUids.begin(); it != remoteUids.end(); it++) {
+			if ((*it) == uid) {
+				isContains = 1;
+				break;
+			}
+		}
+
+		if (!isContains) {
+			remoteUids.push_back(uid);
+		}
+
+		int index = 0;
+		for (it = remoteUids.begin(); it != remoteUids.end(); it++) {
+			if ((*it) == uid) {
+				break;
+			}
+			index++;
+		}
+
         int YSize = width * height;
         if (dst_rgba == NULL) {
             dst_rgba = (uint8*)malloc(4 * YSize * sizeof(uint8));
@@ -129,8 +143,7 @@ public:
 									 width, height);
 
         if(mVidCallback != NULL) {
-            mVidCallback(mOpaque, (unsigned char *)dst_rgba, 4 * YSize, width,
-                                         height, videoFrame.rotation, get_curtime_ms());
+            mVidCallback(uid, index, mOpaque, (unsigned char *)dst_rgba, 4 * YSize, width, height, videoFrame.rotation, get_curtime_ms());
         }
         pthread_mutex_unlock(&mutex);
 
@@ -146,7 +159,7 @@ static AgoraAudioFrameObserver s_audioFrameObserver;
 ////this function will be called by agora sdk
 extern "C" int __attribute__((visibility("default"))) loadAgoraRtcEnginePlugin(agora::rtc::IRtcEngine* engine)
 {
-	__android_log_print(ANDROID_LOG_INFO, LOG_TAG, "loadAgoraRtcEnginePlugin");
+    LOGD("loadAgoraRtcEnginePlugin");
 	rtcEngine = engine;
 #if DEBUG
 	file = fopen("/sdcard/test.yuv", "w+");
@@ -156,7 +169,7 @@ extern "C" int __attribute__((visibility("default"))) loadAgoraRtcEnginePlugin(a
 
 extern "C" void __attribute__((visibility("default"))) unloadAgoraRtcEnginePlugin(agora::rtc::IRtcEngine* engine)
 {
-	__android_log_print(ANDROID_LOG_INFO, LOG_TAG, "unloadAgoraRtcEnginePlugin");
+    LOGD("unloadAgoraRtcEnginePlugin");
 #if DEBUG
 	fclose(file);
 #endif
@@ -190,18 +203,17 @@ void RemoteDataObserver::enableObserver(bool enable)
 			mediaEngine->registerAudioFrameObserver(NULL);
 		}
 	}
-	__android_log_print(ANDROID_LOG_INFO, LOG_TAG, "PreProcessing enbale %d", enable);
+    LOGD("PreProcessing enbale %d", enable);
 
     if (enable) {
-        remoteUid = -1;
-    } else {
-
+        remoteUids.clear();
+    }
+    else {
         if (dst_rgba) {
             free(dst_rgba);
             dst_rgba = NULL;
         }
-
-		remoteUid = -1;
+        remoteUids.clear();
 		hasRemoteVideo = false;
         hasRemoteAudio = false;
     }
@@ -209,8 +221,15 @@ void RemoteDataObserver::enableObserver(bool enable)
 	pthread_mutex_unlock(&mutex);
 }
 
-void RemoteDataObserver::resetRemoteUid() {
-    remoteUid = -1;
+void RemoteDataObserver::resetRemoteUid(unsigned int uid) {
+	vector<unsigned int>::iterator it;
+	for(it = remoteUids.begin(); it!=remoteUids.end(); ++it) {
+		if(*it == uid) {
+			remoteUids.erase(it);
+			break;
+		}
+	}
+    LOGD("resetRemoteUid->uid = %d", uid);
 }
 
 void RemoteDataObserver::set_callback(RemoteDataObserver_vidcallback vcb,

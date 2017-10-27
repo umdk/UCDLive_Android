@@ -84,7 +84,6 @@ public class MediaManager extends IRtcEngineEventHandler {
         }
 
         Log.d(TAG, "init " + appId + ", sdk version:" +  RtcEngine.getSdkVersion());
-
         rtcEngine = RtcEngine.create(context, appId, this);
         videoSource = new AgoraVideoSource(); // define main class for customize video source
         videoSource.Attach();

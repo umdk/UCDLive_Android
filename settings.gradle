@@ -1,9 +1,1 @@
 include ':ulive-demo'
-
-include ':extension-ucloud-faceu'
-include ':extension-libfacepp'
-include ':extension-libopenglfilter'
-
-project(':extension-ucloud-faceu').projectDir = new File(settingsDir, 'extensions/ucloud-faceu')
-project(':extension-libfacepp').projectDir = new File(settingsDir, 'extensions/libfacepp')
-project(':extension-libopenglfilter').projectDir = new File(settingsDir, 'extensions/libopenglfilter')

@@ -59,7 +59,7 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/BlueTheme" >
+            android:theme="@style/FullscreenTheme" >
             <intent-filter>
                 <action android:name="ucloud.intent.action.ulive.example.play.video" />
                 <category android:name="android.intent.category.DEFAULT" />

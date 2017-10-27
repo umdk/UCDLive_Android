@@ -35,7 +35,7 @@ public final class StreamProfileUtil {
 
         public static final UVideoProfile.Resolution DEFAULT_VIDEO_RESOLUTION = UVideoProfile.Resolution.RATIO_AUTO;
 
-        public static final int DEFAULT_AUDIO_SOURCE = UAudioProfile.AUDIO_SOURCE_MIC;
+        public static final int DEFAULT_AUDIO_SOURCE = UAudioProfile.AUDIO_SOURCE_DEFAULT;
     }
 
     public static UStreamingProfile buildDefault() {
@@ -78,22 +78,22 @@ public final class StreamProfileUtil {
                                           int cameraIndex,
                                           String streamUrl) {
         UVideoProfile videoProfile = new UVideoProfile().fps(fps)
-                .bitrate(videoBitrate) //ÉèÖÃ³õÊ¼ÂëÂÊ ÍÆ¼öÉèÖÃ600kbps
-                .minBitrate(UVideoProfile.VIDEO_BITRATE_NORMAL) //ÉèÖÃ×îµÍÂëÂÊ 400kbps
-                .maxBitrate(UVideoProfile.VIDEO_BITRATE_HIGH) //ÉèÖÃ×î¸ßÂëÂÊ 800kbps µ±ÍøÂç·¢ÉúÓµÈû£¬
-                //¹ØÓÚ×îµÍ¡¢×î¸ßÂëÂÊ£º(SDKÄÚ²¿»á¶¯Ì¬µ÷ÕûÒôÊÓÆµÂëÂÊ)
-                //1.¿É×ÔĞĞµ÷Õû×îµÍÂëÂÊµÄÖµ£¬Èô×îĞ¡ÂëÂÊÓë³õÊ¼ÂëÂÊÏà²î½ÏĞ¡£¬µ±ÍøÂçÓµÈûÊ±£¬¿¹¶¶¶¯µÄÄÜÁ¦¾Í±È½ÏĞ¡£¬ÕûÌåÖ¡ÂÊ»á½ÏµÍ¡£
-                //2.½µÂëÂÊ£¬¶ÔÒôÊÓÆµµÄÖÊÁ¿¿Ï¶¨ÓĞÓ°Ïì£¬Ò»°ãÍÆ¼öÉèÖÃÒ»¸öÄúÈÏÎªÄÜ¹»½ÓÊÜµÄ×îµÍĞ§¹ûµÄÖµ£¬µ±ÍøÂç»Ö¸´Í¨³©Ê±£¬ÄÚ²¿»áÖğ²½ÎÈ¶¨Ìá¸ßÂëÂÊ¡£
-                //3.ÈôÁ÷³©ÓÅÏÈ£¬ÊÓÆµÂëÂÊ×îµÍÍÆ¼ö¿ÉÉèÖÃ200kbps£¬»­ÖÊÓÅÏÈÍÆ¼ö³É400kbps (³õÊ¼ÂëÂÊ600kbpsµÄÇé¿ö)£¬ÆäËüÄú×Ô¶¨ÒåµÄÖµÒ²ÊÊÓÃ¡£
+                .bitrate(videoBitrate) //è®¾ç½®åˆå§‹ç ç‡ æ¨èè®¾ç½®600kbps
+                .minBitrate(UVideoProfile.VIDEO_BITRATE_NORMAL) //è®¾ç½®æœ€ä½ç ç‡ 400kbps
+                .maxBitrate(UVideoProfile.VIDEO_BITRATE_HIGH) //è®¾ç½®æœ€é«˜ç ç‡ 800kbps å½“ç½‘ç»œå‘ç”Ÿæ‹¥å¡ï¼Œ
+                //å…³äºæœ€ä½ã€æœ€é«˜ç ç‡ï¼š(SDKå†…éƒ¨ä¼šåŠ¨æ€è°ƒæ•´éŸ³è§†é¢‘ç ç‡)
+                //1.å¯è‡ªè¡Œè°ƒæ•´æœ€ä½ç ç‡çš„å€¼ï¼Œè‹¥æœ€å°ç ç‡ä¸åˆå§‹ç ç‡ç›¸å·®è¾ƒå°ï¼Œå½“ç½‘ç»œæ‹¥å¡æ—¶ï¼ŒæŠ—æŠ–åŠ¨çš„èƒ½åŠ›å°±æ¯”è¾ƒå°ï¼Œæ•´ä½“å¸§ç‡ä¼šè¾ƒä½ã€‚
+                //2.é™ç ç‡ï¼Œå¯¹éŸ³è§†é¢‘çš„è´¨é‡è‚¯å®šæœ‰å½±å“ï¼Œä¸€èˆ¬æ¨èè®¾ç½®ä¸€ä¸ªæ‚¨è®¤ä¸ºèƒ½å¤Ÿæ¥å—çš„æœ€ä½æ•ˆæœçš„å€¼ï¼Œå½“ç½‘ç»œæ¢å¤é€šç•…æ—¶ï¼Œå†…éƒ¨ä¼šé€æ­¥ç¨³å®šæé«˜ç ç‡ã€‚
+                //3.è‹¥æµç•…ä¼˜å…ˆï¼Œè§†é¢‘ç ç‡æœ€ä½æ¨èå¯è®¾ç½®200kbpsï¼Œç”»è´¨ä¼˜å…ˆæ¨èæˆ400kbps (åˆå§‹ç ç‡600kbpsçš„æƒ…å†µ)ï¼Œå…¶å®ƒæ‚¨è‡ªå®šä¹‰çš„å€¼ä¹Ÿé€‚ç”¨ã€‚
                 .resolution(videoResolution)
                 .codecMode(videoCodecType)
                 .captureOrientation(captureOrientation);
 
         UAudioProfile audioProfile = new UAudioProfile()
                 .source(audioSource)
-                .bitrate(audioBitrate) //ÉèÖÃ³õÊ¼ÂëÂÊ ÍÆ¼öÉèÖÃ64kbps
-                .minBitrate(UAudioProfile.AUDIO_BITRATE_LOW) //ÉèÖÃ×îµÍÂëÂÊ 48kbps
-                .maxBitrate(UAudioProfile.AUDIO_BITRATE_HIGH) //ÉèÖÃ×î¸ßÂëÂÊ 128kbps
+                .bitrate(audioBitrate) //è®¾ç½®åˆå§‹ç ç‡ æ¨èè®¾ç½®64kbps
+                .minBitrate(UAudioProfile.AUDIO_BITRATE_LOW) //è®¾ç½®æœ€ä½ç ç‡ 48kbps
+                .maxBitrate(UAudioProfile.AUDIO_BITRATE_HIGH) //è®¾ç½®æœ€é«˜ç ç‡ 128kbps
                 .channels(audioChannels)
                 .samplerate(audioSampleRate);
 

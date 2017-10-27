@@ -11,17 +11,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ucloud.ulive.UAudioProfile;
+import com.ucloud.ulive.UCameraSessionListener;
 import com.ucloud.ulive.UEasyStreaming;
 import com.ucloud.ulive.UFilterProfile;
+import com.ucloud.ulive.USize;
 import com.ucloud.ulive.UVideoProfile;
 import com.ucloud.ulive.example.AVOption;
 import com.ucloud.ulive.example.BaseActivity;
 import com.ucloud.ulive.example.MainActivity;
 import com.ucloud.ulive.example.R;
 import com.ucloud.ulive.example.ext.agora.filter.URemoteAudioMixFilter;
+import com.ucloud.ulive.example.ext.faceunity.FaceunityCompat;
 import com.ucloud.ulive.example.widget.LiveCameraView;
+import com.ucloud.ulive.filter.UVideoGPUFilter;
 import com.ucloud.ulive.framework.AudioBufferFormat;
 import com.ucloud.ulive.framework.ImageBufferFormat;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,6 +51,8 @@ public class ChatActivity extends BaseActivity {
     protected AudioBufferFormat remoteAudioBufferFormat;
 
     private SpecailEffectHolder specailEffectHolder;
+
+    private UVideoGPUFilter filter;
 
     class SpecailEffectHolder {
         boolean line;
@@ -88,9 +96,12 @@ public class ChatActivity extends BaseActivity {
                         break;
                     case USER_OFFLINE:
                         specailEffectHolder.line = false;
-                        //发现连麦用户掉线时，清除小窗口
-//                        LiveCameraView.getEasyStreaming().setOnProcessedFrameListener(null);
+                        //发现连麦用户掉线时，清除小窗口 参数说明 //0 清除所有， 非0固定值 清除指定的窗口
+                        LiveCameraView.getEasyStreaming().clearRemoteVideoFrame((Integer)data[0]);
                         Log.d(TAG, "user offline: uid = " + data[0] + " reason = " + data[1]);
+                        if (agoraRTCClient != null) {
+                            agoraRTCClient.resetRemoteUid((Integer)data[0]); //从连麦列表中清除
+                        }
                         break;
                     default:
                         break;
@@ -100,6 +111,9 @@ public class ChatActivity extends BaseActivity {
         agoraRTCClient = new AgoraRTCClient(mediaManager, localAudioBufferFormat, remoteAudioBufferFormat);
         RemoteAudioCacheUtil.getInstance().init(remoteAudioBufferFormat, 10, remoteAudioBufferFormat.sampleRate / 10 * 2); //内部每笔音频占用的大小，保持一致
         cameraPreview.init(avOption);
+        cameraPreview.addCameraSessionListener(cameraSessionListener);
+        filter = new FaceunityCompat(this);
+        cameraPreview.setVideoGPUFilter(filter);
     }
 
     private void initConfig() {
@@ -112,6 +126,8 @@ public class ChatActivity extends BaseActivity {
             finish();
             return;
         }
+        //当前仅GPU模式下支持连麦
+//        avOption.videoFilterMode = UFilterProfile.FilterMode.GPU;
         avOption.videoFilterMode = i.getIntExtra(MainActivity.KEY_FILTER, UFilterProfile.FilterMode.GPU);
         avOption.videoCodecType = UVideoProfile.CODEC_MODE_HARD;
         avOption.videoCaptureOrientation = i.getIntExtra(MainActivity.KEY_CAPTURE_ORIENTATION, UVideoProfile.ORIENTATION_PORTRAIT);
@@ -223,14 +239,41 @@ public class ChatActivity extends BaseActivity {
         LiveCameraView.getEasyStreaming().setOnProcessedFrameListener(new UEasyStreaming.OnProcessedFrameListener() {
             @Override
             public void onProcessedFrame(byte[] data, int width, int height, long timestamp, int rotation, int format) {
-                if (format == ImageBufferFormat.RGBA) {
+                if (format == ImageBufferFormat.RGBA) { //GPU 采集模式 回调RGBA格式的数据, GPU模式下需要设备支持GLES3，多人连麦最大支持4v4
                     //agora format: 1: I420 2: ARGB 3: NV21 4: RGBA
                     //将UCloud sdk采集处理的原始视频数据，发生给agora sdk
                     mediaManager.getVideoSource().DeliverFrame(data, width, height, 0, 0, 0, 0, rotation, System.currentTimeMillis(), 4);
-                } else if (format == ImageBufferFormat.NV21) {
+                } else if (format == ImageBufferFormat.NV21) { //CPU 采集模式 回调NV21的数据格式, CPU模式下当前仅支持1v1连麦
                     mediaManager.getVideoSource().DeliverFrame(data, width, height, 0, 0, 0, 0, rotation, System.currentTimeMillis(), 3);
                 }
             }
         });
     }
+
+    UCameraSessionListener cameraSessionListener = new UCameraSessionListener() {
+        @Override
+        public USize[] onPreviewSizeChoose(int cameraId, List<USize> supportPreviewSizeList) {
+            return new USize[0];
+        }
+
+        @Override
+        public void onCameraOpenSucceed(int cameraId, List<Integer> supportCameraIndexList, int width, int height) {
+
+        }
+
+        @Override
+        public void onCameraError(Error error, Object extra) {
+
+        }
+
+        @Override
+        public void onCameraFlashSwitched(int cameraId, boolean currentState) {
+
+        }
+
+        @Override
+        public void onPreviewFrame(int cameraId, byte[] data, int width, int height) {
+            ((FaceunityCompat) filter).updateCameraFrame(data, width, height);
+        }
+    };
 }

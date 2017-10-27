@@ -37,7 +37,7 @@ static void freeContext(void* opaque) {
     free(ctx);
 }
 
-static void onRTCVideoFrame(void* opaque, unsigned char* frame_data, int size,
+static void onRTCVideoFrame(int uid, int index, void* opaque, unsigned char* frame_data, int size,
                             int width, int height, int orientation, double pts)
 {
     Context* ctx = (Context*) opaque;
@@ -68,7 +68,7 @@ static void onRTCVideoFrame(void* opaque, unsigned char* frame_data, int size,
 
     if (outBuffer != NULL) {
         env->CallVoidMethod(ctx->obj, ctx->jmid_on_video_event,
-                      outBuffer, size, width, height, orientation, pts);
+                            uid, index, outBuffer, size, width, height, orientation, pts);
     }
 
     if (env->ExceptionCheck()) {
@@ -137,7 +137,7 @@ jlong Java_com_ucloud_ulive_example_ext_agora_RemoteDataObserver_createObserver
         }
         jclass clazz = env->GetObjectClass(thiz);
         ctx->obj = env->NewGlobalRef(thiz);
-        ctx->jmid_on_video_event = env->GetMethodID(clazz, "onVideoFrame", "(Ljava/nio/ByteBuffer;IIIID)V");
+        ctx->jmid_on_video_event = env->GetMethodID(clazz, "onVideoFrame", "(IILjava/nio/ByteBuffer;IIIID)V");
         ctx->jmid_on_audio_event = env->GetMethodID(clazz, "onAudioFrame", "(Ljava/nio/ByteBuffer;"
                 "IIIIDZ)V");
         remoteDataObserver->set_callback(onRTCVideoFrame, onRTCAudioFrame, ctx, freeContext);
@@ -166,9 +166,9 @@ void Java_com_ucloud_ulive_example_ext_agora_RemoteDataObserver_enableObserver
   }
 
 void Java_com_ucloud_ulive_example_ext_agora_RemoteDataObserver_resetRemoteUid(
-        JNIEnv *env, jobject instance, jlong wrapperInstance) {
+        JNIEnv *env, jobject instance, jlong wrapperInstance, jint uid) {
     RemoteDataObserver* remoteDataObserver = getInstance(wrapperInstance);
     if(remoteDataObserver != NULL) {
-        remoteDataObserver->resetRemoteUid();
+        remoteDataObserver->resetRemoteUid(uid);
     }
 }

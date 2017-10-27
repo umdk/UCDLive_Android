@@ -17,7 +17,7 @@ import com.ucloud.ulive.UStreamStateListener;
 import com.ucloud.ulive.UVideoProfile;
 import com.ucloud.ulive.example.AVOption;
 import com.ucloud.ulive.example.R;
-import com.ucloud.ulive.example.ext.faceu.FaceuCompat;
+import com.ucloud.ulive.example.ext.faceunity.FaceunityCompat;
 import com.ucloud.ulive.example.ext.gpuimage.GPUImageCompatibleFilter;
 import com.ucloud.ulive.example.filter.audio.UAudioMuteFilter;
 import com.ucloud.ulive.example.filter.audio.URawAudioMixFilter;
@@ -31,13 +31,14 @@ import com.ucloud.ulive.filter.video.cpu.USkinBlurCPUFilter;
 import com.ucloud.ulive.filter.video.gpu.USkinBeautyGPUFilter;
 import com.ucloud.ulive.filter.video.gpu.USkinSpecialEffectsFilter;
 
+import jp.co.cyberagent.android.gpuimage.GPUImageEmbossFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageGrayscaleFilter;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import jp.co.cyberagent.android.gpuimage.GPUImageEmbossFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageGrayscaleFilter;
 
 import static butterknife.ButterKnife.bind;
 
@@ -89,16 +90,21 @@ public class LiveRoomView extends FrameLayout {
     //GPU滤镜组合
     private final List<UVideoGPUFilter> filters = new ArrayList<>();
 
+    private Context mContext;
+
     public LiveRoomView(Context context) {
         super(context);
+        mContext = context;
     }
 
     public LiveRoomView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
     }
 
     public LiveRoomView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        mContext = context;
     }
 
     @Override
@@ -169,7 +175,7 @@ public class LiveRoomView extends FrameLayout {
         viewHolder.cameraControllerView.resetSpecialEffectButtonUI(specailEffectHolder);
     }
 
-    public static String[] GPU_FILTERS_NAME = {"无", "美颜", "健康", "甜美", "复古", "蓝调", "怀旧", "童话", "组合", "Demo1", "浮雕", "黑白"};
+    public static String[] GPU_FILTERS_NAME = {"无", "美颜", "贴纸", "健康", "甜美", "复古", "蓝调", "怀旧", "童话", "组合", "Demo1", "浮雕", "黑白"};
 
     public UVideoGPUFilter createGPUFilterByPosition(int position) {
         switch (position) {
@@ -178,17 +184,23 @@ public class LiveRoomView extends FrameLayout {
                 specailEffectHolder.filterSeekeable = true;
                 skinGPUFilter.setFilterLevel(FilterControllerView.LEVEL1);  //设置视频GPU美颜滤镜级别
                 return skinGPUFilter;
-            case 2:
+            case 2: //展示faceunity贴纸功能
+                skinGPUFilter = new FaceunityCompat(mContext);
+                filters.clear();
+                filters.add(skinGPUFilter);
+                specailEffectHolder.filterSeekeable = false;
+                return skinGPUFilter;
             case 3:
             case 4:
             case 5:
             case 6:
             case 7:
-                specialEffectsFilter = new USkinSpecialEffectsFilter(position - 1); // 1-6， 若修改了position自行对应
+            case 8:
+                specialEffectsFilter = new USkinSpecialEffectsFilter(position-2); // 1-6， 若修改了position自行对应
                 specialEffectsFilter.setFilterLevel(FilterControllerView.LEVEL1); //设置视频GPU美颜滤镜级别
                 specailEffectHolder.filterSeekeable = true;
                 return specialEffectsFilter;
-            case 8: //展示UCloud SDK提供的美颜滤镜 + 特殊风格滤镜 组合滤镜的使用
+            case 9: //展示UCloud SDK提供的美颜滤镜 + 特殊风格滤镜 组合滤镜的使用
                 skinGPUFilter = new USkinBeautyGPUFilter(); //美颜滤镜
                 specialEffectsFilter = new USkinSpecialEffectsFilter(USkinSpecialEffectsFilter.BLUE); //其他滤镜可以类似的以组合的形式存在
                 skinGPUFilter.setFilterLevel(FilterControllerView.LEVEL1);
@@ -199,16 +211,16 @@ public class LiveRoomView extends FrameLayout {
                 UVideoGroupGPUFilter filter = new UVideoGroupGPUFilter(filters);
                 specailEffectHolder.filterSeekeable = true;
                 return filter;
-            case 9: //展示Demo当中自定义的滤镜
+            case 10: //展示Demo当中自定义的滤镜
                 skinGPUFilter = new UWhiteningGPUVideoFilter();
                 specailEffectHolder.filterSeekeable = false;
                 return skinGPUFilter;
-            case 10: //展示兼容GPUImage, 根据需要自行选择依赖或者移除
+            case 11: //展示兼容GPUImage, 根据需要自行选择依赖或者移除
                 GPUImageFilter gpuImageFilter = new GPUImageEmbossFilter(); //支持适配直接继承android-gpuiamge/GPUImageFilter的滤镜，不支持组合滤镜
                 skinGPUFilter = new GPUImageCompatibleFilter<>(gpuImageFilter);
                 specailEffectHolder.filterSeekeable = false;
                 return skinGPUFilter;
-            case 11: //展示兼容GPUImage, 根据需要自行选择依赖或者移除
+            case 12: //展示兼容GPUImage, 根据需要自行选择依赖或者移除
                 gpuImageFilter = new GPUImageGrayscaleFilter();
                 specailEffectHolder.filterSeekeable = false;
                 skinGPUFilter = new GPUImageCompatibleFilter<>(gpuImageFilter);
@@ -515,8 +527,8 @@ public class LiveRoomView extends FrameLayout {
         public void onPreviewFrame(int cameraId, byte[] data, int width, int height) {
             if (filters != null) {
                 for (UVideoGPUFilter filter: filters) {
-                    if (filter instanceof FaceuCompat) {
-                        ((FaceuCompat) filter).updateCameraFrame(cameraId, data, width, height);
+                    if (filter instanceof FaceunityCompat) {
+                        ((FaceunityCompat) filter).updateCameraFrame(data, width, height);
                     }
                 }
             }

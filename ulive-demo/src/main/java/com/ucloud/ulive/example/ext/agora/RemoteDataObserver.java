@@ -11,6 +11,8 @@ import com.ucloud.ulive.framework.ImageBufferFrame;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class RemoteDataObserver {
     private static final String TAG = "RemoteDataObserver";
@@ -21,28 +23,43 @@ public class RemoteDataObserver {
 
     private volatile boolean receivingRemoteData = false;
 
-    private ByteBuffer videoDirectBuffer;
-
     private ByteBuffer localAudioBuffer;
 
     private AudioBufferFormat localAudioBufFormat;
 
     private AudioBufferFormat remoteAudioBufFormat;
 
-    private ImageBufferFormat imgBufFormat;
-
     private long count = 0;
 
-    private UPosition remoteVideoPosition;
+    private UPosition[] positions;
+
+    private Map<Integer, ByteBuffer> remoteCacheBuffers;
+    private Map<Integer, ImageBufferFormat> remoteVideoFormats;
 
     public RemoteDataObserver(AudioBufferFormat localAudioBufFormat, AudioBufferFormat remoteAudioBufFormat) {
         this.localAudioBufFormat = localAudioBufFormat;
         this.remoteAudioBufFormat = remoteAudioBufFormat;
         observerInstance = createObserver();
-        remoteVideoPosition = new UPosition();
-        remoteVideoPosition.setPosition(UPosition.BOTTOM_RIGHT);
-        remoteVideoPosition.setHorizontalMargin(20);
-        remoteVideoPosition.setVerticalMargin(20);
+
+        UPosition remoteVideoPosition1 = new UPosition();
+        remoteVideoPosition1.setPosition(UPosition.BOTTOM_RIGHT);
+        remoteVideoPosition1.setHorizontalMargin(20);
+        remoteVideoPosition1.setVerticalMargin(20);
+
+        UPosition remoteVideoPosition2 = new UPosition();
+        remoteVideoPosition2.setPosition(UPosition.BOTTOM_RIGHT);
+        remoteVideoPosition2.setHorizontalMargin(20);
+        remoteVideoPosition2.setVerticalMargin(600);
+
+        UPosition remoteVideoPosition3 = new UPosition();
+        remoteVideoPosition3.setPosition(UPosition.BOTTOM_RIGHT);
+        remoteVideoPosition3.setHorizontalMargin(20);
+        remoteVideoPosition3.setVerticalMargin(1200);
+
+        positions = new UPosition[] {remoteVideoPosition1, remoteVideoPosition2, remoteVideoPosition3};
+
+        remoteCacheBuffers = new LinkedHashMap<>();
+        remoteVideoFormats = new LinkedHashMap<>();
     }
 
     public void release() {
@@ -50,7 +67,6 @@ public class RemoteDataObserver {
             Log.d(TAG, "have been released");
             return;
         }
-
         release(observerInstance);
         observerInstance = UNINIT;
     }
@@ -63,41 +79,53 @@ public class RemoteDataObserver {
         enableObserver(observerInstance, enable);
     }
 
-    public void resetRemoteUid() {
-        resetRemoteUid(observerInstance);
-    }
-
     private native long createObserver();
 
     private native void release(long wrapperInstance);
 
     private native void enableObserver(long wrapperInstance, boolean enable);
 
-    private native void resetRemoteUid(long wrapperInstance);
+    private native void resetRemoteUid(long wrapperInstance, int uid);
 
-    public void onVideoFrame(ByteBuffer buffer, int size, int width, int height, int orientation, double pts) {
-//        Log.d(TAG, "onVideoFrame: size = " + size + ", width = " + width + ", height = " + height + ", orientation = " + orientation + ", pts = " + pts);
+    private Object syncObject = new Object();
+
+    public void onVideoFrame(int uid, int index, ByteBuffer buffer, int size, int width, int height, int orientation, double pts) {
+
+        ByteBuffer videoDirectBuffer = remoteCacheBuffers.get(uid);
+
+        if (videoDirectBuffer == null) {
+            videoDirectBuffer = ByteBuffer.allocateDirect(size);
+            remoteCacheBuffers.put(uid, videoDirectBuffer);
+        }
+
+        ImageBufferFormat imgBufFormat = remoteVideoFormats.get(uid);
+
+        if (imgBufFormat == null) {
+            imgBufFormat = new ImageBufferFormat(ImageBufferFormat.RGBA, width, height, orientation);
+            remoteVideoFormats.put(uid, imgBufFormat);
+        }
+
+        if (imgBufFormat.width != width || imgBufFormat.height != height || imgBufFormat.orientation != orientation) {
+            imgBufFormat.width = width;
+            imgBufFormat.height = height;
+            imgBufFormat.orientation = orientation;
+            videoDirectBuffer.clear();
+            videoDirectBuffer = ByteBuffer.allocateDirect(size);
+            remoteCacheBuffers.put(uid, videoDirectBuffer);
+            remoteVideoFormats.put(uid, imgBufFormat);
+        }
+
         if (receivingRemoteData) {
-            if (videoDirectBuffer == null) {
-                videoDirectBuffer = ByteBuffer.allocateDirect(size);
-                imgBufFormat = new ImageBufferFormat(ImageBufferFormat.RGBA, width, height, orientation);
-            }
-            else if (imgBufFormat.width != width
-                    || imgBufFormat.height != height
-                    || imgBufFormat.orientation != orientation) {
-                imgBufFormat.width = width;
-                imgBufFormat.height = height;
-                imgBufFormat.orientation = orientation;
-                videoDirectBuffer.clear();
-                videoDirectBuffer = null;
-                videoDirectBuffer = ByteBuffer.allocateDirect(size);
-            }
             videoDirectBuffer.clear();
             videoDirectBuffer.put(buffer);
             videoDirectBuffer.rewind();
             //当前仅支持RGBA
             ImageBufferFrame bufFrame = new ImageBufferFrame(imgBufFormat, videoDirectBuffer, (long) pts);
-            LiveCameraView.getEasyStreaming().deliverRemoteVideoFrame(bufFrame, remoteVideoPosition);
+            Log.d(TAG, "onVideoFrame: uid =  " + uid + " index = " + index + ", width = " + width + ", height = " + height + ", orientation = " + orientation + ", pts = " + pts);;
+            if (index != -1) {
+                LiveCameraView.getEasyStreaming().deliverRemoteVideoFrame(uid, bufFrame, positions[index]);
+                //说明 LiveCameraView.getEasyStreaming().deliverRemoteVideoFrame(bufFrame, positions[index]);方法已经过时
+            }
         }
     }
 
@@ -121,8 +149,7 @@ public class RemoteDataObserver {
         AudioBufferFrame audioBufferFrame = RemoteAudioCacheUtil.getInstance().poll();
         if (audioBufferFrame == null) {
             Log.d(TAG, "mix->remote->audio->poll->failed.");
-        }
-        else {
+        } else {
             audioBufferFrame.buffer.put(buffer);
             audioBufferFrame.buffer.flip();
             RemoteAudioCacheUtil.getInstance().cacheRemoteAudio(audioBufferFrame);
@@ -174,5 +201,9 @@ public class RemoteDataObserver {
     public void stopReceiveRemoteData() {
         receivingRemoteData = false;
         LiveCameraView.getEasyStreaming().deliverLocalAudioFrame(null);
+    }
+
+    public void resetRemoteUid(int uid) {
+        resetRemoteUid(observerInstance, uid);
     }
 }

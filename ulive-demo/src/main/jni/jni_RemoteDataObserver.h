@@ -39,8 +39,7 @@ JNIEXPORT void JNICALL Java_com_ucloud_ulive_example_ext_agora_RemoteDataObserve
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL
-Java_com_ucloud_ulive_example_ext_agora_RemoteDataObserver_resetRemoteUid(JNIEnv *env, jobject instance,
-                                                                jlong wrapperInstance);
+Java_com_ucloud_ulive_example_ext_agora_RemoteDataObserver_resetRemoteUid(JNIEnv *env, jobject instance, jlong wrapperInstance, jint uid);
 
 #ifdef __cplusplus
 }

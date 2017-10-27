@@ -67,7 +67,8 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
 
     private final String[] publishUrls = {
         "rtmp://publish3.cdn.ucloud.com.cn/ucloud/%s",
-        "rtmp://publish3.usmtd.ucloud.com.cn/live/%s"};
+        "rtmp://publish3.usmtd.ucloud.com.cn/live/%s"
+    };
 
     private final String[] playUrls = {
         "http://vlive3.rtmp.cdn.ucloud.com.cn/ucloud/%s.flv",

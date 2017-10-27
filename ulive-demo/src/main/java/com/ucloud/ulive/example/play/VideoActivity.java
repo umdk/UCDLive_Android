@@ -1,5 +1,6 @@
 package com.ucloud.ulive.example.play;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
@@ -11,7 +12,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ucloud.ulive.example.BaseActivity;
 import com.ucloud.ulive.example.MainActivity;
 import com.ucloud.ulive.example.R;
 import com.ucloud.uvod.UMediaProfile;
@@ -24,7 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class VideoActivity extends BaseActivity implements UPlayerStateListener {
+public class VideoActivity extends Activity implements UPlayerStateListener {
 
     private static final String TAG = "VideoActivity";
 

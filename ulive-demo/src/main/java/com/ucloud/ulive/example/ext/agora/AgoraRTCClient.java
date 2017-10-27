@@ -1,6 +1,7 @@
 package com.ucloud.ulive.example.ext.agora;
 
 
+import com.ucloud.ulive.example.widget.LiveCameraView;
 import com.ucloud.ulive.framework.AudioBufferFormat;
 
 public class AgoraRTCClient {
@@ -28,6 +29,7 @@ public class AgoraRTCClient {
     public void leaveChannel() {
         enableObserver(false);
         mediaManager.leaveChannel();
+        LiveCameraView.getEasyStreaming().clearRemoteVideoFrame(0); //0 清除所有， 其它id 清除指定的窗口
     }
 
     private void enableObserver(boolean enable) {
@@ -48,15 +50,19 @@ public class AgoraRTCClient {
 
     public void startReceiveRemoteData() {
         if (remoteDataObserver != null) {
-            remoteDataObserver.resetRemoteUid();
             remoteDataObserver.startReceiveRemoteData();
         }
     }
 
     public void stopReceiveRemoteData() {
         if (remoteDataObserver != null) {
-            remoteDataObserver.resetRemoteUid();
             remoteDataObserver.stopReceiveRemoteData();
+        }
+    }
+
+    public void resetRemoteUid(int uid) {
+        if (remoteDataObserver != null) {
+            remoteDataObserver.resetRemoteUid(uid);
         }
     }
 }
