@@ -74,6 +74,12 @@ API 文档：请参考Demo下的javadoc目录
   - issue：[查看已有 issues 和提交 Bug 推荐][3]
   - 邮 箱：[sdk_spt@ucloud.cn][4]
 
+### 提交工单，配置推流域名对应的accesskey
+
+[提交工单][8]  
+
+ <img src="screenshot/work_ticket.png" width = "75%" height = "75%" alt="work_ticket" />
+
 ### 问题反馈参考模板
 
 |名称|描述|
@@ -92,3 +98,4 @@ API 文档：请参考Demo下的javadoc目录
 [5]: https://github.com/umdk/UCDLive_Android/wiki/7-常见问题#7
 [6]: https://github.com/umdk/UCDLive_Android/wiki/9-版本历史#9
 [7]: https://github.com/umdk/UCDLive_Android/wiki/10-项目上线注意事项#10
+[8]: https://accountv2.ucloud.cn/work_ticket
