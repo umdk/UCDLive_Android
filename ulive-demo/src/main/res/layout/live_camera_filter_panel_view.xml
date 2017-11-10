@@ -29,11 +29,76 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:id="@+id/txtv_beatuy_level"
             android:text="@string/skin_beauty"
             android:textColor="@color/blue" />
 
         <TextView
-            android:id="@+id/txtv_skin_blur_progress"
+            android:id="@+id/txtv_skin_beauty_progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/blue" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/ll_level2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <SeekBar
+            android:id="@+id/seek_bar_skin_tone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:maxHeight="20dip"
+            android:minHeight="20dip"
+            android:max="100" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/skin_tone"
+            android:textColor="@color/blue" />
+
+        <TextView
+            android:id="@+id/txtv_skin_tone_progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/blue" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/ll_level3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <SeekBar
+            android:id="@+id/seek_bar_skin_bright"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:maxHeight="20dip"
+            android:minHeight="20dip"
+            android:max="100" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/skin_bright"
+            android:textColor="@color/blue" />
+
+        <TextView
+            android:id="@+id/txtv_skin_bright_progress"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

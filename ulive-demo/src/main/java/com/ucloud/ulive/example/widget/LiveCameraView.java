@@ -188,6 +188,7 @@ public class LiveCameraView extends UAspectFrameLayout {
 
     /**
      * 开始推流
+     * 若打开摄像头后立马开始推流，在收到UStreamStateListener.State.PREPARED 消息之后调用
      */
     public void startRecording() {
         if (!isPreviewed()) {
@@ -493,7 +494,20 @@ public class LiveCameraView extends UAspectFrameLayout {
         @Override
         public void onStreamError(UStreamStateListener.Error error, Object extra) {
             if (isPreviewed()) {
-                getEasyStreaming().restart();
+                switch (error) {
+                    case AUDIO_PREPARE_FAILED:
+                    case VIDEO_PREPARE_FAILED:
+                    case UNKNOWN:
+                    case IOERROR:
+                        getEasyStreaming().restart();
+                        break;
+                    case INVALID_STREAMING_URL:
+                        break;
+                    case SIGNATRUE_FAILED:
+                        break;
+                    default:
+                        break;
+                }
             }
             for (UStreamStateListener listener: outerStreamStateListeners) {
                 listener.onStreamError(error, extra);

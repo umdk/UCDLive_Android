@@ -175,7 +175,7 @@ public class VideoActivity extends Activity implements UPlayerStateListener {
         profile.setInteger(UMediaProfile.KEY_START_ON_PREPARED, 1); //当prepread成功后自动开始播放，(无须自己监听prepared消息调用start方法) 直播推荐开启(1开启，0不开启), 默认不开启
         profile.setInteger(UMediaProfile.KEY_LIVE_STREAMING, 1); //标识播放的流为直播源，还是点播源(0点播，1直播),播放器对不同场景，做了不同的优化
         profile.setInteger(UMediaProfile.KEY_MEDIACODEC, 0); //视频解码方式，推荐软解, (默认为0软解)
-        profile.setInteger(UMediaProfile.KEY_RENDER_SURFACUE, 1); //视频渲染方式，推荐
+        profile.setInteger(UMediaProfile.KEY_RENDER_TEXTURE, 1); //视频渲染方式，推荐
 
         profile.setInteger(UMediaProfile.KEY_PREPARE_TIMEOUT, 1000 * 15); //设置第一次播放流地址时，PREPARE_TIMEOUT超时时间(超过设置的值，sdk内部会做重连动作，单位ms)
         profile.setInteger(UMediaProfile.KEY_READ_FRAME_TIMEOUT, 1000 * 15); //设置播放过程中，READ_FRAME_TIMEOUT网络卡顿出现读取数据超时(超过设置的值，sdk内部会做重连动作，单位ms)

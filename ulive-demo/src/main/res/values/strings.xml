@@ -65,7 +65,10 @@
     <string name="codec_mode">编码类型: </string>
     <string name="return_index">返回首页</string>
     <string name="stream_over">直播结束</string>
-    <string name="skin_beauty">强度</string>
+    <string name="skin_beauty">美颜</string>
+    <string name="skin_level">强度</string>
+    <string name="skin_tone">红润</string>
+    <string name="skin_bright">明亮</string>
     <string name="skin_mask">遮罩</string>
     <string name="loading">玩命加载中....</string>
     <string name="float_window_permission_request_failed">悬浮窗权限申请失败，请到设置开启相关权限</string>

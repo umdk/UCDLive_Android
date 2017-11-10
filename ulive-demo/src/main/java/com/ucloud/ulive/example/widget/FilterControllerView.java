@@ -13,17 +13,43 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class FilterControllerView extends LinearLayout implements SeekBar.OnSeekBarChangeListener {
-
-    public static int LEVEL1 = 60;//0-100
+    //美颜（or 强度）
+    public static int LEVEL1 = 50;//0-100
+    //红润
+    public static int LEVEL2 = 50;//0-100
+    //明暗度
+    public static int LEVEL3 = 50;//0-100
 
     @BindView(R.id.seek_bar_skin_beauty)
     SeekBar skinBeauty;
 
-    @BindView(R.id.txtv_skin_blur_progress)
-    TextView skinBlurProgress;
+    @BindView(R.id.txtv_skin_beauty_progress)
+    TextView skinBeautyProgress;
+
+    @BindView(R.id.txtv_beatuy_level)
+    TextView beautyLevelTxtv;
 
     @BindView(R.id.ll_level1)
     View level1Container;
+
+    @BindView(R.id.seek_bar_skin_tone)
+    SeekBar skinTone;
+
+    @BindView(R.id.txtv_skin_tone_progress)
+    TextView skinToneProgress;
+
+    @BindView(R.id.ll_level2)
+    View level2Container;
+
+    @BindView(R.id.seek_bar_skin_bright)
+    SeekBar skinBright;
+
+    @BindView(R.id.txtv_skin_bright_progress)
+    TextView skinBrightProgress;
+
+    @BindView(R.id.ll_level3)
+    View level3Container;
+
 
     //REMOVED
     private ProgressListener progressListener;
@@ -45,15 +71,25 @@ public class FilterControllerView extends LinearLayout implements SeekBar.OnSeek
         super.onFinishInflate();
         ButterKnife.bind(this);
         skinBeauty.setOnSeekBarChangeListener(this);
+        skinTone.setOnSeekBarChangeListener(this);
+        skinBright.setOnSeekBarChangeListener(this);
     }
 
     public void setListener(ProgressListener listener) {
         progressListener = listener;
     }
 
-    @Override
-    public void setVisibility(int visible) {
-        level1Container.setVisibility(visible);
+    public void setVisibility(int visible, int nums) {
+        if (nums == 1) {
+            level1Container.setVisibility(visible);
+            level2Container.setVisibility(View.GONE);
+            level3Container.setVisibility(View.GONE);
+        }
+        else {
+            level1Container.setVisibility(visible);
+            level2Container.setVisibility(visible);
+            level3Container.setVisibility(visible);
+        }
         super.setVisibility(visible);
     }
 
@@ -61,14 +97,22 @@ public class FilterControllerView extends LinearLayout implements SeekBar.OnSeek
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         switch (seekBar.getId()) {
             case R.id.seek_bar_skin_beauty:
-                skinBlurProgress.setText(String.valueOf(progress));
+                skinBeautyProgress.setText(String.valueOf(progress));
                 LEVEL1 = progress;
+                break;
+            case R.id.seek_bar_skin_tone:
+                skinToneProgress.setText(String.valueOf(progress));
+                LEVEL2 = progress;
+                break;
+            case R.id.seek_bar_skin_bright:
+                skinBeautyProgress.setText(String.valueOf(progress));
+                LEVEL3 = progress;
                 break;
             default:
                 break;
         }
         if (progressListener != null) {
-            progressListener.onProgressChanaged(LEVEL1);
+            progressListener.onProgressChanaged(LEVEL1, LEVEL2, LEVEL3);
         }
     }
 
@@ -82,13 +126,30 @@ public class FilterControllerView extends LinearLayout implements SeekBar.OnSeek
 
     }
 
-    public void initProgress(int level1) {
-        skinBeauty.setMax(100);
-        skinBeauty.setProgress(level1);
-        skinBlurProgress.setText(String.valueOf(level1));
+    public void initProgress(int ...levels) {
+        if (levels.length == 1) {
+            skinBeauty.setMax(100);
+            skinBeauty.setProgress(levels[0]);
+            skinBeautyProgress.setText(String.valueOf(levels[0]));
+            beautyLevelTxtv.setText(R.string.skin_level);
+        }
+        else if (levels.length == 3) {
+            skinBeauty.setMax(100);
+            skinBeauty.setProgress(levels[0]);
+            skinBeautyProgress.setText(String.valueOf(levels[0]));
+            beautyLevelTxtv.setText(R.string.skin_beauty);
+
+            skinTone.setMax(100);
+            skinTone.setProgress(levels[1]);
+            skinToneProgress.setText(String.valueOf(levels[1]));
+
+            skinBright.setMax(100);
+            skinBright.setProgress(levels[2]);
+            skinBrightProgress.setText(String.valueOf(levels[2]));
+        }
     }
 
     public interface ProgressListener {
-        boolean onProgressChanaged(int level1);
+        boolean onProgressChanaged(int ...level1);
     }
 }

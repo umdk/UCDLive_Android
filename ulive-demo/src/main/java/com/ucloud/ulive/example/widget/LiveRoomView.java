@@ -29,16 +29,16 @@ import com.ucloud.ulive.filter.UVideoGroupGPUFilter;
 import com.ucloud.ulive.filter.video.cpu.USkinBeautyCPUFilter;
 import com.ucloud.ulive.filter.video.cpu.USkinBlurCPUFilter;
 import com.ucloud.ulive.filter.video.gpu.USkinBeautyGPUFilter;
+import com.ucloud.ulive.filter.video.gpu.USkinBeautyGPUFilterEx;
 import com.ucloud.ulive.filter.video.gpu.USkinSpecialEffectsFilter;
-
-import jp.co.cyberagent.android.gpuimage.GPUImageEmbossFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageGrayscaleFilter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import jp.co.cyberagent.android.gpuimage.GPUImageEmbossFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageGrayscaleFilter;
 
 import static butterknife.ButterKnife.bind;
 
@@ -73,6 +73,7 @@ public class LiveRoomView extends FrameLayout {
         boolean faceDetector;
         int filterPosition;
         boolean filterSeekeable;
+        int filterProgressNums;
     }
 
     private ViewHolder viewHolder;
@@ -130,18 +131,23 @@ public class LiveRoomView extends FrameLayout {
     private final FilterControllerView.ProgressListener filterProgressListneer = new FilterControllerView.ProgressListener() {
 
         @Override
-        public boolean onProgressChanaged(int level1) {
+        public boolean onProgressChanaged(int ...level) {
             if (avOption.videoFilterMode == UFilterProfile.FilterMode.GPU) {
                 if (skinGPUFilter != null) {
-                    skinGPUFilter.setFilterLevel(level1);
+                    if (level.length == 1) {
+                        skinGPUFilter.setFilterLevel(level[0]);
+                    }
+                    if (level.length == 3) {
+                        skinGPUFilter.setFilterLevel(level[0], level[1], level[2]);
+                    }
                 }
-                if (specialEffectsFilter != null) {
+               /* if (specialEffectsFilter != null) {
                     specialEffectsFilter.setFilterLevel(level1);
-                }
+                }*/
             }
             else {
                 if (skinCPUFilter != null) {
-                    skinCPUFilter.setFilterLevel(level1);
+                    skinCPUFilter.setFilterLevel(level[0]);
                 }
             }
             return false;
@@ -175,32 +181,39 @@ public class LiveRoomView extends FrameLayout {
         viewHolder.cameraControllerView.resetSpecialEffectButtonUI(specailEffectHolder);
     }
 
-    public static String[] GPU_FILTERS_NAME = {"无", "美颜", "贴纸", "健康", "甜美", "复古", "蓝调", "怀旧", "童话", "组合", "Demo1", "浮雕", "黑白"};
+    public static String[] GPU_FILTERS_NAME = {"无", "美颜1", "美颜2", "贴纸", "健康", "甜美", "复古", "蓝调", "怀旧", "童话", "组合", "Demo1", "浮雕", "黑白"};
 
     public UVideoGPUFilter createGPUFilterByPosition(int position) {
+        specailEffectHolder.filterProgressNums = 1;
         switch (position) {
-            case 1: //展示UCloud SDK提供的美颜滤镜
+            case 1: //展示UCloud SDK提供的美颜滤镜 综合(美颜 + 红润 + 明暗度调节)
+                skinGPUFilter = new USkinBeautyGPUFilterEx();
+                specailEffectHolder.filterSeekeable = true;
+                skinGPUFilter.setFilterLevel(FilterControllerView.LEVEL1, FilterControllerView.LEVEL2, FilterControllerView.LEVEL3);  //设置视频GPU美颜滤镜级别
+                specailEffectHolder.filterProgressNums = 3; //需要三个进度条的滤镜
+                return skinGPUFilter;
+            case 2: //展示UCloud SDK提供的美颜滤镜
                 skinGPUFilter = new USkinBeautyGPUFilter();
                 specailEffectHolder.filterSeekeable = true;
                 skinGPUFilter.setFilterLevel(FilterControllerView.LEVEL1);  //设置视频GPU美颜滤镜级别
                 return skinGPUFilter;
-            case 2: //展示faceunity贴纸功能
+            case 3: //展示faceunity贴纸功能
                 skinGPUFilter = new FaceunityCompat(mContext);
                 filters.clear();
                 filters.add(skinGPUFilter);
                 specailEffectHolder.filterSeekeable = false;
                 return skinGPUFilter;
-            case 3:
             case 4:
             case 5:
             case 6:
             case 7:
             case 8:
-                specialEffectsFilter = new USkinSpecialEffectsFilter(position-2); // 1-6， 若修改了position自行对应
+            case 9:
+                specialEffectsFilter = new USkinSpecialEffectsFilter(position - 3); // 1-6， 若修改了position自行对应
                 specialEffectsFilter.setFilterLevel(FilterControllerView.LEVEL1); //设置视频GPU美颜滤镜级别
                 specailEffectHolder.filterSeekeable = true;
                 return specialEffectsFilter;
-            case 9: //展示UCloud SDK提供的美颜滤镜 + 特殊风格滤镜 组合滤镜的使用
+            case 10: //展示UCloud SDK提供的美颜滤镜2（1也是可以的） + 特殊风格滤镜 组合滤镜的使用（支持任意和其它一个或多个GPU滤镜组合）
                 skinGPUFilter = new USkinBeautyGPUFilter(); //美颜滤镜
                 specialEffectsFilter = new USkinSpecialEffectsFilter(USkinSpecialEffectsFilter.BLUE); //其他滤镜可以类似的以组合的形式存在
                 skinGPUFilter.setFilterLevel(FilterControllerView.LEVEL1);
@@ -211,16 +224,16 @@ public class LiveRoomView extends FrameLayout {
                 UVideoGroupGPUFilter filter = new UVideoGroupGPUFilter(filters);
                 specailEffectHolder.filterSeekeable = true;
                 return filter;
-            case 10: //展示Demo当中自定义的滤镜
+            case 11: //展示Demo当中自定义的滤镜
                 skinGPUFilter = new UWhiteningGPUVideoFilter();
                 specailEffectHolder.filterSeekeable = false;
                 return skinGPUFilter;
-            case 11: //展示兼容GPUImage, 根据需要自行选择依赖或者移除
+            case 12: //展示兼容GPUImage, 根据需要自行选择依赖或者移除
                 GPUImageFilter gpuImageFilter = new GPUImageEmbossFilter(); //支持适配直接继承android-gpuiamge/GPUImageFilter的滤镜，不支持组合滤镜
                 skinGPUFilter = new GPUImageCompatibleFilter<>(gpuImageFilter);
                 specailEffectHolder.filterSeekeable = false;
                 return skinGPUFilter;
-            case 12: //展示兼容GPUImage, 根据需要自行选择依赖或者移除
+            case 13: //展示兼容GPUImage, 根据需要自行选择依赖或者移除
                 gpuImageFilter = new GPUImageGrayscaleFilter();
                 specailEffectHolder.filterSeekeable = false;
                 skinGPUFilter = new GPUImageCompatibleFilter<>(gpuImageFilter);
@@ -258,7 +271,12 @@ public class LiveRoomView extends FrameLayout {
 
     private void handleVideoFilters(SpecailEffectHolder specailEffectHolder) {
         //初始化UI progress
-        viewHolder.filterControllerView.initProgress(FilterControllerView.LEVEL1);
+        if (specailEffectHolder.filterPosition == 1) {
+            viewHolder.filterControllerView.initProgress(FilterControllerView.LEVEL1, FilterControllerView.LEVEL2, FilterControllerView.LEVEL3);
+        }
+        else {
+            viewHolder.filterControllerView.initProgress(FilterControllerView.LEVEL1);
+        }
         if (avOption.videoFilterMode == UFilterProfile.FilterMode.GPU) {
             UVideoGPUFilter gpuFilter = createGPUFilterByPosition(specailEffectHolder.filterPosition);
             if (gpuFilter != null) {
@@ -269,14 +287,14 @@ public class LiveRoomView extends FrameLayout {
                 skinGPUFilter = null;
                 viewHolder.liveCameraView.setVideoGPUFilter(null);
                 viewHolder.liveCameraView.setVideoCPUFilter(null);
-                viewHolder.filterControllerView.setVisibility(View.GONE);
+                viewHolder.filterControllerView.setVisibility(View.GONE, specailEffectHolder.filterProgressNums);
             }
             //处理GPU滤镜模式
             if (specailEffectHolder.filterSeekeable) {
-                viewHolder.filterControllerView.setVisibility(View.VISIBLE);  //更新UI, 部分滤镜可以调节强度
+                viewHolder.filterControllerView.setVisibility(View.VISIBLE, specailEffectHolder.filterProgressNums);  //更新UI, 部分滤镜可以调节强度
             }
             else {
-                viewHolder.filterControllerView.setVisibility(View.INVISIBLE); //更新UI
+                viewHolder.filterControllerView.setVisibility(View.INVISIBLE, specailEffectHolder.filterProgressNums); //更新UI
             }
         }
         else { //处理CPU滤镜模式
@@ -288,13 +306,13 @@ public class LiveRoomView extends FrameLayout {
                 skinCPUFilter = null;
                 viewHolder.liveCameraView.setVideoGPUFilter(null);
                 viewHolder.liveCameraView.setVideoCPUFilter(null);
-                viewHolder.filterControllerView.setVisibility(View.GONE); //更新UI
+                viewHolder.filterControllerView.setVisibility(View.GONE, specailEffectHolder.filterProgressNums); //更新UI
             }
             if (specailEffectHolder.filterSeekeable) { //若开启了CPU滤镜，设置到ULiveCameraView
-                viewHolder.filterControllerView.setVisibility(View.VISIBLE);
+                viewHolder.filterControllerView.setVisibility(View.VISIBLE, specailEffectHolder.filterProgressNums);
             }
             else {
-                viewHolder.filterControllerView.setVisibility(View.INVISIBLE);
+                viewHolder.filterControllerView.setVisibility(View.INVISIBLE, specailEffectHolder.filterProgressNums);
             }
         }
     }
