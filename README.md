@@ -1,6 +1,6 @@
-# UCloud 直播云 SDK 文档
+# 直播云 SDK 文档
 
-UCDLive SDK 是由 UCloud 提供的低延时、高并发的直播云服务。
+UCDLive SDK 是一款低延时、高并发的直播云服务。
 
 ![screenshot-1](screenshot/screenshot-1.png)  
 ![screenshot-2](screenshot/screenshot-2.png)
@@ -70,9 +70,7 @@ API 文档：请参考Demo下的javadoc目录
 详细请见 [UCDLive_Android 常见问题][5]
 
 ## 反馈和建议
-  - 主 页：<https://www.ucloud.cn/>
-  - issue：[查看已有 issues 和提交 Bug 推荐][3]
-  - 邮 箱：[sdk_spt@ucloud.cn][4]
+  - 请尽量在 [github issue][3] 上公开讨论技术问题，私下邮件询问恕不一一回复
 
 ### 问题反馈参考模板
 
@@ -85,16 +83,9 @@ API 文档：请参考Demo下的javadoc目录
 |操作路径|重现问题的操作步骤|
 |附件|推流界面截屏、推流调试日志截屏、报错日志截图等|
 
-### 提交工单
-
-提交工单，配置推流域名对应的accesskey: https://accountv2.ucloud.cn/work_ticket
-
-<img src="screenshot/work_ticket.png" width = "75%" height = "75%" alt="work_ticket" />
-
 [1]: https://github.com/umdk/UCDLive_Android/wiki
 [2]: https://github.com/umdk/UCDMediaPlayer_Android
 [3]: https://github.com/umdk/UCDLive_Android/issues
-[4]: mailto:sdk_spt@ucloud.cn
 [5]: https://github.com/umdk/UCDLive_Android/wiki/7-常见问题#7
 [6]: https://github.com/umdk/UCDLive_Android/wiki/9-版本历史#9
 [7]: https://github.com/umdk/UCDLive_Android/wiki/10-项目上线注意事项#10
