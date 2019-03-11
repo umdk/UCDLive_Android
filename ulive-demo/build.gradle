@@ -63,7 +63,7 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     compile 'com.umeng.analytics:analytics:latest.integration'
-    compile(name: 'ucommon-android-sdk-2.0.2', ext: 'aar')
-    compile(name: 'ulive-android-sdk-2.0.4', ext: 'aar')
-    compile(name: 'uvod-android-sdk-2.1.0', ext: 'aar')
+    compile(name: 'ucommon-android-sdk-2.0.3', ext: 'aar')
+    compile(name: 'ulive-android-sdk-2.1.0', ext: 'aar')
+    compile(name: 'uvod-android-sdk-2.3.0', ext: 'aar')
 }

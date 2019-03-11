@@ -65,16 +65,6 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
 
     private String[] demoNames;
 
-    private final String[] publishUrls = {
-        "rtmp://demo.push.ucloud.com.cn/live/%s",
-        "rtmp://publish3.usmtd.ucloud.com.cn/live/%s"
-    };
-
-    private final String[] playUrls = {
-        "http://demo.pull.ucloud.com.cn/live/%s.flv",
-        "http://rtmp3.usmtd.ucloud.com.cn/live/%s.flv",
-    };
-
     @BindView(R.id.listview)
     ListView listView;
 
@@ -273,12 +263,12 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
 
     private void line(Intent intent, int id, EditText editText) {
         if (id == R.id.rb_line1) {
-            intent.putExtra(KEY_STREAMING_ADDRESS, String.format(publishUrls[0], editText.getText().toString().trim()));
-            intent.putExtra(KEY_PLAY_ADDRESS, String.format(playUrls[0], editText.getText().toString().trim()));
+            intent.putExtra(KEY_STREAMING_ADDRESS, editText.getText().toString().trim());
+            intent.putExtra(KEY_PLAY_ADDRESS, editText.getText().toString().trim());
         }
         else {
-            intent.putExtra(KEY_STREAMING_ADDRESS, String.format(publishUrls[1], editText.getText().toString().trim()));
-            intent.putExtra(KEY_PLAY_ADDRESS, String.format(playUrls[1], editText.getText().toString().trim()));
+            intent.putExtra(KEY_STREAMING_ADDRESS, editText.getText().toString().trim());
+            intent.putExtra(KEY_PLAY_ADDRESS, editText.getText().toString().trim());
         }
     }
 

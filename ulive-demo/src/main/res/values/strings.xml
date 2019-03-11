@@ -56,8 +56,8 @@
     <string name="network_link">网络线路: </string>
     <string name="network_link1">线路1</string>
     <string name="network_link2">线路2</string>
-    <string name="stream_id">推拉流ID: </string>
-    <string name="stream_id_default">ucloud_test</string>
+    <string name="stream_id">推拉流地址: </string>
+    <string name="stream_id_default">请到各云厂商（优刻得、阿里云等）获取直播地址</string>
     <string name="sdk_version">版本: </string>
     <string name="filter_mode">滤镜类型:  </string>
     <string name="filter_cpu">CPU</string>
