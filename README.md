@@ -70,7 +70,7 @@ API 文档：请参考Demo下的javadoc目录
 详细请见 [UCDLive_Android 常见问题][5]
 
 ## 反馈和建议
-  - 请尽量在 [github issue][3] 上公开讨论技术问题，私下邮件询问恕不一一回复
+  - 该项目系个人维护，精力有限，请尽量在 [github issue][3] 上公开讨论技术问题，私下邮件询问恕不一一回复
 
 ### 问题反馈参考模板
 
@@ -81,7 +81,6 @@ API 文档：请参考Demo下的javadoc目录
 |SDK 版本|v1.4.1|
 |问题描述|描述问题现象|
 |操作路径|重现问题的操作步骤|
-|附件|推流界面截屏、推流调试日志截屏、报错日志截图等|
 
 [1]: https://github.com/umdk/UCDLive_Android/wiki
 [2]: https://github.com/umdk/UCDMediaPlayer_Android
