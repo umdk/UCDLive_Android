@@ -1,5 +1,8 @@
 # 直播云 SDK 文档
 
+## 关于维护
+此项目已于2019年3月停止维护，请慎重使用。
+
 UCDLive SDK 是一款低延时、高并发的直播云服务。
 
 ![screenshot-1](screenshot/screenshot-1.png)  
